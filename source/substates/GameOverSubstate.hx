@@ -13,31 +13,32 @@ import states.FreeplayState;
 class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Character;
+
 	var camFollow:FlxObject;
 
-	var stagePostfix:String = "";
-
-	public static var characterName:String = 'bf-dead';
+	public static var characterName:String = 'genericdeath';
 	public static var deathSoundName:String = 'fnf_loss_sfx';
-	public static var loopSoundName:String = 'gameOver';
-	public static var endSoundName:String = 'gameOverEnd';
+	public static var loopSoundName:String = 'gameover_v4_LOOP';
+	public static var endSoundName:String = 'gameover_v4_End';
+	public static var deathSongBPM:Int = 100;
 	public static var deathDelay:Float = 0;
 
 	public static var instance:GameOverSubstate;
 	public function new(?playStateBoyfriend:Character = null)
 	{
 		if(playStateBoyfriend != null && playStateBoyfriend.curCharacter == characterName) //Avoids spawning a second boyfriend cuz animate atlas is laggy
-		{
 			this.boyfriend = playStateBoyfriend;
-		}
+
 		super();
 	}
 
-	public static function resetVariables() {
-		characterName = 'bf-dead';
+	public static function resetVariables()
+	{
+		characterName = 'genericdeath';
 		deathSoundName = 'fnf_loss_sfx';
-		loopSoundName = 'gameOver';
-		endSoundName = 'gameOverEnd';
+		loopSoundName = 'gameover_v4_LOOP';
+		endSoundName = 'gameover_v4_End';
+		deathSongBPM = 100;
 		deathDelay = 0;
 
 		var _song = PlayState.SONG;
@@ -50,9 +51,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 	}
 
-	var charX:Float = 0;
-	var charY:Float = 0;
-
 	var overlay:FlxSprite;
 	var overlayConfirmOffsets:FlxPoint = FlxPoint.get();
 	override function create()
@@ -60,6 +58,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		instance = this;
 
 		Conductor.songPosition = 0;
+		Conductor.bpm = deathSongBPM;
 
 		if(boyfriend == null)
 		{
@@ -81,52 +80,58 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.camera.focusOn(new FlxPoint(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2)));
 		FlxG.camera.follow(camFollow, LOCKON, 0.01);
 		add(camFollow);
-		
+
 		PlayState.instance.setOnScripts('inGameOver', true);
 		PlayState.instance.callOnScripts('onGameOverStart', []);
 		FlxG.sound.music.loadEmbedded(Paths.music(loopSoundName), true);
 
-		if(characterName == 'pico-dead')
+		switch(characterName)
 		{
-			overlay = new FlxSprite(boyfriend.x + 205, boyfriend.y - 80);
-			overlay.frames = Paths.getSparrowAtlas('Pico_Death_Retry');
-			overlay.animation.addByPrefix('deathLoop', 'Retry Text Loop', 24, true);
-			overlay.animation.addByPrefix('deathConfirm', 'Retry Text Confirm', 24, false);
-			overlay.antialiasing = ClientPrefs.data.antialiasing;
-			overlayConfirmOffsets.set(250, 200);
-			overlay.visible = false;
-			add(overlay);
+			case 'pico-dead':
+				overlay = new FlxSprite(boyfriend.x + 205, boyfriend.y - 80);
+				overlay.frames = Paths.getSparrowAtlas('Pico_Death_Retry');
+				overlay.animation.addByPrefix('deathLoop', 'Retry Text Loop', 24, true);
+				overlay.animation.addByPrefix('deathConfirm', 'Retry Text Confirm', 24, false);
+				overlayConfirmOffsets.set(250, 200);
+				overlay.visible = false;
+				add(overlay);
 
-			boyfriend.animation.callback = function(name:String, frameNumber:Int, frameIndex:Int)
-			{
-				switch(name)
+				boyfriend.animation.callback = function(name:String, frameNumber:Int, frameIndex:Int)
 				{
-					case 'firstDeath':
-						if(frameNumber >= 36 - 1)
-						{
-							overlay.visible = true;
-							overlay.animation.play('deathLoop');
+					switch(name)
+					{
+						case 'firstDeath':
+							if(frameNumber >= 36 - 1)
+							{
+								overlay.visible = true;
+								overlay.animation.play('deathLoop');
+								boyfriend.animation.callback = null;
+							}
+						default:
 							boyfriend.animation.callback = null;
-						}
-					default:
-						boyfriend.animation.callback = null;
+					}
 				}
-			}
 
-			if(PlayState.instance.gf != null && PlayState.instance.gf.curCharacter == 'nene')
-			{
-				var neneKnife:FlxSprite = new FlxSprite(boyfriend.x - 450, boyfriend.y - 250);
-				neneKnife.frames = Paths.getSparrowAtlas('NeneKnifeToss');
-				neneKnife.animation.addByPrefix('anim', 'knife toss', 24, false);
-				neneKnife.antialiasing = ClientPrefs.data.antialiasing;
-				neneKnife.animation.finishCallback = function(_)
+				if(PlayState.instance.gf != null && PlayState.instance.gf.curCharacter == 'nene')
 				{
-					remove(neneKnife);
-					neneKnife.destroy();
+					var neneKnife:FlxSprite = new FlxSprite(boyfriend.x - 450, boyfriend.y - 250);
+					neneKnife.frames = Paths.getSparrowAtlas('NeneKnifeToss');
+					neneKnife.animation.addByPrefix('anim', 'knife toss', 24, false);
+					neneKnife.animation.finishCallback = function(_)
+					{
+						remove(neneKnife);
+						neneKnife.destroy();
+					}
+					insert(0, neneKnife);
+					neneKnife.animation.play('anim', true);
 				}
-				insert(0, neneKnife);
-				neneKnife.animation.play('anim', true);
-			}
+
+			case 'henryphone':
+				FlxG.camera.zoom = 0.9;
+				camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 30, boyfriend.getGraphicMidpoint().y - 60);
+
+			default:
+				//nothing
 		}
 
 		super.create();
@@ -152,10 +157,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if(!isEnding)
 		{
-			if (controls.ACCEPT)
-			{
-				endBullshit();
-			}
+			if (controls.ACCEPT) endBullshit();
 			else if (controls.BACK)
 			{
 				#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
@@ -185,10 +187,7 @@ class GameOverSubstate extends MusicBeatSubstate
 						//if(!ClientPrefs.cursing) exclude = [1, 3, 8, 13, 17, 21];
 	
 						FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + FlxG.random.int(1, 25, exclude)), 1, false, null, true, function() {
-							if(!isEnding)
-							{
-								FlxG.sound.music.fadeIn(0.2, 1, 4);
-							}
+							if(!isEnding) FlxG.sound.music.fadeIn(0.2, 1, 4);
 						});
 
 					default:
@@ -197,9 +196,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			
 			if (FlxG.sound.music.playing)
-			{
 				Conductor.songPosition = FlxG.sound.music.time;
-			}
 		}
 		PlayState.instance.callOnScripts('onUpdatePost', [elapsed]);
 	}

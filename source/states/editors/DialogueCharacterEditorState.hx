@@ -40,8 +40,8 @@ class DialogueCharacterEditorState extends MusicBeatState implements PsychUIEven
 	var offsetIdleText:FlxText;
 	var animText:FlxText;
 
-	var camGame:FlxCamera;
-	var camHUD:FlxCamera;
+	var camGame:PsychCamera;
+	var camHUD:PsychCamera;
 
 	var mainGroup:FlxSpriteGroup;
 	var hudGroup:FlxSpriteGroup;
@@ -57,7 +57,7 @@ class DialogueCharacterEditorState extends MusicBeatState implements PsychUIEven
 		persistentUpdate = persistentDraw = true;
 		camGame = initPsychCamera();
 		camGame.bgColor = FlxColor.fromHSL(0, 0, 0.5);
-		camHUD = new FlxCamera();
+		camHUD = new PsychCamera();
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD, false);
 		
@@ -89,7 +89,6 @@ class DialogueCharacterEditorState extends MusicBeatState implements PsychUIEven
 		mainGroup.add(ghostIdle);
 
 		box = new FlxSprite(70, 370);
-		box.antialiasing = ClientPrefs.data.antialiasing;
 		box.frames = Paths.getSparrowAtlas('speech_bubble');
 		box.scrollFactor.set();
 		box.animation.addByPrefix('normal', 'speech bubble normal', 24);

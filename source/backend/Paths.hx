@@ -123,6 +123,12 @@ class Paths
 	inline public static function getSharedPath(file:String = '')
 		return 'assets/shared/$file';
 
+	inline static public function file(file:String, type:AssetType = TEXT, ?folder:String)
+		return getPath(file, type, folder, true);
+
+	inline static public function deathData(key:String, ?folder:String)
+		return getPath('sounds/deaths/$key/info.txt', TEXT, folder, true);
+
 	inline static public function txt(key:String, ?folder:String)
 		return getPath('data/$key.txt', TEXT, folder, true);
 
@@ -262,6 +268,14 @@ class Paths
 		}
 		#end
 		return (OpenFlAssets.exists(getPath(key, type, parentFolder, false)));
+	}
+
+	public static function fileExistsAbsolute(key:String, ?ignoreMods:Bool = false)
+	{
+		#if sys
+		if(!ignoreMods) return (FileSystem.exists(key));
+		#end
+		return (OpenFlAssets.exists(key));
 	}
 
 	static public function getAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames

@@ -5,7 +5,8 @@ import lime.utils.Assets as LimeAssets;
 
 class CoolUtil
 {
-	inline public static function quantize(f:Float, snap:Float){
+	inline public static function quantize(f:Float, snap:Float)
+	{
 		// changed so this actually works lol
 		var m:Float = Math.fround(f * snap);
 		//trace(snap);
@@ -50,12 +51,10 @@ class CoolUtil
 
 	public static function floorDecimal(value:Float, decimals:Int):Float
 	{
-		if(decimals < 1)
-			return Math.floor(value);
+		if(decimals < 1) return Math.floor(value);
 
 		var tempMult:Float = 1;
-		for (i in 0...decimals)
-			tempMult *= 10;
+		for (i in 0...decimals) tempMult *= 10;
 
 		var newValue:Float = Math.floor(value * tempMult);
 		return newValue / tempMult;
@@ -101,30 +100,52 @@ class CoolUtil
 		return dumbArray;
 	}
 
-	inline public static function browserLoad(site:String) {
-		#if linux
-		Sys.command('/usr/bin/xdg-open', [site]);
+	inline public static function browserLoad(site:String)
+	{
+		try
+		{
+			#if linux
+			Sys.command('/usr/bin/xdg-open $site &');
+			#else
+			FlxG.openURL(site);
+			#end
+		}
+		catch(e:Dynamic)
+		{
+			FlxG.log.warn("Couldn't open site!");
+		}
+	}
+
+	inline public static function openFolder(folder:String, absolute:Bool = false)
+	{
+		#if sys
+		if(!absolute) folder = Sys.getCwd() + folder;
+
+		folder = folder.replace('\\', '/');
+		if(folder.endsWith('/')) folder.substr(0, folder.length - 1);
+
+		final command:String = #if linux '/usr/bin/xdg-open' #else 'explorer.exe' #end;
+		try
+		{
+			Sys.command(command, [folder]);
+			trace('$command $folder');
+		}
+		catch(e:Dynamic)
+		{
+			FlxG.log.warn("Couldn't open folder!");
+		}
 		#else
-		FlxG.openURL(site);
+		FlxG.log.warn("Platform is not supported for CoolUtil.openFolder");
 		#end
 	}
 
-	inline public static function openFolder(folder:String, absolute:Bool = false) {
+	inline public static function getProgramPath():String
+	{
 		#if sys
-			if(!absolute) folder =  Sys.getCwd() + '$folder';
-
-			folder = folder.replace('/', '\\');
-			if(folder.endsWith('/')) folder.substr(0, folder.length - 1);
-
-			#if linux
-			var command:String = '/usr/bin/xdg-open';
-			#else
-			var command:String = 'explorer.exe';
-			#end
-			Sys.command(command, [folder]);
-			trace('$command $folder');
+		return Sys.getCwd().replace('\\', '/');
 		#else
-			FlxG.error("Platform is not supported for CoolUtil.openFolder");
+		FlxG.log.warn("Platform is not supported for CoolUtil.getProgramPath");
+		return '';
 		#end
 	}
 

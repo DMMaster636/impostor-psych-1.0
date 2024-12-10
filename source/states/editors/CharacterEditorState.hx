@@ -46,8 +46,8 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 	var animsTxt:FlxText;
 	var curAnim = 0;
 
-	private var camEditor:FlxCamera;
-	private var camHUD:FlxCamera;
+	private var camEditor:PsychCamera;
+	private var camHUD:PsychCamera;
 
 	var UI_box:PsychUIBox;
 	var UI_characterbox:PsychUIBox;
@@ -73,7 +73,9 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		FlxG.sound.music.stop();
 		camEditor = initPsychCamera();
 
-		camHUD = new FlxCamera();
+		FlxG.sound.playMusic(Paths.music('sussus_muzak'), 0.5);
+
+		camHUD = new PsychCamera();
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD, false);
 
@@ -83,13 +85,11 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		add(silhouettes);
 
 		var dad:FlxSprite = new FlxSprite(dadPosition.x, dadPosition.y).loadGraphic(Paths.image('editors/silhouetteDad'));
-		dad.antialiasing = ClientPrefs.data.antialiasing;
 		dad.active = false;
 		dad.offset.set(-4, 1);
 		silhouettes.add(dad);
 
 		var boyfriend:FlxSprite = new FlxSprite(bfPosition.x, bfPosition.y + 350).loadGraphic(Paths.image('editors/silhouetteBF'));
-		boyfriend.antialiasing = ClientPrefs.data.antialiasing;
 		boyfriend.active = false;
 		boyfriend.offset.set(-6, 2);
 		silhouettes.add(boyfriend);
@@ -656,9 +656,8 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		noAntialiasingCheckBox.checked = character.noAntialiasing;
 		noAntialiasingCheckBox.onClick = function() {
 			character.antialiasing = false;
-			if(!noAntialiasingCheckBox.checked && ClientPrefs.data.antialiasing) {
+			if(!noAntialiasingCheckBox.checked && ClientPrefs.data.antialiasing)
 				character.antialiasing = true;
-			}
 			character.noAntialiasing = noAntialiasingCheckBox.checked;
 		};
 
@@ -1054,6 +1053,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			{
 				if(!unsavedProgress)
 				{
+					camEditor.bgColor = 0xFF000000;
 					MusicBeatState.switchState(new states.editors.MasterEditorMenu());
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 				}
@@ -1061,6 +1061,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			}
 			else
 			{
+				camEditor.bgColor = 0xFF000000;
 				FlxG.mouse.visible = false;
 				MusicBeatState.switchState(new PlayState());
 			}
@@ -1077,9 +1078,8 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		/////////////
 		// bg data //
 		/////////////
-		#if !BASE_GAME_FILES
 		camEditor.bgColor = 0xFF666666;
-		#else
+
 		var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
 		add(bg);
 
@@ -1087,7 +1087,6 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 		stageFront.updateHitbox();
 		add(stageFront);
-		#end
 
 		dadPosition.set(100, 100);
 		bfPosition.set(770, 100);
@@ -1292,6 +1291,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 
 			"position":	character.positionArray,
 			"camera_position": character.cameraPosition,
+			"platform_pos": character.platformPos,
 
 			"flip_x": character.originalFlipX,
 			"no_antialiasing": character.noAntialiasing,
@@ -1300,7 +1300,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 			"_editor_isPlayer": character.isPlayer
 		};
 
-		var data:String = PsychJsonPrinter.print(json, ['offsets', 'position', 'healthbar_colors', 'camera_position', 'indices']);
+		var data:String = PsychJsonPrinter.print(json, ['offsets', 'position', 'healthbar_colors', 'camera_position', 'platform_pos', 'indices']);
 
 		if (data.length > 0)
 		{

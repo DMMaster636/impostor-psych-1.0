@@ -83,7 +83,55 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		['Change Character', "Value 1: Character to change (Dad, BF, GF)\nValue 2: New character's name"],
 		['Change Scroll Speed', "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."],
 		['Set Property', "Value 1: Variable name\nValue 2: New value"],
-		['Play Sound', "Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"]
+		['Play Sound', "Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"],
+		['Reactor Beep', "beep beep value 1 changes the type"],
+		['Double Kill Events', "Events for Double Kill\nDarken - Slowly darkens screen\nBrighten - Removes darkness"],
+		['DefeatDark', "black thingy"],
+		['Finale Flashback Change', "eTHAN THINGY CODE IN GAME!!"],
+		['Finale Drop', "fire ass song this shit fucks\n-aqua"],
+		['Finale End', "fire ass song this shit fucks\n-aqua"],
+		['Jerma Scream', "ladies and gentlemen\nneato newgrounds"],
+		['Jerma Screamed', "ladies and gentlemen\nneato newgrounds"],
+		['flash', "weirdly programmed flash event (dont change) \n 0 and 1 are normal flashes but 2 and 3 are \n for fades in identity crisis specifically"],
+		['Ellie Drop', "ellie dro p down"],
+		['Armed End', 'armed ending'],
+		['Meltdown Video', "'Dead Body Reported'"],
+		['Toogus Sax', "blow"],
+		['Lights out', "turn the lights off"],
+		['Lights on', "turn the lights on"],
+		['Lights on Ending', "turn the lights on ENDING"],
+		['Lights Down OFF', "turn the lights on ENDING"],
+		['Both Opponents', ""],
+		['Opponent Two', ""],
+		['Play On Left', ''],
+		['Cam lock in Who', 'Value 1: "in" for in zoom\nValue 2: "dad" for dad'],
+		['Cam lock in Voting Time', 'Value 1: "in" for in zoom\nValue 2: "dad" for dad'],
+		['Turbulence Ending', 'WAAHHHHHH'],
+		['Turbulence Speed', 'WAAHHHHHH'],
+		['Who Buzz', ''],
+		['Dave AUGH', ''],
+		['Reactor Beep', 'Reactor whomp err'],
+		['bye gf', 'lol'],
+		['scream danger', 'danfer'],
+		['unscream danger', 'based and Black Pilled ha ha memes'],
+		['tuesdayblast', 'loud sound'],
+		['HUD Fade', 'fades da hud'],
+		['Identity Crisis line', 'dialogue'],
+		['Lights Down O2', "WHAT THE F-"],
+		['WTF O2', "WHAT THE F-"],
+		['Victory Darkness', 'let there be dark'],
+		['Show Victory Guy', 'value one is character, value 2 is show or null'],
+		['Defeat Fade', 'defeat bodies apear'],
+		['Defeat Retro', 'defeat bodies apear'],
+		['Identity Crisis Events', 'Changes shifted background in identity crisis. 0 is default, 1 is red\n2 is black, 3 is green.'],
+		['Ejected Video', 'video at start ejected'],
+		['Ejected Start', 'start the actual song lol'],
+		['Forehead', 'start the actual song lol'],
+		['Forehead2', 'start the actual song lol'],
+		['IdentityFade', 'fade in or out black in identity crisis.'],
+		['Orbyy', 'fade in or out black in identity crisis.'],
+		['Orbyy2', 'fade in or out black in identity crisis.'],
+		['tomongusdie', 'kill them.']
 	];
 	
 	public static var keysArray:Array<FlxKey> = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT]; //Used for Vortex Editor
@@ -140,7 +188,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 	var infoBoxPosition:FlxPoint = FlxPoint.get(1000, 360);
 	var upperBox:PsychUIBox;
 	
-	var camUI:FlxCamera;
+	var camUI:PsychCamera;
 
 	var prevGridBg:ChartingGridSprite;
 	var gridBg:ChartingGridSprite;
@@ -232,7 +280,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		opponentVocals.looped = true;
 
 		initPsychCamera();
-		camUI = new FlxCamera();
+		camUI = new PsychCamera();
 		camUI.bgColor.alpha = 0;
 		FlxG.cameras.add(camUI, false);
 
@@ -240,7 +288,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		chartEditorSave.bind('chart_editor_data', CoolUtil.getSavePath());
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
 		bg.scrollFactor.set();
 		add(bg);
 
@@ -320,7 +367,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		if(SHOW_EVENT_COLUMN)
 		{
 			eventIcon = new FlxSprite(0, iconY).loadGraphic(Paths.image('editors/eventIcon'));
-			eventIcon.antialiasing = ClientPrefs.data.antialiasing;
 			eventIcon.alpha = 0.6;
 			eventIcon.setGraphicSize(30, 30);
 			eventIcon.updateHitbox();
@@ -384,7 +430,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		autoSaveIcon = new FlxSprite(50).loadGraphic(Paths.image('editors/autosave'));
 		autoSaveIcon.screenCenter(Y);
 		autoSaveIcon.scale.set(0.6, 0.6);
-		autoSaveIcon.antialiasing = ClientPrefs.data.antialiasing;
 		autoSaveIcon.scrollFactor.set();
 		autoSaveIcon.alpha = 0;
 		add(autoSaveIcon);
@@ -413,9 +458,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		add(outputTxt);
 
 		if(PlayState.SONG == null) //Atleast try to avoid crashes
-		{
 			openNewChart();
-		}
 
 		updateJsonData();
 		
@@ -587,11 +630,17 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			needsVoices: true,
 			speed: 1,
 			offset: 0,
+			stage: 'stage',
 
 			player1: 'bf',
 			player2: 'dad',
 			gfVersion: 'gf',
-			stage: 'stage',
+			player4: null,
+
+			allowBFskin: true,
+			allowGFskin: true,
+			allowPet: true,
+
 			format: 'psych_v1'
 		};
 		Song.chartPath = null;

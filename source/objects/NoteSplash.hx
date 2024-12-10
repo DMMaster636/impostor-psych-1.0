@@ -64,8 +64,11 @@ class NoteSplash extends FlxSprite
 		if (skin == null || skin.length < 1)
 			skin = try PlayState.SONG.splashSkin catch(e) null;
 
+		if (skin == DEFAULT_SKIN)
+			skin += getSplashSkinPostfix();
+
 		if (skin == null || skin.length < 1)
-			skin = DEFAULT_SKIN + getSplashSkinPostfix();
+			skin = DEFAULT_SKIN;
 
 		this.skin = skin;
 
@@ -166,7 +169,14 @@ class NoteSplash extends FlxSprite
 				((note.noteSplashData.useRGBShader) && (PlayState.SONG == null || !PlayState.SONG.disableNoteRGB)))
 			{
 				// If Note RGB is enabled:
-				if((!note.noteSplashData.useGlobalShader || ((cast FlxG.state) is NoteSplashEditorState)))
+				if(note.noteSplashData.useNoteShader)
+				{
+					tempShader = new RGBPalette();
+					tempShader.r = note.rgbShader.r;
+					tempShader.g = note.rgbShader.g;
+					tempShader.b = note.rgbShader.b;
+				}
+				else if((!note.noteSplashData.useGlobalShader || ((cast FlxG.state) is NoteSplashEditorState)))
 				{
 					var colors = config.rgb;
 					if (colors != null)
@@ -177,8 +187,6 @@ class NoteSplash extends FlxSprite
 							if (i > 2) break;
 
 							var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[noteData % Note.colArray.length];
-							if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixel[noteData % Note.colArray.length];
-
 							var rgb = colors[i];
 							if (rgb == null)
 							{
@@ -231,7 +239,7 @@ class NoteSplash extends FlxSprite
         alpha = ClientPrefs.data.splashAlpha;
 		if(note != null) alpha = note.noteSplashData.a;
 
-		if(note != null) antialiasing = note.noteSplashData.antialiasing;
+		if(note != null) antialiasing = (note.noteSplashData.antialiasing && ClientPrefs.data.antialiasing);
 		if(PlayState.isPixelStage) antialiasing = false;
 
 		if(animation.curAnim != null && conf != null)

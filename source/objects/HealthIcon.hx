@@ -3,15 +3,16 @@ package objects;
 class HealthIcon extends FlxSprite
 {
 	public var sprTracker:FlxSprite;
-	private var isPlayer:Bool = false;
 	private var char:String = '';
+	private var isPlayer:Bool = false;
+	private var isAnimated:Bool = false;
 
 	public function new(char:String = 'face', isPlayer:Bool = false, ?allowGPU:Bool = true)
 	{
 		super();
+
 		this.isPlayer = isPlayer;
 		changeIcon(char, allowGPU);
-		scrollFactor.set();
 	}
 
 	override function update(elapsed:Float)
@@ -23,28 +24,46 @@ class HealthIcon extends FlxSprite
 	}
 
 	private var iconOffsets:Array<Float> = [0, 0];
-	public function changeIcon(char:String, ?allowGPU:Bool = true) {
-		if(this.char != char) {
-			var name:String = 'icons/' + char;
-			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + char; //Older versions of psych engine's support
-			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-face'; //Prevents crash from missing icon
-			
+	public function changeIcon(char:String, ?allowGPU:Bool = true)
+	{
+		if(this.char == char) return;
+
+		var name:String = 'icons/' + char;
+		if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + char; //Older versions of psych engine's support
+		if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-face'; //Prevents crash from missing icon
+
+		isAnimated = Paths.fileExists('images/' + name + '.xml', TEXT);
+
+		if(!isAnimated)
+		{
 			var graphic = Paths.image(name, allowGPU);
 			var iSize:Float = Math.round(graphic.width / graphic.height);
 			loadGraphic(graphic, true, Math.floor(graphic.width / iSize), Math.floor(graphic.height));
 			iconOffsets[0] = (width - 150) / iSize;
 			iconOffsets[1] = (height - 150) / iSize;
-			updateHitbox();
 
 			animation.add(char, [for(i in 0...frames.frames.length) i], 0, false, isPlayer);
 			animation.play(char);
-			this.char = char;
-
-			if(char.endsWith('-pixel'))
-				antialiasing = false;
-			else
-				antialiasing = ClientPrefs.data.antialiasing;
 		}
+		else
+		{
+			frames = Paths.getSparrowAtlas(name, allowGPU);
+			animation.addByPrefix('0', 'normal', 24, true, isPlayer);
+			animation.addByPrefix('1', 'losing', 24, true, isPlayer);
+			// animation.addByPrefix('2', 'winning', 24, true, isPlayer);
+			animation.play('0');
+		}
+		updateHitbox();
+
+		this.char = char;
+
+		if(char.endsWith('-pixel')) antialiasing = false;
+	}
+
+	public function playAnim(animState:Int = 0)
+	{
+		if(isAnimated) animation.play('$animState');
+		else animation.curAnim.curFrame = animState;
 	}
 
 	public var autoAdjustOffset:Bool = true;
@@ -58,7 +77,6 @@ class HealthIcon extends FlxSprite
 		}
 	}
 
-	public function getCharacter():String {
+	public function getCharacter():String
 		return char;
-	}
 }

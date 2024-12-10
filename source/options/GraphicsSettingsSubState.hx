@@ -66,12 +66,13 @@ class GraphicsSettingsSubState extends BaseOptionsMenu
 
 	function onChangeAntiAliasing()
 	{
+		FlxG.game.stage.quality = ClientPrefs.data.antialiasing ? BEST : LOW;
+		FlxSprite.defaultAntialiasing = ClientPrefs.data.antialiasing;
 		for (sprite in members)
 		{
 			var sprite:FlxSprite = cast sprite;
-			if(sprite != null && (sprite is FlxSprite) && !(sprite is FlxText)) {
+			if(sprite != null && (sprite is FlxSprite) && !(sprite is FlxText))
 				sprite.antialiasing = ClientPrefs.data.antialiasing;
-			}
 		}
 	}
 

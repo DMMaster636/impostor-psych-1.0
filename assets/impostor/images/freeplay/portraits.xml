@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="portraits.png" width="8186" height="3391">
+	<SubTexture name="Character0000" x="3924" y="0" width="741" height="635" frameX="-187" frameY="-233" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0001" x="4670" y="0" width="741" height="635" frameX="-187" frameY="-233" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0002" x="1799" y="1366" width="847" height="810" frameX="-146" frameY="-78" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0003" x="5416" y="0" width="763" height="664" frameX="-202" frameY="-208" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0004" x="7534" y="0" width="652" height="739" frameX="-287" frameY="-113" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0005" x="3348" y="0" width="571" height="634" frameX="-322" frameY="-229" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0006" x="3565" y="640" width="690" height="755" frameX="-233" frameY="-116" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0007" x="2699" y="2235" width="1018" height="887" frameX="-16" frameY="-134" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0008" x="902" y="2143" width="856" height="910" frameX="-121" frameY="-66" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0009" x="5047" y="1454" width="664" height="836" frameX="-293" frameY="-75" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0010" x="6055" y="2332" width="947" height="928" frameX="-268" frameY="-6" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0011" x="6504" y="1484" width="831" height="843" frameX="-166" frameY="-106" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0012" x="700" y="583" width="708" height="719" frameX="-191" frameY="-140" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0013" x="2238" y="617" width="757" height="744" frameX="-191" frameY="-163" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0014" x="861" y="1332" width="933" height="806" frameX="-203" frameY="-206" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0015" x="5548" y="669" width="627" height="780" frameX="-321" frameY="-120" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0016" x="0" y="0" width="338" height="272" frameX="-447" frameY="-388" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0017" x="6861" y="0" width="668" height="687" frameX="-245" frameY="-169" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0018" x="6758" y="692" width="728" height="787" frameX="-226" frameY="-155" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0019" x="4637" y="2295" width="896" height="899" frameX="-168" frameY="-102" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0020" x="1413" y="602" width="820" height="725" frameX="-220" frameY="-163" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0021" x="6180" y="669" width="573" height="784" frameX="-398" frameY="-128" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0022" x="0" y="2143" width="897" height="851" frameX="-195" frameY="-85" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0023" x="3368" y="1400" width="840" height="830" frameX="-226" frameY="-21" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0024" x="4849" y="669" width="694" height="775" frameX="-208" frameY="-102" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0025" x="5538" y="2299" width="512" height="924" frameX="-383" frameY="-12" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0026" x="7491" y="744" width="688" height="797" frameX="-309" frameY="-111" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0027" x="6184" y="0" width="672" height="664" frameX="-281" frameY="-171" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0028" x="5716" y="1458" width="783" height="836" frameX="-254" frameY="-100" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0029" x="2445" y="0" width="898" height="612" frameX="-196" frameY="-211" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0030" x="7340" y="1546" width="802" height="909" frameX="-191" frameY="-18" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0031" x="343" y="0" width="822" height="553" frameX="-255" frameY="-203" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0032" x="7007" y="2460" width="922" height="931" frameX="-194" frameY="-5" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0033" x="3000" y="639" width="560" height="752" frameX="-323" frameY="-184" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0034" x="1170" y="0" width="690" height="578" frameX="-274" frameY="-181" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0035" x="2651" y="1396" width="712" height="818" frameX="-318" frameY="-94" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0036" x="1763" y="2219" width="931" height="882" frameX="-185" frameY="-54" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0037" x="1865" y="0" width="575" height="597" frameX="-441" frameY="-242" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0038" x="4213" y="1449" width="829" height="834" frameX="-185" frameY="-67" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0039" x="0" y="558" width="695" height="705" frameX="-332" frameY="-196" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0040" x="0" y="1307" width="856" height="791" frameX="-211" frameY="-127" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0041" x="4260" y="640" width="584" height="770" frameX="-368" frameY="-155" frameWidth="1215" frameHeight="1097"/>
+	<SubTexture name="Character0042" x="3722" y="2288" width="910" height="889" frameX="-187" frameY="-61" frameWidth="1215" frameHeight="1097"/>
+</TextureAtlas>

@@ -13,9 +13,9 @@ class NoteOffsetState extends MusicBeatState
 	var boyfriend:Character;
 	var gf:Character;
 
-	public var camHUD:FlxCamera;
-	public var camGame:FlxCamera;
-	public var camOther:FlxCamera;
+	public var camGame:PsychCamera;
+	public var camHUD:PsychCamera;
+	public var camOther:PsychCamera;
 
 	var coolText:FlxText;
 	var rating:FlxSprite;
@@ -44,11 +44,11 @@ class NoteOffsetState extends MusicBeatState
 		// Cameras
 		camGame = initPsychCamera();
 
-		camHUD = new FlxCamera();
+		camHUD = new PsychCamera();
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD, false);
 
-		camOther = new FlxCamera();
+		camOther = new PsychCamera();
 		camOther.bgColor.alpha = 0;
 		FlxG.cameras.add(camOther, false);
 
@@ -79,7 +79,6 @@ class NoteOffsetState extends MusicBeatState
 
 		rating = new FlxSprite().loadGraphic(Paths.image('sick'));
 		rating.cameras = [camHUD];
-		rating.antialiasing = ClientPrefs.data.antialiasing;
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
 		rating.updateHitbox();
 		
@@ -100,7 +99,6 @@ class NoteOffsetState extends MusicBeatState
 		{
 			var numScore:FlxSprite = new FlxSprite(43 * daLoop).loadGraphic(Paths.image('num' + i));
 			numScore.cameras = [camHUD];
-			numScore.antialiasing = ClientPrefs.data.antialiasing;
 			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			numScore.updateHitbox();
 			comboNums.add(numScore);
@@ -133,7 +131,7 @@ class NoteOffsetState extends MusicBeatState
 		barPercent = ClientPrefs.data.noteOffset;
 		updateNoteDelay();
 		
-		timeBar = new Bar(0, timeTxt.y + (timeTxt.height / 3), 'healthBar', function() return barPercent, delayMin, delayMax);
+		timeBar = new Bar(0, timeTxt.y + (timeTxt.height / 3), 'healthBar', null, function() return barPercent, delayMin, delayMax);
 		timeBar.scrollFactor.set();
 		timeBar.screenCenter(X);
 		timeBar.visible = false;

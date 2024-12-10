@@ -21,7 +21,6 @@ class ErrorState extends MusicBeatState
 	{
 		var bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = FlxColor.GRAY;
-		bg.antialiasing = ClientPrefs.data.antialiasing;
 		add(bg);
 		bg.screenCenter();
 
@@ -39,10 +38,8 @@ class ErrorState extends MusicBeatState
 		errorSine += 180 * elapsed;
 		errorText.alpha = 1 - Math.sin((Math.PI * errorSine) / 180);
 
-		if(controls.ACCEPT && acceptCallback != null)
-			acceptCallback();
-		else if(controls.BACK && backCallback != null)
-			backCallback();
+		if(controls.ACCEPT && acceptCallback != null) acceptCallback();
+		else if(controls.BACK && backCallback != null) backCallback();
 
 		super.update(elapsed);
 	}

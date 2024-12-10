@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="gfdead.png" width="3699" height="232">
+	<SubTexture name="gf speaker instance 10000" x="2467" y="0" width="616" height="232" frameX="-0" frameY="-1" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10001" x="2467" y="0" width="616" height="232" frameX="-0" frameY="-1" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10002" x="0" y="0" width="613" height="226" frameX="-3" frameY="-7" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10003" x="618" y="0" width="612" height="226" frameX="-4" frameY="-7" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10004" x="3088" y="0" width="611" height="232" frameX="-4" frameY="-1" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10005" x="3088" y="0" width="611" height="232" frameX="-4" frameY="-1" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10006" x="1235" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10007" x="1235" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10008" x="1851" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10009" x="1851" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10010" x="1851" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10011" x="1851" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10012" x="1851" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+	<SubTexture name="gf speaker instance 10013" x="1851" y="0" width="611" height="228" frameX="-4" frameY="-5" frameWidth="616" frameHeight="233"/>
+</TextureAtlas>

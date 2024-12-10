@@ -56,7 +56,6 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		difficultyChoices.push('BACK');
 
-
 		pauseMusic = new FlxSound();
 		try
 		{
@@ -146,13 +145,23 @@ class PauseSubState extends MusicBeatSubstate
 		super.create();
 	}
 	
-	function getPauseSong()
+	public static function getPauseSong():String
 	{
-		var formattedSongName:String = (songName != null ? Paths.formatToSongPath(songName) : '');
-		var formattedPauseMusic:String = Paths.formatToSongPath(ClientPrefs.data.pauseMusic);
-		if(formattedSongName == 'none' || (formattedSongName != 'none' && formattedPauseMusic == 'none')) return null;
+		switch(PlayState.SONG.stage.toLowerCase())
+		{
+			case 'defeat': return 'blackPause';
+			case 'school' | 'tomtus': return 'tomongusPause';
+			case 'finale': return 'finalePause';
+			case 'alpha': return 'untitled';
+			case 'powstage': return 'breakfast-(pico)';
+			default:
+				var formattedSongName:String = (songName != null ? Paths.formatToSongPath(songName) : '');
+				var formattedPauseMusic:String = Paths.formatToSongPath(ClientPrefs.data.pauseMusic);
+				if(formattedSongName == 'none' || (formattedSongName != 'none' && formattedPauseMusic == 'none')) return null;
 
-		return (formattedSongName != '') ? formattedSongName : formattedPauseMusic;
+				return (formattedSongName != '') ? formattedSongName : formattedPauseMusic;
+		}
+		return null;
 	}
 
 	var holdTime:Float = 0;
@@ -330,8 +339,7 @@ class PauseSubState extends MusicBeatSubstate
 						MusicBeatState.switchState(new FreeplayState());
 
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-					PlayState.changedDifficulty = false;
-					PlayState.chartingMode = false;
+					PlayState.changedDifficulty = PlayState.chartingMode = false;
 					FlxG.camera.followLerp = 0;
 			}
 		}
@@ -352,14 +360,10 @@ class PauseSubState extends MusicBeatSubstate
 	public static function restartSong(noTrans:Bool = false)
 	{
 		PlayState.instance.paused = true; // For lua
-		FlxG.sound.music.volume = 0;
-		PlayState.instance.vocals.volume = 0;
+		FlxG.sound.music.volume = PlayState.instance.vocals.volume = 0;
 
-		if(noTrans)
-		{
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
-		}
+		if(noTrans) FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
+
 		MusicBeatState.resetState();
 	}
 
@@ -381,37 +385,47 @@ class PauseSubState extends MusicBeatSubstate
 				item.alpha = 1;
 				if(item == skipTimeTracker)
 				{
+					skipTimeText.alpha = 1;
 					curTime = Math.max(0, Conductor.songPosition);
 					updateSkipTimeText();
 				}
+				else 
+				{
+					if(skipTimeText != null) skipTimeText.alpha = 0.6;
+				}
 			}
 		}
-		missingText.visible = false;
-		missingTextBG.visible = false;
+		missingText.visible = missingTextBG.visible = false;
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 	}
 
-	function regenMenu():Void {
-		for (i in 0...grpMenuShit.members.length)
+	function regenMenu():Void
+	{
+		for (obj in grpMenuShit)
 		{
-			var obj:Alphabet = grpMenuShit.members[0];
 			obj.kill();
 			grpMenuShit.remove(obj, true);
 			obj.destroy();
 		}
 
-		for (num => str in menuItems) {
-			var item = new Alphabet(90, 320, Language.getPhrase('pause_$str', str), true);
+		for (num => str in menuItems)
+		{
+			var item = new Alphabet(0, 320, Language.getPhrase('pause_$str', str), true);
 			item.isMenuItem = true;
+			item.changeX = false;
+			item.distancePerItem.y = 80;
+			item.screenCenter();
 			item.targetY = num;
 			grpMenuShit.add(item);
 
 			if(str == 'Skip Time')
 			{
-				skipTimeText = new FlxText(0, 0, 0, '', 64);
+				item.x -= 140;
+				skipTimeText = new FlxText(0, 0, 0, '0:00 / 0:00', 64);
 				skipTimeText.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				skipTimeText.scrollFactor.set();
 				skipTimeText.borderSize = 2;
+				skipTimeText.alpha = 0.6;
 				skipTimeTracker = item;
 				add(skipTimeText);
 
@@ -429,7 +443,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		skipTimeText.x = skipTimeTracker.x + skipTimeTracker.width + 60;
 		skipTimeText.y = skipTimeTracker.y;
-		skipTimeText.visible = (skipTimeTracker.alpha >= 1);
+		// skipTimeText.visible = (skipTimeTracker.alpha >= 1);
 	}
 
 	function updateSkipTimeText()

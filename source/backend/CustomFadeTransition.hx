@@ -2,8 +2,11 @@ package backend;
 
 import flixel.util.FlxGradient;
 
-class CustomFadeTransition extends MusicBeatSubstate {
+class CustomFadeTransition extends MusicBeatSubstate
+{
 	public static var finishCallback:Void->Void;
+	var camTrans:PsychCamera;
+
 	var isTransIn:Bool = false;
 	var transBlack:FlxSprite;
 	var transGradient:FlxSprite;
@@ -18,7 +21,12 @@ class CustomFadeTransition extends MusicBeatSubstate {
 
 	override function create()
 	{
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length-1]];
+		camTrans = new PsychCamera();
+		camTrans.bgColor.alpha = 0;
+		FlxG.cameras.add(camTrans, false);
+
+		cameras = [camTrans];
+
 		var width:Int = Std.int(FlxG.width / Math.max(camera.zoom, 0.001));
 		var height:Int = Std.int(FlxG.height / Math.max(camera.zoom, 0.001));
 		transGradient = FlxGradient.createGradientFlxSprite(1, height, (isTransIn ? [0x0, FlxColor.BLACK] : [FlxColor.BLACK, 0x0]));
@@ -35,10 +43,8 @@ class CustomFadeTransition extends MusicBeatSubstate {
 		transBlack.screenCenter(X);
 		add(transBlack);
 
-		if(isTransIn)
-			transGradient.y = transBlack.y - transBlack.height;
-		else
-			transGradient.y = -transGradient.height;
+		if(!isTransIn) transGradient.y = -transGradient.height;
+		else transGradient.y = transBlack.y - transBlack.height;
 
 		super.create();
 	}

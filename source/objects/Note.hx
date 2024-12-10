@@ -6,11 +6,10 @@ import backend.NoteTypesConfig;
 import shaders.RGBPalette;
 import shaders.RGBPalette.RGBShaderReference;
 
+import objects.NoteSplash;
 import objects.StrumNote;
 
 import flixel.math.FlxRect;
-
-using StringTools;
 
 typedef EventNote = {
 	strumTime:Float,
@@ -23,6 +22,7 @@ typedef NoteSplashData = {
 	disabled:Bool,
 	texture:String,
 	useGlobalShader:Bool, //breaks r/g/b but makes it copy default colors for your custom note
+	useNoteShader:Bool,
 	useRGBShader:Bool,
 	antialiasing:Bool,
 	a:Float
@@ -43,7 +43,11 @@ class Note extends FlxSprite
 		'Hey!',
 		'Hurt Note',
 		'GF Sing',
-		'No Animation'
+		'No Animation',
+		'Behind Note',
+		'Opponent 2 Sing',
+		'Toogus Sax',
+		'Both Opponents Sing'
 	];
 
 	public var extraData:Map<String, Dynamic> = new Map<String, Dynamic>();
@@ -86,9 +90,13 @@ class Note extends FlxSprite
 
 	public var animSuffix:String = '';
 	public var gfNote:Bool = false;
+	public var extraNote:Bool = false;
 	public var earlyHitMult:Float = 1;
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
+
+	// botplay for a specific note
+	public var autoHit:Bool = false;
 
 	public static var SUSTAIN_SIZE:Int = 44;
 	public static var swagWidth:Float = 160 * 0.7;
@@ -100,6 +108,7 @@ class Note extends FlxSprite
 		texture: null,
 		antialiasing: !PlayState.isPixelStage,
 		useGlobalShader: false,
+		useNoteShader: false,
 		useRGBShader: (PlayState.SONG != null) ? !(PlayState.SONG.disableNoteRGB == true) : true,
 		a: ClientPrefs.data.splashAlpha
 	};
@@ -127,6 +136,10 @@ class Note extends FlxSprite
 	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
 	public var distance:Float = 2000; //plan on doing scroll directions soon -bb
+
+	// for the double ghost shit
+	public var mainRow:Int = -1;
+	public var subRow:Int = -1;
 
 	public var hitsoundDisabled:Bool = false;
 	public var hitsoundChartEditor:Bool = true;
@@ -168,8 +181,6 @@ class Note extends FlxSprite
 	public function defaultRGB()
 	{
 		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[noteData];
-		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixel[noteData];
-
 		if (arr != null && noteData > -1 && noteData <= arr.length)
 		{
 			rgbShader.r = arr[0];
@@ -185,7 +196,7 @@ class Note extends FlxSprite
 	}
 
 	private function set_noteType(value:String):String {
-		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : 'noteSplashes';
+		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : NoteSplash.DEFAULT_SKIN;
 		defaultRGB();
 
 		if(noteData > -1 && noteType != value) {
@@ -202,23 +213,24 @@ class Note extends FlxSprite
 					rgbShader.b = 0xFF990022;
 
 					// splash data and colors
-					//noteSplashData.r = 0xFFFF0000;
-					//noteSplashData.g = 0xFF101010;
-					noteSplashData.texture = 'noteSplashes-electric';
+					noteSplashData.texture = 'noteSplashes/noteSplashes-electric';
+					noteSplashData.useNoteShader = true;
 
 					// gameplay data
-					lowPriority = true;
-					missHealth = isSustainNote ? 0.25 : 0.1;
-					hitCausesMiss = true;
+					lowPriority = hitCausesMiss = true;
+					missHealth = isSustainNote ? 0.025 : 0.1;
 					hitsound = 'cancelMenu';
 					hitsoundChartEditor = false;
 				case 'Alt Animation':
 					animSuffix = '-alt';
-				case 'No Animation':
-					noAnimation = true;
-					noMissAnimation = true;
 				case 'GF Sing':
 					gfNote = true;
+				case 'No Animation':
+					noAnimation = noMissAnimation = true;
+				case 'Behind Note':
+					/*colorSwap.hue = 0;
+					colorSwap.saturation = -50;
+					colorSwap.brightness = 0;*/
 			}
 			if (value != null && value.length > 1) NoteTypesConfig.applyNoteTypeData(this, value);
 			if (hitsound != 'hitsound' && hitsoundVolume > 0) Paths.sound(hitsound); //precache new sound for being idiot-proof
@@ -233,7 +245,6 @@ class Note extends FlxSprite
 
 		animation = new PsychAnimationController(this);
 
-		antialiasing = ClientPrefs.data.antialiasing;
 		if(createdFrom == null) createdFrom = PlayState.instance;
 
 		if (prevNote == null)
@@ -325,8 +336,7 @@ class Note extends FlxSprite
 		if(globalRgbShaders[noteData] == null)
 		{
 			var newRGB:RGBPalette = new RGBPalette();
-			var arr:Array<FlxColor> = (!PlayState.isPixelStage) ? ClientPrefs.data.arrowRGB[noteData] : ClientPrefs.data.arrowRGBPixel[noteData];
-			
+			var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[noteData];
 			if (arr != null && noteData > -1 && noteData <= arr.length)
 			{
 				newRGB.r = arr[0];
@@ -363,9 +373,8 @@ class Note extends FlxSprite
 		else rgbShader.enabled = false;
 
 		var animName:String = null;
-		if(animation.curAnim != null) {
+		if(animation.curAnim != null)
 			animName = animation.curAnim.name;
-		}
 
 		var skinPixel:String = skin;
 		var lastScaleY:Float = scale.y;
@@ -407,9 +416,9 @@ class Note extends FlxSprite
 			}
 		}
 
-		if(isSustainNote) {
+		if(isSustainNote)
 			scale.y = lastScaleY;
-		}
+
 		updateHitbox();
 
 		if(animName != null)
@@ -448,7 +457,8 @@ class Note extends FlxSprite
 		{
 			animation.add(colArray[noteData] + 'holdend', [noteData + 4], 24, true);
 			animation.add(colArray[noteData] + 'hold', [noteData], 24, true);
-		} else animation.add(colArray[noteData] + 'Scroll', [noteData + 4], 24, true);
+		}
+		else animation.add(colArray[noteData] + 'Scroll', [noteData + 4], 24, true);
 	}
 
 	function attemptToAddAnimationByPrefix(name:String, prefix:String, framerate:Float = 24, doLoop:Bool = true)
@@ -499,34 +509,27 @@ class Note extends FlxSprite
 
 	public function followStrumNote(myStrum:StrumNote, fakeCrochet:Float, songSpeed:Float = 1)
 	{
-		var strumX:Float = myStrum.x;
-		var strumY:Float = myStrum.y;
-		var strumAngle:Float = myStrum.angle;
-		var strumAlpha:Float = myStrum.alpha;
-		var strumDirection:Float = myStrum.direction;
-
 		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed);
 		if (!myStrum.downScroll) distance *= -1;
 
-		var angleDir = strumDirection * Math.PI / 180;
+		final angleDir = myStrum.direction * Math.PI / 180;
 		if (copyAngle)
-			angle = strumDirection - 90 + strumAngle + offsetAngle;
+			angle = myStrum.direction - 90 + myStrum.angle + offsetAngle;
 
 		if(copyAlpha)
-			alpha = strumAlpha * multAlpha;
+			alpha = myStrum.alpha * multAlpha;
 
 		if(copyX)
-			x = strumX + offsetX + Math.cos(angleDir) * distance;
+			x = myStrum.x + offsetX + Math.cos(angleDir) * distance;
 
 		if(copyY)
 		{
-			y = strumY + offsetY + correctionOffset + Math.sin(angleDir) * distance;
+			y = myStrum.y + offsetY + correctionOffset + Math.sin(angleDir) * distance;
 			if(myStrum.downScroll && isSustainNote)
 			{
 				if(PlayState.isPixelStage)
-				{
 					y -= PlayState.daPixelZoom * 9.5;
-				}
+
 				y -= (frameHeight * scale.y) - (Note.swagWidth / 2);
 			}
 		}

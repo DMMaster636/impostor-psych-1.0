@@ -9,9 +9,6 @@ import openfl.utils.AssetType;
 import openfl.utils.Assets;
 import haxe.Json;
 
-import backend.Song;
-import states.stages.objects.TankmenBG;
-
 typedef CharacterFile = {
 	var animations:Array<AnimArray>;
 	var image:String;
@@ -21,6 +18,7 @@ typedef CharacterFile = {
 
 	var position:Array<Float>;
 	var camera_position:Array<Float>;
+	@:optional var platform_pos:Array<Float>;
 
 	var flip_x:Bool;
 	var no_antialiasing:Bool;
@@ -67,7 +65,10 @@ class Character extends FlxSprite
 
 	public var positionArray:Array<Float> = [0, 0];
 	public var cameraPosition:Array<Float> = [0, 0];
+	public var platformPos:Array<Float> = [0, 0];
 	public var healthColorArray:Array<Int> = [255, 0, 0];
+
+	public var anchorPoint:Array<Float> = [0, 0];
 
 	public var missingCharacter:Bool = false;
 	public var missingText:FlxText;
@@ -81,6 +82,12 @@ class Character extends FlxSprite
 	public var originalFlipX:Bool = false;
 	public var editorIsPlayer:Null<Bool> = null;
 
+	//Ghost stuff
+	public var allowGhost:Bool = true;
+	public var prevRow:Int = -1;
+	public var ghostSprites:Array<FlxSprite> = [];
+	public var ghostTweens:Array<FlxTween> = [];
+
 	public function new(x:Float, y:Float, ?character:String = 'bf', ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -90,16 +97,19 @@ class Character extends FlxSprite
 		animOffsets = new Map<String, Array<Dynamic>>();
 		this.isPlayer = isPlayer;
 		changeCharacter(character);
-		
-		switch(curCharacter)
+
+		for(i in 0...4)
 		{
-			case 'pico-speaker':
-				skipDance = true;
-				loadMappedAnims();
-				playAnim("shoot1");
-			case 'pico-blazin', 'darnell-blazin':
-				skipDance = true;
+			var ghost:FlxSprite = new FlxSprite();
+			ghost.alpha = 0;
+			ghostSprites.push(ghost);
 		}
+		
+		/*switch(curCharacter)
+		{
+			case 'character':
+				skipDance = true;
+		}*/
 	}
 
 	public function changeCharacter(character:String)
@@ -185,6 +195,7 @@ class Character extends FlxSprite
 		// positioning
 		positionArray = json.position;
 		cameraPosition = json.camera_position;
+		platformPos = json.platform_pos != null ? json.platform_pos : [0, 0];
 
 		// data
 		healthIcon = json.healthicon;
@@ -272,20 +283,11 @@ class Character extends FlxSprite
 			finishAnimation();
 		}
 
-		switch(curCharacter)
+		/*switch(curCharacter)
 		{
-			case 'pico-speaker':
-				if(animationNotes.length > 0 && Conductor.songPosition > animationNotes[0][0])
-				{
-					var noteData:Int = 1;
-					if(animationNotes[0][1] > 2) noteData = 3;
-
-					noteData += FlxG.random.int(0, 1);
-					playAnim('shoot' + noteData, true);
-					animationNotes.shift();
-				}
-				if(isAnimationFinished()) playAnim(getAnimationName(), false, false, animation.curAnim.frames.length - 3);
-		}
+			case 'character':
+				// something
+		}*/
 
 		if (getAnimationName().startsWith('sing')) holdTimer += elapsed;
 		else if(isPlayer) holdTimer = 0;
@@ -299,6 +301,9 @@ class Character extends FlxSprite
 		var name:String = getAnimationName();
 		if(isAnimationFinished() && hasAnimation('$name-loop'))
 			playAnim('$name-loop');
+
+		for (ghost in ghostSprites)
+			ghost.update(elapsed);
 
 		super.update(elapsed);
 	}
@@ -378,6 +383,10 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		specialAnim = false;
+
+		if (AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
+			AnimName = AnimName.split('-')[0];
+
 		if(!isAnimateAtlas)
 		{
 			animation.play(AnimName, Force, Reversed, Frame);
@@ -391,7 +400,7 @@ class Character extends FlxSprite
 
 		if (hasAnimation(AnimName))
 		{
-			var daOffset = animOffsets.get(AnimName);
+			final daOffset = animOffsets.get(AnimName);
 			offset.set(daOffset[0], daOffset[1]);
 		}
 		//else offset.set(0, 0);
@@ -409,20 +418,47 @@ class Character extends FlxSprite
 		}
 	}
 
-	function loadMappedAnims():Void
+	public function playGhostAnim(GhostNum:Int, AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		try
-		{
-			var songData:SwagSong = Song.getChart('picospeaker', Paths.formatToSongPath(Song.loadedSongName));
-			if(songData != null)
-				for (section in songData.notes)
-					for (songNotes in section.sectionNotes)
-						animationNotes.push(songNotes);
+		if(!allowGhost) return;
 
-			TankmenBG.animationNotes = animationNotes;
-			animationNotes.sort(sortAnims);
+		if (AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
+			AnimName = AnimName.split('-')[0];
+
+		if (ghostTweens[GhostNum] != null)
+			ghostTweens[GhostNum].cancel();
+
+		var ghost:FlxSprite = ghostSprites[GhostNum];
+		ghost.frames = frames;
+		ghost.animation.copyFrom(animation);
+		ghost.scale.copyFrom(scale);
+		ghost.updateHitbox();
+		ghost.antialiasing = antialiasing;
+		ghost.x = x;
+		ghost.y = y;
+		ghost.flipX = flipX;
+		ghost.flipY = flipY;
+		ghost.angle = angle;
+		ghost.alpha = alpha * 0.8;
+		ghost.visible = visible;
+		ghost.color = color;
+
+		ghost.animation.play(AnimName, Force, Reversed, Frame);
+		if (hasAnimation(AnimName))
+		{
+			final daOffset = animOffsets.get(AnimName);
+			ghost.offset.set(daOffset[0], daOffset[1]);
 		}
-		catch(e:Dynamic) {}
+
+		ghostTweens[GhostNum] = FlxTween.tween(ghost, {alpha: 0}, 0.75,
+		{
+			ease: FlxEase.linear,
+			onComplete: function(no:FlxTween)
+			{
+				ghost.alpha = 0;
+				ghostTweens[GhostNum] = null;
+			}
+		});
 	}
 
 	function sortAnims(Obj1:Array<Dynamic>, Obj2:Array<Dynamic>):Int
@@ -469,6 +505,7 @@ class Character extends FlxSprite
 	public var isAnimateAtlas(default, null):Bool = false;
 	#if flxanimate
 	public var atlas:FlxAnimate;
+	#end
 	public override function draw()
 	{
 		var lastAlpha:Float = alpha;
@@ -479,6 +516,7 @@ class Character extends FlxSprite
 			color = FlxColor.BLACK;
 		}
 
+		#if flxanimate
 		if(isAnimateAtlas)
 		{
 			if(atlas.anim.curInstance != null)
@@ -496,7 +534,16 @@ class Character extends FlxSprite
 			}
 			return;
 		}
+		#end
+
+		for(ghost in ghostSprites)
+		{
+			if(ghost.visible && ghost.alpha != 0)
+				ghost.draw();
+		}
+
 		super.draw();
+
 		if(missingCharacter && visible)
 		{
 			alpha = lastAlpha;
@@ -507,6 +554,7 @@ class Character extends FlxSprite
 		}
 	}
 
+	#if flxanimate
 	public function copyAtlasValues()
 	{
 		@:privateAccess
@@ -529,11 +577,14 @@ class Character extends FlxSprite
 			atlas.color = color;
 		}
 	}
+	#end
 
 	public override function destroy()
 	{
+		#if flxanimate
 		atlas = FlxDestroyUtil.destroy(atlas);
+		#end
+		for(ghost in ghostSprites) ghost = FlxDestroyUtil.destroy(ghost);
 		super.destroy();
 	}
-	#end
 }

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="greenImpostor.png" width="8149" height="913">
+	<SubTexture name="green cremation reveal0000" x="753" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0001" x="1002" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0002" x="1251" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0003" x="1500" y="290" width="245" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0004" x="1750" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0005" x="1999" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0006" x="2248" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0007" x="2497" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0008" x="2746" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0009" x="2995" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0010" x="3244" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0011" x="3493" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0012" x="3742" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0013" x="3991" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0014" x="4240" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0015" x="4489" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0016" x="4738" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0017" x="4987" y="290" width="244" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0018" x="5236" y="290" width="245" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green cremation reveal0019" x="5236" y="290" width="245" height="286" frameX="-0" frameY="-0" frameWidth="245" frameHeight="286"/>
+	<SubTexture name="green crewmate happy0000" x="5236" y="290" width="245" height="286" frameX="-0" frameY="-5" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0001" x="496" y="0" width="244" height="285" frameX="-0" frameY="-4" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0002" x="745" y="0" width="244" height="285" frameX="-0" frameY="-2" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0003" x="994" y="0" width="244" height="285" frameX="-0" frameY="-1" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0004" x="1243" y="0" width="244" height="285" frameX="-0" frameY="-0" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0005" x="1492" y="0" width="244" height="285" frameX="-0" frameY="-0" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0006" x="1741" y="0" width="244" height="285" frameX="-0" frameY="-1" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0007" x="1990" y="0" width="244" height="285" frameX="-0" frameY="-3" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0008" x="2239" y="0" width="244" height="285" frameX="-0" frameY="-5" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate happy0009" x="5486" y="290" width="244" height="286" frameX="-0" frameY="-8" frameWidth="245" frameHeight="294"/>
+	<SubTexture name="green crewmate nervous0000" x="2488" y="0" width="243" height="285" frameX="-1" frameY="-4" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0001" x="2736" y="0" width="243" height="285" frameX="-1" frameY="-3" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0002" x="2984" y="0" width="243" height="285" frameX="-1" frameY="-1" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0003" x="3232" y="0" width="243" height="285" frameX="-1" frameY="-1" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0004" x="3480" y="0" width="243" height="285" frameX="-1" frameY="-0" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0005" x="0" y="0" width="243" height="284" frameX="-1" frameY="-0" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0006" x="3728" y="0" width="244" height="285" frameX="-0" frameY="-0" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0007" x="248" y="0" width="243" height="284" frameX="-1" frameY="-3" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0008" x="3977" y="0" width="243" height="285" frameX="-1" frameY="-4" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate nervous0009" x="5735" y="290" width="243" height="286" frameX="-1" frameY="-6" frameWidth="245" frameHeight="292"/>
+	<SubTexture name="green crewmate smile0000" x="2533" y="581" width="241" height="293" frameX="-0" frameY="-6" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0001" x="2779" y="581" width="241" height="293" frameX="-0" frameY="-4" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0002" x="3025" y="581" width="241" height="293" frameX="-0" frameY="-2" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0003" x="3271" y="581" width="241" height="293" frameX="-0" frameY="-1" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0004" x="3517" y="581" width="241" height="293" frameX="-0" frameY="-0" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0005" x="3763" y="581" width="241" height="293" frameX="-0" frameY="-0" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0006" x="4009" y="581" width="241" height="293" frameX="-0" frameY="-1" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0007" x="4255" y="581" width="241" height="293" frameX="-0" frameY="-3" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0008" x="4501" y="581" width="241" height="293" frameX="-0" frameY="-5" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green crewmate smile0009" x="4747" y="581" width="241" height="293" frameX="-0" frameY="-9" frameWidth="241" frameHeight="302"/>
+	<SubTexture name="green imposor evilous0000" x="5309" y="581" width="311" height="327" frameX="-0" frameY="-5" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0001" x="5625" y="581" width="311" height="327" frameX="-0" frameY="-4" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0002" x="5941" y="581" width="311" height="328" frameX="-0" frameY="-2" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0003" x="6257" y="581" width="312" height="329" frameX="-0" frameY="-1" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0004" x="6890" y="581" width="311" height="331" frameX="-0" frameY="-0" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0005" x="7522" y="581" width="311" height="332" frameX="-0" frameY="-0" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0006" x="7838" y="581" width="311" height="332" frameX="-0" frameY="-1" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0007" x="7206" y="581" width="311" height="331" frameX="-0" frameY="-3" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0008" x="6574" y="581" width="311" height="329" frameX="-0" frameY="-5" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green imposor evilous0009" x="4993" y="581" width="311" height="325" frameX="-0" frameY="-8" frameWidth="312" frameHeight="334"/>
+	<SubTexture name="green impostor angry0000" x="5983" y="290" width="246" height="286" frameX="-0" frameY="-4" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0001" x="4225" y="0" width="246" height="285" frameX="-0" frameY="-3" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0002" x="4476" y="0" width="246" height="285" frameX="-0" frameY="-2" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0003" x="4727" y="0" width="246" height="285" frameX="-0" frameY="-1" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0004" x="4978" y="0" width="246" height="285" frameX="-0" frameY="-0" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0005" x="5229" y="0" width="246" height="285" frameX="-0" frameY="-0" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0006" x="5480" y="0" width="246" height="285" frameX="-0" frameY="-0" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0007" x="5731" y="0" width="247" height="285" frameX="-0" frameY="-2" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0008" x="6234" y="290" width="246" height="286" frameX="-0" frameY="-2" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impostor angry0009" x="6485" y="290" width="246" height="286" frameX="-0" frameY="-4" frameWidth="247" frameHeight="291"/>
+	<SubTexture name="green impoters neutral0000" x="6736" y="290" width="401" height="286" frameX="-0" frameY="-5" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0001" x="7142" y="290" width="401" height="286" frameX="-0" frameY="-3" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0002" x="7548" y="290" width="401" height="286" frameX="-0" frameY="-2" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0003" x="251" y="580" width="401" height="286" frameX="-0" frameY="-1" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0004" x="657" y="581" width="401" height="286" frameX="-0" frameY="-0" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0005" x="5983" y="0" width="401" height="285" frameX="-0" frameY="-0" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0006" x="6389" y="0" width="401" height="285" frameX="-0" frameY="-1" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0007" x="1063" y="581" width="401" height="286" frameX="-0" frameY="-2" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0008" x="1469" y="581" width="401" height="286" frameX="-0" frameY="-3" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="green impoters neutral0009" x="1875" y="581" width="401" height="286" frameX="-0" frameY="-6" frameWidth="401" frameHeight="292"/>
+	<SubTexture name="greenimportor happy0000" x="2281" y="581" width="247" height="286" frameX="-0" frameY="-5" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0001" x="6795" y="0" width="246" height="285" frameX="-0" frameY="-4" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0002" x="7046" y="0" width="246" height="285" frameX="-0" frameY="-2" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0003" x="7297" y="0" width="246" height="285" frameX="-0" frameY="-1" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0004" x="7548" y="0" width="246" height="285" frameX="-0" frameY="-0" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0005" x="7799" y="0" width="246" height="285" frameX="-0" frameY="-0" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0006" x="0" y="289" width="246" height="285" frameX="-0" frameY="-1" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0007" x="251" y="290" width="246" height="285" frameX="-0" frameY="-3" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0008" x="502" y="290" width="246" height="285" frameX="-0" frameY="-5" frameWidth="247" frameHeight="294"/>
+	<SubTexture name="greenimportor happy0009" x="0" y="579" width="246" height="286" frameX="-0" frameY="-8" frameWidth="247" frameHeight="294"/>
+</TextureAtlas>

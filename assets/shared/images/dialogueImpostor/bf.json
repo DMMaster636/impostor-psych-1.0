@@ -1,0 +1,213 @@
+{
+	"animations": [
+		{
+			"anim": "neutral",
+			"name": "BF neutral",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "neutral-loop",
+			"name": "BF neutral",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				6
+			],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "happy",
+			"name": "BF happy",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "happy-loop",
+			"name": "BF happy",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				6
+			],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "sad",
+			"name": "BF sad",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "sad-loop",
+			"name": "BF sad",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				6
+			],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "angry",
+			"name": "BF angry",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "angry-loop",
+			"name": "BF angry",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				6
+			],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "mad",
+			"name": "BF mad",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "mad-loop",
+			"name": "BF mad",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				5
+			],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "realization",
+			"name": "BF realization",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				-50
+			]
+		},
+		{
+			"anim": "realization-loop",
+			"name": "BF realization",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				2
+			],
+			"offsets": [
+				0,
+				-50
+			]
+		},
+		{
+			"anim": "q",
+			"name": "BF q",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "q-loop",
+			"name": "BF q",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				6
+			],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "uwu",
+			"name": "BF uwu",
+			"fps": 24,
+			"loop": false,
+			"indices": [],
+			"offsets": [
+				0,
+				0
+			]
+		},
+		{
+			"anim": "uwu-loop",
+			"name": "BF uwu",
+			"fps": 24,
+			"loop": true,
+			"indices": [
+				6
+			],
+			"offsets": [
+				0,
+				0
+			]
+		}
+	],
+	"image": "boyfriend",
+	"scale": 1,
+	"flip_x": true,
+	"position": [
+		0,
+		0
+	],
+	"no_antialiasing": false,
+
+	"name": "Boyfriend",
+	"sound": "bf",
+	"box_icon": "bf",
+	"box_colors": [
+		40,
+		40,
+		150
+	]
+}

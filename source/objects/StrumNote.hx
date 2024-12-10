@@ -33,8 +33,6 @@ class StrumNote extends FlxSprite
 		if(PlayState.SONG != null && PlayState.SONG.disableNoteRGB) useRGBShader = false;
 		
 		var arr:Array<FlxColor> = ClientPrefs.data.arrowRGB[leData];
-		if(PlayState.isPixelStage) arr = ClientPrefs.data.arrowRGBPixel[leData];
-		
 		if(leData <= arr.length)
 		{
 			@:bypassAccessor
@@ -51,12 +49,13 @@ class StrumNote extends FlxSprite
 		this.ID = noteData;
 		super(x, y);
 
-		var skin:String = null;
-		if(PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1) skin = PlayState.SONG.arrowSkin;
-		else skin = Note.defaultNoteSkin;
+		var skin:String = Note.defaultNoteSkin;
+		if(PlayState.SONG != null && PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1)
+			skin = PlayState.SONG.arrowSkin;
 
-		var customSkin:String = skin + Note.getNoteSkinPostfix();
-		if(Paths.fileExists('images/$customSkin.png', IMAGE)) skin = customSkin;
+		var path:String = PlayState.isPixelStage ? 'pixelUI/' : '';
+		var customSkin:String = path + skin + Note.getNoteSkinPostfix();
+		if(Paths.fileExists('images/$customSkin.png', IMAGE)) skin += Note.getNoteSkinPostfix();
 
 		texture = skin; //Load texture and anims
 		scrollFactor.set();
@@ -78,20 +77,20 @@ class StrumNote extends FlxSprite
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 
+			animation.add('purple', [4]);
+			animation.add('blue', [5]);
 			animation.add('green', [6]);
 			animation.add('red', [7]);
-			animation.add('blue', [5]);
-			animation.add('purple', [4]);
 			switch (Math.abs(noteData) % 4)
 			{
 				case 0:
 					animation.add('static', [0]);
 					animation.add('pressed', [4, 8], 12, false);
-					animation.add('confirm', [12, 16], 24, false);
+					animation.add('confirm', [12, 16], 12, false);
 				case 1:
 					animation.add('static', [1]);
 					animation.add('pressed', [5, 9], 12, false);
-					animation.add('confirm', [13, 17], 24, false);
+					animation.add('confirm', [13, 17], 12, false);
 				case 2:
 					animation.add('static', [2]);
 					animation.add('pressed', [6, 10], 12, false);
@@ -99,18 +98,17 @@ class StrumNote extends FlxSprite
 				case 3:
 					animation.add('static', [3]);
 					animation.add('pressed', [7, 11], 12, false);
-					animation.add('confirm', [15, 19], 24, false);
+					animation.add('confirm', [15, 19], 12, false);
 			}
 		}
 		else
 		{
 			frames = Paths.getSparrowAtlas(texture);
-			animation.addByPrefix('green', 'arrowUP');
-			animation.addByPrefix('blue', 'arrowDOWN');
 			animation.addByPrefix('purple', 'arrowLEFT');
+			animation.addByPrefix('blue', 'arrowDOWN');
+			animation.addByPrefix('green', 'arrowUP');
 			animation.addByPrefix('red', 'arrowRIGHT');
 
-			antialiasing = ClientPrefs.data.antialiasing;
 			setGraphicSize(Std.int(width * 0.7));
 
 			switch (Math.abs(noteData) % 4)
@@ -135,10 +133,7 @@ class StrumNote extends FlxSprite
 		}
 		updateHitbox();
 
-		if(lastAnim != null)
-		{
-			playAnim(lastAnim, true);
-		}
+		if(lastAnim != null) playAnim(lastAnim, true);
 	}
 
 	public function playerPosition()

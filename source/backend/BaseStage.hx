@@ -40,9 +40,9 @@ class BaseStage extends FlxBasic
 
 	public var unspawnNotes(get, never):Array<Note>;
 	
-	public var camGame(get, never):FlxCamera;
-	public var camHUD(get, never):FlxCamera;
-	public var camOther(get, never):FlxCamera;
+	public var camGame(get, never):PsychCamera;
+	public var camHUD(get, never):PsychCamera;
+	public var camOther(get, never):PsychCamera;
 
 	public var defaultCamZoom(get, set):Float;
 	public var camFollow(get, never):FlxObject;
@@ -166,9 +166,9 @@ class BaseStage extends FlxBasic
 		return cast game.unspawnNotes;
 	}
 	
-	inline private function get_camGame():FlxCamera return game.camGame;
-	inline private function get_camHUD():FlxCamera return game.camHUD;
-	inline private function get_camOther():FlxCamera return game.camOther;
+	inline private function get_camGame():PsychCamera return game.camGame;
+	inline private function get_camHUD():PsychCamera return game.camHUD;
+	inline private function get_camOther():PsychCamera return game.camOther;
 
 	inline private function get_defaultCamZoom():Float return game.defaultCamZoom;
 	inline private function set_defaultCamZoom(value:Float):Float

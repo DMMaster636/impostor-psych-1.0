@@ -45,16 +45,22 @@ class OptionsState extends MusicBeatState
 	override function create()
 	{
 		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Options Menu", null);
+		DiscordClient.changePresence("In the Options Menu", null);
 		#end
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		bg.color = 0xFFea71fd;
-		bg.updateHitbox();
+		var starBG:FlxBackdrop = new FlxBackdrop(Paths.image('freeplay/starBG', 'impostor'));
+		starBG.setPosition(111.3, 67.95);
+        starBG.updateHitbox();
+        starBG.scrollFactor.set();
+		starBG.velocity.set(-8, 0);
+        add(starBG);
 
-		bg.screenCenter();
-		add(bg);
+        var starFG:FlxBackdrop = new FlxBackdrop(Paths.image('freeplay/starFG', 'impostor'));
+        starFG.setPosition(54.3, 59.45);
+        starFG.updateHitbox();
+        starFG.scrollFactor.set();
+		starFG.velocity.set(-24, 0);
+        add(starFG);
 
 		grpOptions = new FlxTypedGroup<Alphabet>();
 		add(grpOptions);

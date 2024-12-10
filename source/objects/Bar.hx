@@ -16,31 +16,37 @@ class Bar extends FlxSpriteGroup
 	// you might need to change this if you want to use a custom bar
 	public var barWidth(default, set):Int = 1;
 	public var barHeight(default, set):Int = 1;
-	public var barOffset:FlxPoint = new FlxPoint(3, 3);
+	public var barOffset:FlxPoint = FlxPoint.get(3, 3);
 
-	public function new(x:Float, y:Float, image:String = 'healthBar', valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1)
+	public function new(x:Float, y:Float, bgImage:String = 'healthBar', barImage:String = null, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1, backBg:Bool = false)
 	{
 		super(x, y);
 		
 		this.valueFunction = valueFunction;
 		setBounds(boundX, boundY);
 		
-		bg = new FlxSprite().loadGraphic(Paths.image(image));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		barWidth = Std.int(bg.width - 6);
-		barHeight = Std.int(bg.height - 6);
+		bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
+		bg.updateHitbox();
+		barWidth = Std.int(bg.width - barOffset.x * 2);
+		barHeight = Std.int(bg.height - barOffset.y * 2);
 
 		leftBar = new FlxSprite().makeGraphic(Std.int(bg.width), Std.int(bg.height), FlxColor.WHITE);
-		//leftBar.color = FlxColor.WHITE;
-		leftBar.antialiasing = antialiasing = ClientPrefs.data.antialiasing;
-
 		rightBar = new FlxSprite().makeGraphic(Std.int(bg.width), Std.int(bg.height), FlxColor.WHITE);
-		rightBar.color = FlxColor.BLACK;
-		rightBar.antialiasing = ClientPrefs.data.antialiasing;
 
+		if(barImage != null && barImage.length > 0)
+		{
+			leftBar.loadGraphic(Paths.image(barImage));
+			rightBar.loadGraphic(Paths.image(barImage));
+		}
+
+		//leftBar.color = FlxColor.WHITE;
+		rightBar.color = FlxColor.BLACK;
+
+		if(backBg) add(bg);
 		add(leftBar);
 		add(rightBar);
-		add(bg);
+		if(!backBg) add(bg);
+
 		regenerateClips();
 	}
 
@@ -69,10 +75,8 @@ class Bar extends FlxSpriteGroup
 
 	public function setColors(left:FlxColor = null, right:FlxColor = null)
 	{
-		if (left != null)
-			leftBar.color = left;
-		if (right != null)
-			rightBar.color = right;
+		if (left != null) leftBar.color = left;
+		if (right != null) rightBar.color = right;
 	}
 
 	public function updateBar()

@@ -37,6 +37,8 @@ class ChartingGridSprite extends FlxSprite
 		stripe.scrollFactor.x = 0;
 		stripe.color = FlxColor.BLACK;
 		updateStripes();
+
+		vortexLine.antialiasing = stripe.antialiasing = antialiasing = false;
 	}
 
 	public function loadGrid(color1:FlxColor, color2:FlxColor)

@@ -14,12 +14,18 @@ typedef SwagSong =
 	var needsVoices:Bool;
 	var speed:Float;
 	var offset:Float;
+	var stage:String;
 
 	var player1:String;
 	var player2:String;
 	var gfVersion:String;
-	var stage:String;
+	@:optional var player4:String;
+
 	var format:String;
+
+	@:optional var allowBFskin:Bool;
+	@:optional var allowGFskin:Bool;
+	@:optional var allowPet:Bool;
 
 	@:optional var gameOverChar:String;
 	@:optional var gameOverSound:String;
@@ -62,6 +68,10 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
+	public var player4:String = null;
+	public var allowBFskin:Bool = true;
+	public var allowGFskin:Bool = true;
+	public var allowPet:Bool = true;
 	public var format:String = 'psych_v1';
 
 	public static function convert(songJson:Dynamic) // Convert old charts to psych_v1 format

@@ -4,40 +4,91 @@ import objects.AttachedSprite;
 
 class CreditsState extends MusicBeatState
 {
-	var curSelected:Int = -1;
-
-	private var grpOptions:FlxTypedGroup<Alphabet>;
-	private var iconArray:Array<AttachedSprite> = [];
 	private var creditsStuff:Array<Array<String>> = [];
+	var curSelected:Int = 0;
 
-	var bg:FlxSprite;
+    var nameText:FlxText;
 	var descText:FlxText;
-	var intendedColor:FlxColor;
-	var descBox:AttachedSprite;
 
-	var offsetThing:Float = -75;
+    var wallback:FlxSprite;
+    var frame:FlxSprite;
+    var dumnote:FlxSprite;
+    var lamp:FlxSprite;
+    var lamplight:FlxSprite;
+    var tree1:FlxSprite;
+    var tree2:FlxSprite;
+
+    var portrait:FlxSprite;
+
+    var mole:FlxSprite; //hey pip :]
+    var baritone:FlxSprite; //hey pip again :]
 
 	override function create()
 	{
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("Checking the Credits", null);
 		#end
 
-		persistentUpdate = true;
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		add(bg);
-		bg.screenCenter();
-		
-		grpOptions = new FlxTypedGroup<Alphabet>();
-		add(grpOptions);
+		persistentUpdate = persistentDraw = true;
+
+        wallback = new FlxSprite().loadGraphic(Paths.image('credits/wallback', 'impostor'));
+        wallback.scale.set(1.3, 1.3);
+		add(wallback);
+
+        portrait = new FlxSprite(0, 100).loadGraphic(Paths.image('credits/portraits/clow', 'impostor'));
+		add(portrait);
+
+        frame = new FlxSprite(0, 50).loadGraphic(Paths.image('credits/frame', 'impostor'));
+		add(frame);
+
+        dumnote = new FlxSprite(0, 30).loadGraphic(Paths.image('credits/stickynote', 'impostor'));
+		dumnote.scale.set(1.25, 1.25);
+		add(dumnote);
+
+        lamplight = new FlxSprite(0, 100).loadGraphic(Paths.image('credits/lamplight', 'impostor'));
+        lamplight.x = (FlxG.width / 2)  - (lamplight.width / 2);
+        lamplight.blend = ADD;
+        lamplight.alpha = 0.2;
+		add(lamplight);
+
+        lamp = new FlxSprite(0, -50).loadGraphic(Paths.image('credits/lamp', 'impostor'));
+        lamp.x = (FlxG.width / 2)  - (lamp.width / 2);
+		add(lamp);
+
+        tree1 = new FlxSprite(-400, 0).loadGraphic(Paths.image('credits/tree', 'impostor'));
+		add(tree1);
+
+        tree2 = new FlxSprite(1050, 0).loadGraphic(Paths.image('credits/tree2', 'impostor'));
+		add(tree2);
+
+        mole = new FlxSprite(621, 620).loadGraphic(Paths.image('credits/mole', 'impostor'));
+		mole.antialiasing = false;
+        add(mole);
+
+        descText = new FlxText(0, 600, 1200, "", 0);
+		descText.setFormat(Paths.font("AmaticSC-Bold.ttf"), 50, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		descText.scrollFactor.set();
+		descText.borderSize = 1.3;
+        add(descText);
+
+        nameText = new FlxText(565, 120, 800, "", 0);
+		nameText.setFormat(Paths.font("Dum-Regular.ttf"), 45, FlxColor.BLACK, CENTER);
+		nameText.angle = -12;
+        nameText.updateHitbox();
+        add(nameText);
+
+        baritone = new FlxSprite(630, 638).loadGraphic(Paths.image('credits/baritoneAd', 'impostor'));
+		baritone.antialiasing = false;
+        baritone.scale.set(1.2, 1.2);
+        add(baritone);
 
 		#if MODS_ALLOWED
 		for (mod in Mods.parseList().enabled) pushModCreditsToList(mod);
 		#end
 
-		var defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
+		// Name - Icon name - Description - Link - BG Color
+		/*var defaultList:Array<Array<String>> = [
 			["Psych Engine Team"],
 			["Shadow Mario",		"shadowmario",		"Main Programmer and Head of Psych Engine",					"https://ko-fi.com/shadowmario",	"444444"],
 			["Riveren",				"riveren",			"Main Artist/Animator of Psych Engine",						"https://x.com/riverennn",			"14967B"],
@@ -67,66 +118,67 @@ class CreditsState extends MusicBeatState
 			[""],
 			["Psych Engine Discord"],
 			["Join the Psych Ward!", "discord", "", "https://discord.gg/2ka77eMXDv", "5165F6"]
+		];*/
+		// Name - Portrait name - Description - Link
+		var impostorList:Array<Dynamic> = [
+			//WE ARE ALL IMPORTANT PEOPLE
+			['Clowfoe',		     'clow',	          'im clowfoe.... i directed the mod and i coded a SHIT TON of it\nim really proud of this whole team ty all for playing and hope it was worth the wait',																															'https://x.com/Clowfoe'],		
+			['Ethan\nTheDoodler','ethan',		      'im a real doodler now, mama',																																																													'https://x.com/D00dlerEthan'],        
+			['_emi',		     'emi',			      'artist!! so glad to be a part of this mod.. ty for playing <3',																																																					'https://x.com/superinky_'],   
+			['mayhew',		     'mayhew',		      'i made triple trouble and i am gay artist',																																																										'@kibolomay'],
+			
+			['aqua',		     'aqua',			  "local sexy babe and hot programmer\ni coded a lot of this mod and lost sleep working on it\nfollow me for my insane ramblings @ useraqua_",																																		'https://x.com/useraqua_'],   
+			['fabs',	         'fabs',	          'did a thing',																																																																	'https://x.com/fabsthefabs'],		
+			['ziffy',	         'ziffy',		      'I HELPED ON TORTURE AND\nI MADE THE FREEPLAY MENU',																																																								'https://x.com/ziffymusic'],
+			['Rozebud',	         'rozebud',	          "Download Bunker Bumrush.\nPlay my new game Bunker Bumrush.",																																																						'https://x.com/helpme_thebigt'],
+			['duskie',	         'duskie',	          'From what little i did do for this mod, the team was nice and fun to work with. Hope you enjoyed the double note ghosts :)',																																						'https://x.com/DuskieWhy'],		
+			
+			['punkett',			 'punkett',		      "im punkett",																																																																		'https://x.com/_punkett'],
+			['emihead',			 'emihead',			  "im emihead i made tomonjus tuesday and the credits song also i am canonically the black impostor's lover so please draw us making out and tag me on x @ emihead",																												'https://x.com/emihead'],
+			['Saster',		     'saster',	          "Hey guys, it's me! I composed Sauces Moogus and Heartbeat. Though they are both songs I created more than a year ago, I still think they're not too bad. I hope you enjoyed those songs and see you in another mod!!",															'https://x.com/sub0ru'],
+			['Rareblin',		 'rareblin',	      "im a funny musician idk check out my Youtube channel",																																																							'https://www.youtube.com/@Rareblin'],
+			['keoni',			 'keoni',			  "keoni",																																																																			'https://x.com/AmongUsVore'],
+			['Keegan',		     'keegan',	          "Hey Gamers, I'm Keegan, I made Turbulence and all the midi sections of Room Code.\nI like ENA and I draw occasionally you should follow me @__Keegan_",																															'https://x.com/__Keegan_'],
+			['fluffyhairs',		 'fluffyhair',		  "subscribe to fluffyhairs",																																																														'https://x.com/fluffyhairslol'],
+			['Nii-san',          'niisan',            'Musician. Had lots of fun working on this mod, thanks to everyone for playing V4! (sub to my youtube, @niisanmusic, i uploaded the songs there)', 																																'https://x.com/NiisanHP'],
+			['JADS',             'jads',              '"if u tired, just sleep." - Gandhi',																																																												'https://x.com/Aw3somejds'],
+			
+			['loggo',			 'lojo',			  'halloween',																																																																		'https://x.com/loggoman512'],   
+			['mayo',			 'mayo',		      "Hi I'm Mayokiddo! I'm an artist for the mod and I made a bunch of the playable mini impostor skins, and i also made a few sprites\nshout out to everyone currently in silly squad",																								'https://x.com/Mayokiddo_'],
+			['Mash\nPro\nTato',  'mashywashy',        'im so sorry for making among us kills 2 years ago',																																																								'https://x.com/MashProTato'],
+			['Julien',           'julien',            'hi i made the parasite form isnt he so awesome',																																																									'https://x.com/itjulienn'],
+			['neato',			 'neato',		      'if she yo girl why my leitmotif in her theme',																																																									'https://neatong.newgrounds.com/'],
+			['orbyy',		     'orb',			      "Im really happy i got to work on this, i was brought on v3 to do pixel art for tomongus and i'm grateful for being given the opportunity. I hope yall love the new pixel art for tomongus week and i apologize for v3's defeat chart.",											'https://x.com/OrbyyNew'],   
+			['squidboy',         'squid',	          'hi im squid you may or may not know me for moderating the impostorm discord server\nive also been working for impostor ever since its beginning so thats cool i guess\nlove u zial <3<3<3',																						'https://x.com/SquidBoy84'],
+			['pip',		         'pip',			      '"            "',																																																																	'https://x.com/DojimaDog'],   
+			['grave',			 'grave',		      "opium",																																																																			'https://x.com/konn_artist'],
+			['data\n5',			 'data',		      "i saved the mod",																																																																'https://x.com/_data5'],
+			['Lay\nLasagna',	 'lay',		          "#1 giggleboy and omfg fan\nhello mommy!!!!!!! :)))) i'm a big boy now!!!!",																																																		'https://x.com/LayLasagna7'],
+			['coti',	    	 'coti',			  'hi !! im coti-- i didnt really do much except for a drawing or visual tweaking here and there, but im happy i got to work on the mod anyway !! remember to always be silly',																										'https://x.com/espeoncutie'],   
+			['elikapika',		 'pika',			  'bunny emoji',																																																																	'https://x.com/elikapika'],   
+			['salterino',	     'salterino',	      'hi i did 1 thing for mod hi',																																																													'https://x.com/Salterin0'],		
+			['Farfoxx',		     'hi',			      "hi!!! i did a few little things for the mod - although i wish i could've helped more, seeing the mod's development progress was incredible! everyone on the team is so talented, i'm grateful i got to see it reach completion",													'https://x.com/iron222_2'],   
+			['Steve',            'thales',            "I'm very happy to help draw a small part of this mod, it's a big achievement for me, I hope you all have a good time in the game!", 																																				'https://x.com/Steve06421194'],
+			['MSG',              'msg',               "gaming", 																																																																		'https://x.com/MSGTheEpic'],
+	
+			['Gonk',			 'gonk',	          "Working on Impostor has been a ton of fun honestly, was really cool to be a part of something special like this. I'm also the reason crewicide is in, dumb joke song based off a dream I had and its probably my favourite thing I worked on in the mod, It Funny, makes Me Lol",'https://www.youtube.com/watch?v=rZP7kWOMPzI'],
+			['gibz',			 'gibz',		      "shit idk , charted a few songs",																																																													'https://x.com/9766Gibz'],
+			['thales',			 'thalesrealthistime',"I guess I'm the closest to a Jorsawsee director in the mod? Created / Voiced Warchief and charted a lot, making sure everything was playable. Working with everyone was a pleasure, but never tell me to chart two 4+ minute songs again.",										'https://x.com/MoonlessShift'],
+			['kal',			     'kal',		          "i love snas\n-art by @Butholeeo",																																																												'https://x.com/Kal_050'],
+			
+			['monotone\ndoc',	 'monotone',	      "hi i'm the guy who voiced the shapeshifter, very grateful to have had the opportunity and i hope y'all thought it was cool :)",																																					'https://x.com/MonotoneDoc'],
+			['amongus\nfan',	 'cooper',		      "i did nothing for this mod but let them use red mungus but i get a quote for having cancer\nfly high cooper",																																									'https://x.com/amongusfan24'],
+			
+			['DM-kun',	 		 'dmkun',			  "this was a pain to make, but hey, it's now here and it's so awesome and cool and yeah!\ni hope y'all liked this port :>",																																						'https://www.youtube.com/@dm-kun'],
+			['5UP34',	 		 '5up34',		      "insert 5up quote here if she actually helps with icons",																																																							'https://x.com/5UP34']
 		];
-		
-		for(i in defaultList)
-			creditsStuff.push(i);
-	
-		for (i => credit in creditsStuff)
+
+		for(pal in impostorList)
 		{
-			var isSelectable:Bool = !unselectableCheck(i);
-			var optionText:Alphabet = new Alphabet(FlxG.width / 2, 300, credit[0], !isSelectable);
-			optionText.isMenuItem = true;
-			optionText.targetY = i;
-			optionText.changeX = false;
-			optionText.snapToPosition();
-			grpOptions.add(optionText);
-
-			if(isSelectable)
-			{
-				if(credit[5] != null)
-					Mods.currentModDirectory = credit[5];
-
-				var str:String = 'credits/missing_icon';
-				if(credit[1] != null && credit[1].length > 0)
-				{
-					var fileName = 'credits/' + credit[1];
-					if (Paths.fileExists('images/$fileName.png', IMAGE)) str = fileName;
-					else if (Paths.fileExists('images/$fileName-pixel.png', IMAGE)) str = fileName + '-pixel';
-				}
-
-				var icon:AttachedSprite = new AttachedSprite(str);
-				if(str.endsWith('-pixel')) icon.antialiasing = false;
-				icon.xAdd = optionText.width + 10;
-				icon.sprTracker = optionText;
-	
-				// using a FlxGroup is too much fuss!
-				iconArray.push(icon);
-				add(icon);
-				Mods.currentModDirectory = '';
-
-				if(curSelected == -1) curSelected = i;
-			}
-			else optionText.alignment = CENTERED;
+			Paths.image('credits/portraits/' + pal[1], 'impostor');
+			creditsStuff.push(pal);
 		}
-		
-		descBox = new AttachedSprite();
-		descBox.makeGraphic(1, 1, FlxColor.BLACK);
-		descBox.xAdd = -10;
-		descBox.yAdd = -10;
-		descBox.alphaMult = 0.6;
-		descBox.alpha = 0.6;
-		add(descBox);
 
-		descText = new FlxText(50, FlxG.height + offsetThing - 25, 1180, "", 32);
-		descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
-		descText.scrollFactor.set();
-		//descText.borderSize = 2.4;
-		descBox.sprTracker = descText;
-		add(descText);
-
-		bg.color = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
-		intendedColor = bg.color;
 		changeSelection();
 		super.create();
 	}
@@ -136,9 +188,7 @@ class CreditsState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.7)
-		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
 
 		if(!quitting)
 		{
@@ -147,36 +197,34 @@ class CreditsState extends MusicBeatState
 				var shiftMult:Int = 1;
 				if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
 
-				var upP = controls.UI_UP_P;
-				var downP = controls.UI_DOWN_P;
-
-				if (upP)
+				if (controls.UI_LEFT_P)
 				{
 					changeSelection(-shiftMult);
 					holdTime = 0;
 				}
-				if (downP)
+				if (controls.UI_RIGHT_P)
 				{
 					changeSelection(shiftMult);
 					holdTime = 0;
 				}
 
-				if(controls.UI_DOWN || controls.UI_UP)
+				if(controls.UI_LEFT || controls.UI_RIGHT)
 				{
 					var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
 					holdTime += elapsed;
 					var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
 
 					if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
-					{
-						changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
-					}
+						changeSelection((checkNewHold - checkLastHold) * (controls.UI_LEFT ? -shiftMult : shiftMult));
 				}
 			}
 
-			if(controls.ACCEPT && (creditsStuff[curSelected][3] == null || creditsStuff[curSelected][3].length > 4)) {
+			if(controls.ACCEPT && (creditsStuff[curSelected][3] == null || creditsStuff[curSelected][3].length > 4))
+			{
+				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 				CoolUtil.browserLoad(creditsStuff[curSelected][3]);
 			}
+
 			if (controls.BACK)
 			{
 				FlxG.sound.play(Paths.sound('cancelMenu'));
@@ -184,28 +232,10 @@ class CreditsState extends MusicBeatState
 				quitting = true;
 			}
 		}
-		
-		for (item in grpOptions.members)
-		{
-			if(!item.bold)
-			{
-				var lerpVal:Float = Math.exp(-elapsed * 12);
-				if(item.targetY == 0)
-				{
-					var lastX:Float = item.x;
-					item.screenCenter(X);
-					item.x = FlxMath.lerp(item.x - 70, lastX, lerpVal);
-				}
-				else
-				{
-					item.x = FlxMath.lerp(200 + -40 * Math.abs(item.targetY), item.x, lerpVal);
-				}
-			}
-		}
+
 		super.update(elapsed);
 	}
 
-	var moveTween:FlxTween = null;
 	function changeSelection(change:Int = 0)
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -215,46 +245,42 @@ class CreditsState extends MusicBeatState
 		}
 		while(unselectableCheck(curSelected));
 
-		var newColor:FlxColor = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
-		//trace('The BG color is: $newColor');
-		if(newColor != intendedColor)
-		{
-			intendedColor = newColor;
-			FlxTween.cancelTweensOf(bg);
-			FlxTween.color(bg, 1, bg.color, intendedColor);
-		}
-
-		for (num => item in grpOptions.members)
-		{
-			item.targetY = num - curSelected;
-			if(!unselectableCheck(num)) {
-				item.alpha = 0.6;
-				if (item.targetY == 0) {
-					item.alpha = 1;
-				}
-			}
-		}
-
+        nameText.text = creditsStuff[curSelected][0];
 		descText.text = creditsStuff[curSelected][2];
 		if(descText.text.trim().length > 0)
 		{
-			descText.visible = descBox.visible = true;
-			descText.y = FlxG.height - descText.height + offsetThing - 60;
-	
-			if(moveTween != null) moveTween.cancel();
-			moveTween = FlxTween.tween(descText, {y : descText.y + 75}, 0.25, {ease: FlxEase.sineOut});
-	
-			descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
-			descBox.updateHitbox();
+			descText.visible = true;
+			descText.x = ((FlxG.width / 2) - (descText.width / 2));
 		}
-		else descText.visible = descBox.visible = false;
+		else descText.visible = false;
+
+        switch(creditsStuff[curSelected][0])
+		{
+            case 'Ethan\nTheDoodler' | 'Lay\nLasagna' | 'monotone\ndoc' | 'amongus\nfan':
+                nameText.y = 100;
+            case 'Mash\nPro\nTato':
+                nameText.y = 80;
+            default:
+                nameText.y = 120;
+        }
+
+        portrait.loadGraphic(Paths.image('credits/portraits/' + creditsStuff[curSelected][1], 'impostor'));
+        portrait.x = ((FlxG.width / 2) - (portrait.width / 2));
+        frame.x = portrait.x - 55;
+        dumnote.x = frame.x + 560;
+
+        tree1.visible = (curSelected <= 0);
+    	tree2.visible = (curSelected >= creditsStuff.length - 1);
+
+		mole.visible = (creditsStuff[curSelected][1] == 'pip');
+		baritone.visible = (creditsStuff[curSelected][1] == 'rozebud');
 	}
 
 	#if MODS_ALLOWED
 	function pushModCreditsToList(folder:String)
 	{
 		var creditsFile:String = Paths.mods(folder + '/data/credits.txt');
-		
+
 		#if TRANSLATIONS_ALLOWED
 		//trace('/data/credits-${ClientPrefs.data.language}.txt');
 		var translatedCredits:String = Paths.mods(folder + '/data/credits-${ClientPrefs.data.language}.txt');
@@ -274,7 +300,6 @@ class CreditsState extends MusicBeatState
 	}
 	#end
 
-	private function unselectableCheck(num:Int):Bool {
+	private function unselectableCheck(num:Int):Bool
 		return creditsStuff[num].length <= 1;
-	}
 }
