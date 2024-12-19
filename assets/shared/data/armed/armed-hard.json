@@ -7600,9 +7600,8 @@
 			}
 		],
 		"player2": "rhm",
-		"gfVersion": "gf",
 		"events": [],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"player4": "reginald",
 		"song": "Armed",
 		"needsVoices": true,

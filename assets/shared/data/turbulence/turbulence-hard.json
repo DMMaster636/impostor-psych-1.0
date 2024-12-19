@@ -6632,7 +6632,6 @@
 				"mustHitSection": true
 			}
 		],
-		"gfVersion": "gf",
 		"events": [
 			[
 				55714.2857142857,
@@ -6656,7 +6655,7 @@
 			]
 		],
 		"allowBFskin": true,
-		"player3": "gfmira",
+		"gfVersion": "gfmira",
 		"allowGFskin": true,
 		"song": "turbulence",
 		"arrowSkin": "",

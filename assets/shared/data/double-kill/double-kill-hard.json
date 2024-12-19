@@ -2,7 +2,6 @@
 	"song": {
 		"player1": "bf",
 		"events": [],
-		"gfVersion": "gf",
 		"notes": [
 			{
 				"sectionNotes": [],
@@ -18676,7 +18675,7 @@
 			}
 		],
 		"player2": "whitedk",
-		"player3": "gf-car",
+		"gfVersion": "gf-car",
 		"player4": "blackdk",
 		"song": "Double Kill",
 		"needsVoices": true,

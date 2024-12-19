@@ -8045,7 +8045,7 @@
 				"mustHitSection": true
 			}
 		],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"isHey": false,
 		"initialSpeed": 1.215,
 		"cutsceneType": "none",

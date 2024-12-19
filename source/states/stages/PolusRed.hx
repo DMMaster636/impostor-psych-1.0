@@ -1,6 +1,7 @@
 package states.stages;
 
-import cutscenes.DialogueBoxImpostor;
+import cutscenes.CutsceneHandler;
+//import cutscenes.DialogueBoxImpostor;
 
 class PolusRed extends BaseStage
 {
@@ -42,18 +43,15 @@ class PolusRed extends BaseStage
 			switch (songName)
 			{
 				case 'sussus-moogus':
-					if(!seenCutscene) setStartCallback(videoCutscene.bind('polus1'));
+					if(!seenCutscene) setStartCallback(startingCutscene);
 				case 'sabotage':
 					if(!seenCutscene) setStartCallback(videoCutscene.bind('polus2'));
 				case 'meltdown':
 					if(!seenCutscene) setStartCallback(videoCutscene.bind('polus3'));
 					setEndCallback(function()
 					{
-						game.endingSong = true;
-						inCutscene = true;
-						canPause = false;
-						FlxG.camera.visible = false;
-						camHUD.visible = false;
+						game.endingSong = inCutscene = true;
+						canPause = FlxG.camera.visible = camHUD.visible = false;
 						game.startVideo('meltdown_afterscene');
 					});
 			}
@@ -62,7 +60,7 @@ class PolusRed extends BaseStage
 
 	override function createPost()
 	{
-		var snow:BGSprite = new BGSprite('polus/snow', 0, -250, 1, 1, ['cum'], true, 24);
+		var snow:BGSprite = new BGSprite('polus/snow', -450, -500, 1.05, 1, ['cum'], true, 24);
 		snow.setGraphicSize(Std.int(snow.width * 2));
 		snow.updateHitbox();
 		add(snow);
@@ -81,6 +79,108 @@ class PolusRed extends BaseStage
 	{
 		speaker.dance();
 		if(curBeat % 2 == 0) crowd.dance();
+	}
+
+	var cutsceneHandler:CutsceneHandler;
+	var gfCutscene:FlxAnimate;
+	var boyfriendCutscene:FlxAnimate;
+	var impostorCutscene:FlxAnimate;
+	function prepareCutscene()
+	{
+		cutsceneHandler = new CutsceneHandler();
+
+		gfGroup.alpha = dadGroup.alpha = boyfriendGroup.alpha = 0.00001;
+		camHUD.visible = false;
+
+		gfCutscene = new FlxAnimate(gf.x, gf.y);
+		gfCutscene.showPivot = false;
+		Paths.loadAnimateAtlas(gfCutscene, 'cutscenes/gf_starting_cutscene');
+		gfCutscene.anim.addBySymbol('cut', 'girlfriend cutscene', 24, false);
+		gfCutscene.anim.play('cut', true);
+		gfCutscene.antialiasing = ClientPrefs.data.antialiasing;
+		addBehindDad(gfCutscene);
+		cutsceneHandler.push(gfCutscene);
+
+		boyfriendCutscene = new FlxAnimate(boyfriend.x, boyfriend.y);
+		boyfriendCutscene.showPivot = false;
+		Paths.loadAnimateAtlas(boyfriendCutscene, 'cutscenes/boyfriend_starting_cutscene');
+		boyfriendCutscene.anim.addBySymbol('cut', 'boyfriend cutscene', 24, false);
+		boyfriendCutscene.anim.play('cut', true);
+		boyfriendCutscene.antialiasing = ClientPrefs.data.antialiasing;
+		addBehindDad(boyfriendCutscene);
+		cutsceneHandler.push(boyfriendCutscene);
+
+		impostorCutscene = new FlxAnimate(dad.x, dad.y);
+		impostorCutscene.showPivot = false;
+		Paths.loadAnimateAtlas(impostorCutscene, 'cutscenes/impostor_starting_cutscene');
+		impostorCutscene.anim.addBySymbol('cut', 'impostor cutscene', 24, false);
+		impostorCutscene.anim.play('cut', true);
+		impostorCutscene.antialiasing = ClientPrefs.data.antialiasing;
+		addBehindDad(impostorCutscene);
+		cutsceneHandler.push(impostorCutscene);
+
+		cutsceneHandler.finishCallback = function()
+		{
+			gfGroup.alpha = dadGroup.alpha = boyfriendGroup.alpha = 1;
+			camHUD.visible = true;
+
+			var timeForStuff:Float = Conductor.crochet / 1000 * 4.5;
+			FlxG.sound.music.fadeOut(timeForStuff);
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
+
+			//startImpDialogue();
+		};
+
+		cutsceneHandler.skipCallback = function()
+		{
+			gfGroup.alpha = dadGroup.alpha = boyfriendGroup.alpha = 1;
+			camHUD.visible = true;
+
+			FlxTween.cancelTweensOf(FlxG.camera);
+			FlxTween.cancelTweensOf(camFollow);
+			game.moveCameraSection();
+			FlxG.camera.scroll.set(camFollow.x - FlxG.width/2, camFollow.y - FlxG.height/2);
+			FlxG.camera.zoom = defaultCamZoom;
+
+			//startImpDialogue();
+		};
+
+		camFollow.setPosition(boyfriend.x, boyfriend.y - 200);
+	}
+
+	function startingCutscene()
+	{
+		prepareCutscene();
+
+		Paths.sound('cartoonChomp');
+
+		cutsceneHandler.endTime = 13;
+		cutsceneHandler.music = 'redStartCutscene';
+
+		gfCutscene.anim.play('cut', true);
+		boyfriendCutscene.anim.play('cut', true);
+		impostorCutscene.anim.play('cut', true);
+
+		FlxG.camera.zoom *= 1.2;
+
+		// Cam Movement
+		cutsceneHandler.timer(3, function()
+		{
+			camFollow.x += 750;
+			camFollow.y += 100;
+		});
+
+		// Cam Zoom
+		cutsceneHandler.timer(4.5, function()
+		{
+			FlxG.camera.zoom *= 1.2;
+		});
+
+		// Hand comp'd
+		cutsceneHandler.timer(4.5, function()
+		{
+			FlxG.sound.play(Paths.sound('cartoonChomp'));
+		});
 	}
 
 	var videoEnded:Bool = false;
@@ -112,7 +212,7 @@ class PolusRed extends BaseStage
 			return;
 		}
 
-		switch (songName)
+		/*switch (songName)
 		{
 			case 'sussus-moogus':
 				startImpDialogue();
@@ -120,10 +220,10 @@ class PolusRed extends BaseStage
 				startImpDialogue();
 			case 'meltdown':
 				startImpDialogue();
-		}
+		}*/
 	}
 
-	var doof:DialogueBoxImpostor = null;
+	/*var doof:DialogueBoxImpostor = null;
 	function startImpDialogue()
 	{
 		var file:String = Paths.txt('$songName/${songName}Dialogue_${ClientPrefs.data.language}'); //Checks for vanilla/Senpai dialogue
@@ -163,5 +263,5 @@ class PolusRed extends BaseStage
 			}
 			else tmr.reset(0.1);
 		});
-	}
+	}*/
 }

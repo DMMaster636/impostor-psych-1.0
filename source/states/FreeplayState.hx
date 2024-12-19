@@ -811,7 +811,7 @@ class FreeplayState extends MusicBeatState
 					{
 						intendedColor = newColor;
 						FlxTween.cancelTweensOf(porGlow);
-						FlxTween.color(porGlow, 0.5, porGlow.color, intendedColor);
+						FlxTween.color(porGlow, 0.3, porGlow.color, intendedColor);
 					}
 				}
 			}
@@ -831,7 +831,7 @@ class FreeplayState extends MusicBeatState
 			{
 				intendedColor = newColor;
 				FlxTween.cancelTweensOf(porGlow);
-				FlxTween.color(porGlow, 0.5, porGlow.color, intendedColor);
+				FlxTween.color(porGlow, 0.3, porGlow.color, intendedColor);
 			}
 		}
 

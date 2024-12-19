@@ -4713,7 +4713,7 @@
 			}
 		],
 		"player2": "charles",
-		"player3": "gf",
+		"gfVersion": "gf",
 		"initialSpeed": 1.215,
 		"sliderVelocities": null,
 		"song": "Greatest Plan",

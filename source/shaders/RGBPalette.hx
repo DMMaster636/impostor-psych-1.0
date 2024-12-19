@@ -98,7 +98,7 @@ class RGBShaderReference
 	}
 
 	public var allowNew = true;
-	private function cloneOriginal()
+	public function cloneOriginal()
 	{
 		if(allowNew)
 		{

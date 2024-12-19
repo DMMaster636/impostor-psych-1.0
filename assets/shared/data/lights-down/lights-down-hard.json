@@ -31549,7 +31549,7 @@
 				"value": 170
 			}
 		],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "Lights-Down",
 		"needsVoices": true,
 		"stage": "toogus",

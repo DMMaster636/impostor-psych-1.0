@@ -7253,9 +7253,8 @@
 				"mustHitSection": true
 			}
 		],
-		"gfVersion": "hamster",
 		"events": [],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "Dlow",
 		"validScore": true,
 		"sections": 0,

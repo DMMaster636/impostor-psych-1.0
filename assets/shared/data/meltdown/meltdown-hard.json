@@ -2,7 +2,6 @@
 	"song": {
 		"player1": "bfg",
 		"events": [],
-		"gfVersion": "ghostgf",
 		"player2": "impostor2",
 		"notes": [
 			{
@@ -7051,7 +7050,7 @@
 			}
 		],
 		"allowBFskin": true,
-		"player3": "ghostgf",
+		"gfVersion": "ghostgf",
 		"allowGFskin": true,
 		"song": "Meltdown",
 		"stage": "polus",

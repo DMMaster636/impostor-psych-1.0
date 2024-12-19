@@ -3729,7 +3729,7 @@
 			}
 		],
 		"player2": "oldpostor",
-		"player3": "oldgf",
+		"gfVersion": "oldgf",
 		"isHey": false,
 		"cutsceneType": "none",
 		"isSpooky": false,

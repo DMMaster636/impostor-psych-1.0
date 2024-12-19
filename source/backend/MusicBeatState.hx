@@ -13,29 +13,27 @@ class MusicBeatState extends FlxState
 
 	private var curDecStep:Float = 0;
 	private var curDecBeat:Float = 0;
-	public var controls(get, never):Controls;
-	private function get_controls()
-	{
-		return Controls.instance;
-	}
 
 	var _psychCameraInitialized:Bool = false;
+
+	public var controls(get, never):Controls;
+	private function get_controls()
+		return Controls.instance;
 
 	public var variables:Map<String, Dynamic> = new Map<String, Dynamic>();
 	public static function getVariables()
 		return getState().variables;
 
 	override function create() {
-		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 		#if MODS_ALLOWED Mods.updatedOnState = false; #end
 
 		if(!_psychCameraInitialized) initPsychCamera();
 
 		super.create();
 
-		if(!skip) {
+		if(!FlxTransitionableState.skipNextTransOut)
 			openSubState(new CustomFadeTransition(0.5, true));
-		}
+
 		FlxTransitionableState.skipNextTransOut = false;
 		timePassedOnState = 0;
 	}

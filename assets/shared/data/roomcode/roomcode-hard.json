@@ -5148,7 +5148,7 @@
 			}
 		],
 		"allowBFskin": true,
-		"player3": "gfmira",
+		"gfVersion": "gfmira",
 		"allowGFskin": true,
 		"song": "ROOMCODE",
 		"validScore": true,

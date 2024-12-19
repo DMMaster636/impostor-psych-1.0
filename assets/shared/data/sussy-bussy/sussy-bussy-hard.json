@@ -27281,7 +27281,6 @@
 			}
 		],
 		"gfVersion": "gf-pixel",
-		"player3": "gf-pixel",
 		"eventObjects": [
 			{
 				"type": "BPM Change",

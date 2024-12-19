@@ -4328,10 +4328,9 @@
 				"mustHitSection": true
 			}
 		],
-		"gfVersion": "gf",
 		"events": [],
 		"allowBFskin": true,
-		"player3": "gfmira",
+		"gfVersion": "gfmira",
 		"allowGFskin": true,
 		"song": "Who",
 		"allowPet": true,

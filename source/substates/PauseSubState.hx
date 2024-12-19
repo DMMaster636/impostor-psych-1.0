@@ -15,7 +15,7 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = [];
-	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Options', 'Exit to menu'];
+	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Options', 'Exit to menu'];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
@@ -30,9 +30,16 @@ class PauseSubState extends MusicBeatSubstate
 
 	public static var songName:String = null;
 
+	var camPause:PsychCamera;
+
 	override function create()
 	{
-		if(Difficulty.list.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
+		camPause = new PsychCamera();
+		camPause.bgColor.alpha = 0;
+		FlxG.cameras.add(camPause, false);
+		camPause.zoom = 0.1;
+
+		// if(Difficulty.list.length > 0) menuItemsOG.insert(2, 'Change Difficulty');
 
 		if(PlayState.chartingMode)
 		{
@@ -140,9 +147,11 @@ class PauseSubState extends MusicBeatSubstate
 		add(missingText);
 
 		regenMenu();
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		cameras = [camPause];
 
 		super.create();
+
+		FlxTween.tween(camPause, {zoom: 1}, 0.1, {ease: FlxEase.linear});
 	}
 	
 	public static function getPauseSong():String
@@ -165,7 +174,7 @@ class PauseSubState extends MusicBeatSubstate
 	}
 
 	var holdTime:Float = 0;
-	var cantUnpause:Float = 0.1;
+	var cantUnpause:Float = 0.2;
 	override function update(elapsed:Float)
 	{
 		cantUnpause -= elapsed;
@@ -174,29 +183,33 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 
-		if(controls.BACK)
+		if(cantUnpause <= 0)
 		{
-			close();
-			return;
-		}
+			if(controls.BACK)
+			{
+				cantUnpause = 0.2;
+				FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
+					ease: FlxEase.linear,
+					onComplete: function(twn:FlxTween)
+					{
+						close();
+						return;
+					}
+				});
+			}
 
-		if(FlxG.keys.justPressed.F5)
-		{
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
-			PlayState.nextReloadAll = true;
-			MusicBeatState.resetState();
+			if(FlxG.keys.justPressed.F5)
+			{
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
+				PlayState.nextReloadAll = true;
+				MusicBeatState.resetState();
+			}
 		}
 
 		updateSkipTextStuff();
-		if (controls.UI_UP_P)
-		{
-			changeSelection(-1);
-		}
-		if (controls.UI_DOWN_P)
-		{
-			changeSelection(1);
-		}
+		if (controls.UI_UP_P) changeSelection(-1);
+		if (controls.UI_DOWN_P) changeSelection(1);
 
 		var daSelected:String = menuItems[curSelected];
 		switch (daSelected)
@@ -219,9 +232,7 @@ class PauseSubState extends MusicBeatSubstate
 				{
 					holdTime += elapsed;
 					if(holdTime > 0.5)
-					{
 						curTime += 45000 * elapsed * (controls.UI_LEFT ? -1 : 1);
-					}
 
 					if(curTime >= FlxG.sound.music.length) curTime -= FlxG.sound.music.length;
 					else if(curTime < 0) curTime += FlxG.sound.music.length;
@@ -266,7 +277,6 @@ class PauseSubState extends MusicBeatSubstate
 					return;
 				}
 
-
 				menuItems = menuItemsOG;
 				regenMenu();
 			}
@@ -274,7 +284,13 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
-					close();
+					FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
+						ease: FlxEase.linear,
+						onComplete: function(twn:FlxTween)
+						{
+							close();
+						}
+					});
 				case 'Change Difficulty':
 					menuItems = difficultyChoices;
 					deleteSkipTimeText();
@@ -301,13 +317,25 @@ class PauseSubState extends MusicBeatSubstate
 							PlayState.instance.clearNotesBefore(curTime);
 							PlayState.instance.setSongTime(curTime);
 						}
-						close();
+						FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
+							ease: FlxEase.linear,
+							onComplete: function(twn:FlxTween)
+							{
+								close();
+							}
+						});
 					}
 				case 'End Song':
-					close();
-					PlayState.instance.notes.clear();
-					PlayState.instance.unspawnNotes = [];
-					PlayState.instance.finishSong(true);
+					FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
+						ease: FlxEase.linear,
+						onComplete: function(twn:FlxTween)
+						{
+							close();
+							PlayState.instance.notes.clear();
+							PlayState.instance.unspawnNotes = [];
+							PlayState.instance.finishSong(true);
+						}
+					});
 				case 'Toggle Botplay':
 					PlayState.instance.cpuControlled = !PlayState.instance.cpuControlled;
 					PlayState.changedDifficulty = true;

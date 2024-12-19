@@ -65,6 +65,7 @@ class Character extends FlxSprite
 
 	public var positionArray:Array<Float> = [0, 0];
 	public var cameraPosition:Array<Float> = [0, 0];
+	public var cameraOffset:Array<Float> = [0, 0];
 	public var platformPos:Array<Float> = [0, 0];
 	public var healthColorArray:Array<Int> = [255, 0, 0];
 
@@ -516,6 +517,12 @@ class Character extends FlxSprite
 			color = FlxColor.BLACK;
 		}
 
+		for(ghost in ghostSprites)
+		{
+			if(ghost.visible && ghost.alpha != 0)
+				ghost.draw();
+		}
+
 		#if flxanimate
 		if(isAnimateAtlas)
 		{
@@ -535,12 +542,6 @@ class Character extends FlxSprite
 			return;
 		}
 		#end
-
-		for(ghost in ghostSprites)
-		{
-			if(ghost.visible && ghost.alpha != 0)
-				ghost.draw();
-		}
 
 		super.draw();
 

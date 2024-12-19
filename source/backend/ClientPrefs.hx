@@ -45,7 +45,7 @@ enum FinaleState
 	public var noReset:Bool = false;
 	public var healthBarAlpha:Float = 1;
 	public var hitsoundVolume:Float = 0;
-	public var pauseMusic:String = 'Suzzus Muzak';
+	public var pauseMusic:String = 'Sussus Muzak';
 	public var checkForUpdates:Bool = true;
 	public var comboStacking:Bool = true;
 	public var gameplaySettings:Map<String, Dynamic> = [
@@ -218,10 +218,8 @@ class ClientPrefs {
 		}
 		
 		// flixel automatically saves your volume!
-		if(FlxG.save.data.volume != null)
-			FlxG.sound.volume = FlxG.save.data.volume;
-		if (FlxG.save.data.mute != null)
-			FlxG.sound.muted = FlxG.save.data.mute;
+		if(FlxG.save.data.volume != null) FlxG.sound.volume = FlxG.save.data.volume;
+		if(FlxG.save.data.mute != null) FlxG.sound.muted = FlxG.save.data.mute;
 
 		#if DISCORD_ALLOWED DiscordClient.check(); #end
 

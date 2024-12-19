@@ -15,11 +15,13 @@ typedef StageFile = {
 	var boyfriend:Array<Dynamic>;
 	var girlfriend:Array<Dynamic>;
 	var opponent:Array<Dynamic>;
+	@:optional var extraChar:Null<Array<Dynamic>>;
 	var hide_girlfriend:Bool;
 
 	var camera_boyfriend:Array<Float>;
 	var camera_opponent:Array<Float>;
 	var camera_girlfriend:Array<Float>;
+	@:optional var camera_extraChar:Null<Array<Float>>;
 	var camera_speed:Null<Float>;
 
 	@:optional var preload:Dynamic;
@@ -47,11 +49,13 @@ class StageData {
 			boyfriend: [770, 100],
 			girlfriend: [400, 130],
 			opponent: [100, 100],
+			extraChar: [100, 100],
 			hide_girlfriend: false,
 
 			camera_boyfriend: [0, 0],
 			camera_opponent: [0, 0],
 			camera_girlfriend: [0, 0],
+			camera_extraChar: [0, 0],
 			camera_speed: 1,
 
 			_editorMeta: {
@@ -115,8 +119,8 @@ class StageData {
 		return 'stage';
 	}
 
-	public static var reservedNames:Array<String> = ['gf', 'gfGroup', 'dad', 'dadGroup', 'boyfriend', 'boyfriendGroup']; //blocks these names from being used on stage editor's name input text
-	public static function addObjectsToState(objectList:Array<Dynamic>, gf:FlxSprite, dad:FlxSprite, boyfriend:FlxSprite, ?group:Dynamic = null, ?ignoreFilters:Bool = false)
+	public static var reservedNames:Array<String> = ['gf', 'gfGroup', 'dad', 'dadGroup', 'boyfriend', 'boyfriendGroup', 'extraChar', 'extraCharGroup']; //blocks these names from being used on stage editor's name input text
+	public static function addObjectsToState(objectList:Array<Dynamic>, gf:FlxSprite, dad:FlxSprite, boyfriend:FlxSprite, extraChar:FlxSprite, ?group:Dynamic = null, ?ignoreFilters:Bool = false)
 	{
 		var addedObjects:Map<String, FlxSprite> = [];
 		for (num => data in objectList)
@@ -145,6 +149,13 @@ class StageData {
 						boyfriend.ID = num;
 						if (group != null) group.add(boyfriend);
 						addedObjects.set('boyfriend', boyfriend);
+					}
+				case 'extraChar', 'extraCharGroup':
+					if(extraChar != null)
+					{
+						extraChar.ID = num;
+						if (group != null) group.add(extraChar);
+						addedObjects.set('extraChar', extraChar);
 					}
 
 				case 'square', 'sprite', 'animatedSprite':

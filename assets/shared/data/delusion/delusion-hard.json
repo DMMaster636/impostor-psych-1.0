@@ -5432,7 +5432,7 @@
 			}
 		],
 		"player2": "grey",
-		"player3": "gfdead",
+		"gfVersion": "gfdead",
 		"allowGFskin": true,
 		"song": "Delusion",
 		"needsVoices": true,

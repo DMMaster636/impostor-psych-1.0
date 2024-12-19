@@ -1,7 +1,6 @@
 {
 	"song": {
 		"player1": "bf",
-		"gfVersion": "gf",
 		"notes": [
 			{
 				"endTime": 995.850622406639,
@@ -36155,7 +36154,7 @@
 				"value": 241
 			}
 		],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "Double Trouble",
 		"needsVoices": true,
 		"stage": "polus",

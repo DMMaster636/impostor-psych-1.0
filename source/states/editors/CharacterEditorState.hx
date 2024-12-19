@@ -73,7 +73,7 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		FlxG.sound.music.stop();
 		camEditor = initPsychCamera();
 
-		FlxG.sound.playMusic(Paths.music('sussus_muzak'), 0.5);
+		FlxG.sound.playMusic(Paths.music('sussus-muzak'), 0.5);
 
 		camHUD = new PsychCamera();
 		camHUD.bgColor.alpha = 0;

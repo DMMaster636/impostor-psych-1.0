@@ -9083,10 +9083,9 @@
 				"mustHitSection": true
 			}
 		],
-		"gfVersion": "gf-fall",
 		"events": [],
 		"allowBFskin": true,
-		"player3": "gf-fall",
+		"gfVersion": "gf-fall",
 		"allowGFskin": true,
 		"song": "ejected",
 		"arrowSkin": "",

@@ -1,8 +1,10 @@
 package states.stages.objects;
 
+import backend.animation.PsychAnimationController;
+
 class WalkingCrewmate extends FlxSprite
 {
-    public var thecolor:String;
+    public var theColor:String;
     public var xRange:Array<Float> = [0, 0];
     var savedHeight:Float;
 
@@ -12,44 +14,46 @@ class WalkingCrewmate extends FlxSprite
     var right:Bool;
     var hibernating:Bool = false;
 
-    public function new(theColor:Int, range:Array<Float>, height:Float, thescale:Float)
+    public function new(col:Int, xRange:Array<Float>, savedHeight:Float = 0, sca:Float = 1)
     {
-        super(FlxG.random.float(range[1] - range[0]), height);   
+        super(FlxG.random.float(xRange[1] - xRange[0]), height);
 
-        xRange = range;
-        savedHeight = height;
-        scale.set(thescale, thescale);
+		animation = new PsychAnimationController(this);
 
-        lookupColor(theColor);
+        this.xRange = xRange;
+        this.savedHeight = savedHeight;
+        scale.set(sca, sca);
 
-        frames = Paths.getSparrowAtlas('mira/walkers', 'impostor');	
-	    animation.addByPrefix('walk', thecolor, 24, true);
-        animation.addByIndices('idle', thecolor, [8], "", 24, true);
+        lookupColor(col);
+
+        frames = Paths.getSparrowAtlas('mira/walkers', 'impostor');
+	    animation.addByPrefix('walk', theColor, 24, true);
+        animation.addByIndices('idle', theColor, [8], "", 24, true);
 	    animation.play('walk');
 	    scrollFactor.set(1, 1);
 
         setNewActionTime();
     }
 
-    function lookupColor(h:Int)
+    function lookupColor(num:Int)
     {
         y = savedHeight;
-        switch(h)
+        switch(num)
         {
             case 0:
-                thecolor = 'blue';
+                theColor = 'blue';
                 y += 70;
             case 1:
-                thecolor = 'brown';
+                theColor = 'brown';
             case 2:
-                thecolor = 'lime';
+                theColor = 'lime';
                 y += 70;
             case 3:
-                thecolor = 'tan';
+                theColor = 'tan';
             case 4:
-                thecolor = 'white';
+                theColor = 'white';
             case 5:
-                thecolor = 'yellow';
+                theColor = 'yellow';
         }
     }
 
@@ -62,15 +66,15 @@ class WalkingCrewmate extends FlxSprite
         animation.remove('idle');
 
         var newColor:Int = 0;
-        switch(thecolor) //prevent duplicate guys appearing on the screen at the same time
+        switch(theColor) //prevent duplicate guys appearing on the screen at the same time
         {
             case 'blue' | 'brown': newColor = FlxG.random.int(0, 1);
             case 'lime' | 'tan': newColor = FlxG.random.int(2, 3);
             case 'white' | 'yellow': newColor = FlxG.random.int(4, 5);
         }
         lookupColor(newColor);
-        animation.addByPrefix('walk', thecolor, 24, true);
-        animation.addByIndices('idle', thecolor, [8], "", 24, true);
+        animation.addByPrefix('walk', theColor, 24, true);
+        animation.addByIndices('idle', theColor, [8], "", 24, true);
     }
 
     function setNewActionTime() nextActionTime = time + FlxG.random.float(0.5, 1);
@@ -97,9 +101,11 @@ class WalkingCrewmate extends FlxSprite
 
         if(time > nextActionTime) triggerNextAction();
 
-        super.update(elapsed);
-
-        if(hibernating) return;
+        if(hibernating)
+        {
+            super.update(elapsed);
+            return;
+        }
 
         if(x > (xRange[1] * 0.9))
         {
@@ -108,7 +114,7 @@ class WalkingCrewmate extends FlxSprite
             right = false;
             swapSkin();
         }
-    
+
         if(x < (xRange[0] * 1.1))
         {
             hibernating = true;
@@ -120,27 +126,22 @@ class WalkingCrewmate extends FlxSprite
         if(!idle)
         {
             if(animation.curAnim.name != 'walk') animation.play('walk');
-            if(right)
-            {
-                x = FlxMath.lerp(x, x + 30, FlxMath.bound(elapsed * 9, 0, 1));
-                flipX = false;
-            }
-            else
-            {
-                x = FlxMath.lerp(x, x - 30, FlxMath.bound(elapsed * 9, 0, 1));
-                flipX = true;
-            }
+
+            if(right) x = FlxMath.lerp(x, x + 30, FlxMath.bound(elapsed * 9 * FlxG.animationTimeScale, 0, 1));
+            else x = FlxMath.lerp(x, x - 30, FlxMath.bound(elapsed * 9 * FlxG.animationTimeScale, 0, 1));
+
+            flipX = !right;
         }
         else
         {
             if(animation.curAnim.name != 'idle' && (animation.curAnim.curFrame == 7 || animation.curAnim.curFrame == 15))
                 animation.play('idle');
-    
-            if(right) flipX = false;
-            else flipX = true;
+
+            flipX = !right;
         }
 
-        if(x > xRange[1]) right = false;
-        if(x < xRange[0]) right = true;
+        right = (x < xRange[0]);
+
+        super.update(elapsed);
     }
 }

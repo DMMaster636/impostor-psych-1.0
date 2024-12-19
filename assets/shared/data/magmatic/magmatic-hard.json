@@ -4464,7 +4464,7 @@
 			}
 		],
 		"player2": "maroon",
-		"player3": "gfpolus",
+		"gfVersion": "gfpolus",
 		"song": "Magmatic",
 		"stage": "polus2",
 		"needsVoices": true,

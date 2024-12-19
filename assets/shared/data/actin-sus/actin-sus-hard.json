@@ -1932,7 +1932,7 @@
 			}
 		],
 		"isHey": false,
-		"player3": "oldgf",
+		"gfVersion": "oldgf",
 		"cutsceneType": "none",
 		"isSpooky": false,
 		"allowGFskin": true,
@@ -1947,7 +1947,6 @@
 		"sections": 0,
 		"stage": "alpha",
 		"uiType": "normal",
-		"bpm": 124,
-		"gf": "gf"
+		"bpm": 124
 	}
 }

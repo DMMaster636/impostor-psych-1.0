@@ -1,11 +1,9 @@
 package substates;
 
-import backend.WeekData;
+import flixel.FlxObject;
+import flixel.math.FlxPoint;
 
 import objects.Character;
-import flixel.FlxObject;
-import flixel.FlxSubState;
-import flixel.math.FlxPoint;
 
 import states.StoryMenuState;
 import states.FreeplayState;
@@ -14,6 +12,7 @@ class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Character;
 
+	var camUpper:PsychCamera;
 	var camFollow:FlxObject;
 
 	public static var characterName:String = 'genericdeath';
@@ -51,14 +50,17 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 	}
 
-	var overlay:FlxSprite;
-	var overlayConfirmOffsets:FlxPoint = FlxPoint.get();
+	var overlay:FlxOffsetSprite;
 	override function create()
 	{
 		instance = this;
 
 		Conductor.songPosition = 0;
 		Conductor.bpm = deathSongBPM;
+
+		camUpper = new PsychCamera();
+		camUpper.bgColor.alpha = 0;
+		FlxG.cameras.add(camUpper, false);
 
 		if(boyfriend == null)
 		{
@@ -88,11 +90,11 @@ class GameOverSubstate extends MusicBeatSubstate
 		switch(characterName)
 		{
 			case 'pico-dead':
-				overlay = new FlxSprite(boyfriend.x + 205, boyfriend.y - 80);
+				overlay = new FlxOffsetSprite(boyfriend.x + 205, boyfriend.y - 80);
 				overlay.frames = Paths.getSparrowAtlas('Pico_Death_Retry');
 				overlay.animation.addByPrefix('deathLoop', 'Retry Text Loop', 24, true);
 				overlay.animation.addByPrefix('deathConfirm', 'Retry Text Confirm', 24, false);
-				overlayConfirmOffsets.set(250, 200);
+				overlay.addOffset('deathConfirm', 250, 200);
 				overlay.visible = false;
 				add(overlay);
 
@@ -147,7 +149,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!boyfriend.isAnimationNull() && boyfriend.getAnimationName() == 'firstDeath' && boyfriend.isAnimationFinished())
 		{
 			boyfriend.playAnim('deathLoop');
-			if(overlay != null && overlay.animation.exists('deathLoop'))
+			if(overlay != null && overlay.hasAnimation('deathLoop'))
 			{
 				overlay.visible = true;
 				overlay.animation.play('deathLoop');
@@ -164,8 +166,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				FlxG.camera.visible = false;
 				FlxG.sound.music.stop();
 				PlayState.deathCounter = 0;
-				PlayState.seenCutscene = false;
-				PlayState.chartingMode = false;
+				PlayState.seenCutscene = PlayState.chartingMode = false;
 	
 				Mods.loadTopMod();
 				if (PlayState.isStoryMode)
@@ -198,6 +199,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			if (FlxG.sound.music.playing)
 				Conductor.songPosition = FlxG.sound.music.time;
 		}
+
 		PlayState.instance.callOnScripts('onUpdatePost', [elapsed]);
 	}
 
@@ -213,17 +215,18 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!isEnding)
 		{
 			isEnding = true;
+
 			if(boyfriend.hasAnimation('deathConfirm'))
 				boyfriend.playAnim('deathConfirm', true);
 			else if(boyfriend.hasAnimation('deathLoop'))
 				boyfriend.playAnim('deathLoop', true);
 
-			if(overlay != null && overlay.animation.exists('deathConfirm'))
+			if(overlay != null && overlay.hasAnimation('deathConfirm'))
 			{
 				overlay.visible = true;
-				overlay.animation.play('deathConfirm');
-				overlay.offset.set(overlayConfirmOffsets.x, overlayConfirmOffsets.y);
+				overlay.playAnim('deathConfirm');
 			}
+
 			FlxG.sound.music.stop();
 			FlxG.sound.play(Paths.music(endSoundName));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
@@ -233,6 +236,7 @@ class GameOverSubstate extends MusicBeatSubstate
 					MusicBeatState.resetState();
 				});
 			});
+
 			PlayState.instance.callOnScripts('onGameOverConfirm', [true]);
 		}
 	}

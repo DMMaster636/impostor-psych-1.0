@@ -5826,7 +5826,7 @@
 		],
 		"player2": "black-run",
 		"allowBFskin": true,
-		"player3": "gfdanger",
+		"gfVersion": "gfdanger",
 		"allowGFskin": true,
 		"song": "Danger",
 		"allowPet": true,

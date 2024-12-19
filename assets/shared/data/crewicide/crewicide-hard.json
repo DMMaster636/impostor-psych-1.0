@@ -2,7 +2,6 @@
 	"song": {
 		"player1": "bf",
 		"events": [],
-		"gfVersion": "gf",
 		"player2": "dave",
 		"notes": [
 			{
@@ -8363,7 +8362,7 @@
 				"mustHitSection": true
 			}
 		],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "Crewicide",
 		"stage": "dave",
 		"needsVoices": true,

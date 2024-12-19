@@ -2,7 +2,6 @@
 	"song": {
 		"player1": "bfsusreal",
 		"events": [],
-		"gfVersion": "gf",
 		"notes": [
 			{
 				"sectionNotes": [],
@@ -2423,7 +2422,7 @@
 		],
 		"player2": "tuesday",
 		"allowBFskin": true,
-		"player3": "tuesdaygf",
+		"gfVersion": "tuesdaygf",
 		"allowGFskin": true,
 		"song": "Tomongus Tuesday",
 		"allowPet": false,

@@ -2,7 +2,6 @@
 	"song": {
 		"player1": "ziffytorture",
 		"events": [],
-		"gfVersion": "gf",
 		"notes": [
 			{
 				"sectionNotes": [],
@@ -3657,7 +3656,7 @@
 			}
 		],
 		"player2": "cvaltorture",
-		"player3": "ziffytorture",
+		"gfVersion": "ziffytorture",
 		"allowBFskin": true,
 		"player4": "piptorture",
 		"song": "Torture",

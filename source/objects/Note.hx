@@ -225,6 +225,7 @@ class Note extends FlxSprite
 					animSuffix = '-alt';
 				case 'GF Sing':
 					gfNote = true;
+					mainRow = 2;
 				case 'No Animation':
 					noAnimation = noMissAnimation = true;
 				case 'Behind Note':
@@ -247,8 +248,7 @@ class Note extends FlxSprite
 
 		if(createdFrom == null) createdFrom = PlayState.instance;
 
-		if (prevNote == null)
-			prevNote = this;
+		if (prevNote == null) prevNote = this;
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;

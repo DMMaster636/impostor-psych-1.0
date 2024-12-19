@@ -25990,7 +25990,7 @@
 				"value": 170
 			}
 		],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "christmas",
 		"needsVoices": true,
 		"stage": "loggo",

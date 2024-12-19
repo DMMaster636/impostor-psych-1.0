@@ -6722,7 +6722,7 @@
 		],
 		"player2": "chefogus",
 		"allowBFskin": true,
-		"player3": "gf",
+		"gfVersion": "gf",
 		"allowGFskin": true,
 		"song": "Sauces Moogus",
 		"stage": "chef",

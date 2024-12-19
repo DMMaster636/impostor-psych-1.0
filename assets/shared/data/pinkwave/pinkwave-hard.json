@@ -7221,9 +7221,8 @@
 				"mustHitSection": true
 			}
 		],
-		"gfVersion": "gfmira",
 		"events": [],
-		"player3": "gfmira",
+		"gfVersion": "gfmira",
 		"song": "Pinkwave",
 		"arrowSkin": "",
 		"validScore": true,

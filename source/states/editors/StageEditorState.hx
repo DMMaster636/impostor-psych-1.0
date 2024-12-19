@@ -178,7 +178,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		var list:Map<String, FlxSprite> = [];
 		if(stageJson.objects != null && stageJson.objects.length > 0)
 		{
-			list = StageData.addObjectsToState(stageJson.objects, gf, dad, boyfriend, null, true);
+			list = StageData.addObjectsToState(stageJson.objects, gf, dad, boyfriend, null, null, true);
 			for (key => spr in list)
 				stageSprites[spr.ID] = new StageEditorMetaSprite(stageJson.objects[spr.ID], spr);
 

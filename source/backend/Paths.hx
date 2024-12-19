@@ -231,6 +231,25 @@ class Paths
 		return graph;
 	}
 
+	static public function bitmap(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):BitmapData
+	{
+		key = Language.getFileTranslation('images/$key') + '.png';
+		var bitmap:BitmapData = null;
+		var file:String = getPath(key, IMAGE, parentFolder, true);
+		#if MODS_ALLOWED
+		if (FileSystem.exists(file))
+			bitmap = BitmapData.fromFile(file);
+		else #end if (OpenFlAssets.exists(file, IMAGE))
+			bitmap = OpenFlAssets.getBitmapData(file);
+
+		if (bitmap == null)
+		{
+			trace('oh no its returning null NOOOO ($file)');
+			return null;
+		}
+		return bitmap;
+	}
+
 	inline static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
 		var path:String = getPath(key, TEXT, !ignoreMods);

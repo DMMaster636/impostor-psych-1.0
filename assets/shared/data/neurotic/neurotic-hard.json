@@ -6759,9 +6759,8 @@
 			}
 		],
 		"player2": "grey",
-		"gfVersion": "gf-car",
 		"events": [],
-		"player3": "gfdead",
+		"gfVersion": "gfdead",
 		"allowBFskin": false,
 		"song": "Neurotic",
 		"allowGFskin": true,

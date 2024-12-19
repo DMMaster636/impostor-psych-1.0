@@ -28192,7 +28192,6 @@
 			}
 		],
 		"gfVersion": "gf",
-		"player3": "gf",
 		"eventObjects": [
 			{
 				"type": "BPM Change",

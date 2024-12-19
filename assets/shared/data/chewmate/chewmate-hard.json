@@ -1,7 +1,6 @@
 {
 	"song": {
 		"player1": "bfsus-pixel",
-		"gfVersion": "gf-pixel",
 		"notes": [
 			{
 				"sectionNotes": [
@@ -2188,7 +2187,7 @@
 		],
 		"player2": "hamster",
 		"allowBFskin": true,
-		"player3": "gf-pixel",
+		"gfVersion": "gf-pixel",
 		"allowGFskin": true,
 		"song": "Chewmate",
 		"allowPet": true,

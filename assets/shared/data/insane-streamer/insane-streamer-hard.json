@@ -2,7 +2,6 @@
 	"song": {
 		"player1": "bf",
 		"events": [],
-		"gfVersion": "gf",
 		"notes": [
 			{
 				"sectionNotes": [
@@ -6230,7 +6229,7 @@
 			}
 		],
 		"player2": "jerma",
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "Insane Streamer",
 		"stage": "jerma",
 		"needsVoices": true,

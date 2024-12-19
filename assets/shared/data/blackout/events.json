@@ -4,7 +4,7 @@
 		"stage": "grey",
 		"player1": "bf",
 		"player2": "grey",
-		"player3": "gf",
+		"gfVersion": "gf",
 		"player4": null,
 		"notes": [
 			{

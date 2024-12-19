@@ -9296,7 +9296,7 @@
 				"mustHitSection": true
 			}
 		],
-		"player3": "gf",
+		"gfVersion": "gf",
 		"song": "Boiling Point",
 		"allowPet": true,
 		"stage": "polus3",

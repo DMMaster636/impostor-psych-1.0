@@ -18,7 +18,7 @@ class Bar extends FlxSpriteGroup
 	public var barHeight(default, set):Int = 1;
 	public var barOffset:FlxPoint = FlxPoint.get(3, 3);
 
-	public function new(x:Float, y:Float, bgImage:String = 'healthBar', barImage:String = null, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1, backBg:Bool = false)
+	public function new(x:Float, y:Float, bgImage:String = 'healthBar', barImage:String = null, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1)
 	{
 		super(x, y);
 		
@@ -42,16 +42,16 @@ class Bar extends FlxSpriteGroup
 		//leftBar.color = FlxColor.WHITE;
 		rightBar.color = FlxColor.BLACK;
 
-		if(backBg) add(bg);
 		add(leftBar);
 		add(rightBar);
-		if(!backBg) add(bg);
+		add(bg);
 
 		regenerateClips();
 	}
 
 	public var enabled:Bool = true;
-	override function update(elapsed:Float) {
+	override function update(elapsed:Float)
+	{
 		if(!enabled)
 		{
 			super.update(elapsed);
@@ -64,6 +64,7 @@ class Bar extends FlxSpriteGroup
 			percent = (value != null ? value : 0);
 		}
 		else percent = 0;
+
 		super.update(elapsed);
 	}
 	

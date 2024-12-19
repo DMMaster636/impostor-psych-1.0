@@ -24443,7 +24443,6 @@
 			}
 		],
 		"player2": "pinkexe",
-		"gfVersion": "gf",
 		"events": [
 			[
 				106849.315068493,
@@ -24527,7 +24526,7 @@
 			]
 		],
 		"isRing": true,
-		"player3": "gf-car",
+		"gfVersion": "gf-car",
 		"song": "triple trouble",
 		"validScore": true,
 		"needsVoices": true,

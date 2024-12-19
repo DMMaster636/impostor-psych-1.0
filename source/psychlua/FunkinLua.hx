@@ -174,10 +174,13 @@ class FunkinLua {
 			set('defaultOpponentY', game.DAD_Y);
 			set('defaultGirlfriendX', game.GF_X);
 			set('defaultGirlfriendY', game.GF_Y);
+			set('defaultExtraCharX', game.EXTRACHAR_X);
+			set('defaultExtraCharY', game.EXTRACHAR_Y);
 
 			set('boyfriendName', game.boyfriend != null ? game.boyfriend.curCharacter : PlayState.SONG.player1);
 			set('dadName', game.dad != null ? game.dad.curCharacter : PlayState.SONG.player2);
 			set('gfName', game.gf != null ? game.gf.curCharacter : PlayState.SONG.gfVersion);
+			set('extraCharName', game.extraChar != null ? game.extraChar.curCharacter : PlayState.SONG.player4);
 		}
 
 		// Other settings
@@ -694,8 +697,9 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "addCharacterToList", function(name:String, type:String) {
 			var charType:Int = 0;
 			switch(type.toLowerCase()) {
-				case 'dad': charType = 1;
+				case 'dad' | 'opponent': charType = 1;
 				case 'gf' | 'girlfriend': charType = 2;
+				case 'extra' | 'extraChar': charType = 3;
 			}
 			game.addCharacterToList(name, charType);
 		});
@@ -763,6 +767,8 @@ class FunkinLua {
 					return game.dadGroup.x;
 				case 'gf' | 'girlfriend':
 					return game.gfGroup.x;
+				case 'extra' | 'extraChar':
+					return game.extraCharGroup.x;
 				default:
 					return game.boyfriendGroup.x;
 			}
@@ -773,6 +779,8 @@ class FunkinLua {
 					game.dadGroup.x = value;
 				case 'gf' | 'girlfriend':
 					game.gfGroup.x = value;
+				case 'extra' | 'extraChar':
+					game.extraCharGroup.x = value;
 				default:
 					game.boyfriendGroup.x = value;
 			}
@@ -783,6 +791,8 @@ class FunkinLua {
 					return game.dadGroup.y;
 				case 'gf' | 'girlfriend':
 					return game.gfGroup.y;
+				case 'extra' | 'extraChar':
+					return game.extraCharGroup.y;
 				default:
 					return game.boyfriendGroup.y;
 			}
@@ -793,6 +803,8 @@ class FunkinLua {
 					game.dadGroup.y = value;
 				case 'gf' | 'girlfriend':
 					game.gfGroup.y = value;
+				case 'extra' | 'extraChar':
+					game.extraCharGroup.y = value;
 				default:
 					game.boyfriendGroup.y = value;
 			}
@@ -915,8 +927,9 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "characterDance", function(character:String) {
 			switch(character.toLowerCase()) {
-				case 'dad': game.dad.dance();
+				case 'dad' | 'opponent': game.dad.dance();
 				case 'gf' | 'girlfriend': if(game.gf != null) game.gf.dance();
+				case 'extra' | 'extraChar': if(game.extraChar != null) game.extraChar.dance();
 				default: game.boyfriend.dance();
 			}
 		});

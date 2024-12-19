@@ -6,19 +6,16 @@ import android.content.Context;
 
 import debug.FPSCounter;
 
-import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
-import flixel.FlxState;
 import haxe.io.Path;
-import openfl.Assets;
+
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
 import lime.app.Application;
-import states.TitleState;
 
-#if linux
+#if (linux || mac)
 import lime.graphics.Image;
 #end
 
@@ -30,16 +27,13 @@ import backend.ALSoftConfig; // Just to make sure DCE doesn't remove this, since
 #if CRASH_HANDLER
 import openfl.events.UncaughtErrorEvent;
 import haxe.CallStack;
-import haxe.io.Path;
 #end
 
 import backend.Highscore;
 
 #if linux
 @:cppInclude('./external/gamemode_client.h')
-@:cppFileCode('
-	#define GAMEMODE_AUTO
-')
+@:cppFileCode('#define GAMEMODE_AUTO')
 #end
 
 class Main extends Sprite
@@ -47,7 +41,7 @@ class Main extends Sprite
 	var game = {
 		width: 1280, // WINDOW width
 		height: 720, // WINDOW height
-		initialState: TitleState, // initial game state
+		initialState: states.TitleState, // initial game state
 		zoom: -1.0, // game state bounds
 		framerate: 60, // default framerate
 		skipSplash: true, // if the default flixel splash screen should be skipped
@@ -74,14 +68,9 @@ class Main extends Sprite
 		Sys.setCwd(lime.system.System.applicationStorageDirectory);
 		#end
 
-		if (stage != null)
-		{
-			init();
-		}
-		else
-		{
-			addEventListener(Event.ADDED_TO_STAGE, init);
-		}
+		if (stage != null) init();
+		else addEventListener(Event.ADDED_TO_STAGE, init);
+
 		#if VIDEOS_ALLOWED
 		hxvlc.util.Handle.init(#if (hxvlc >= "1.8.0")  ['--no-lua'] #end);
 		#end
@@ -90,9 +79,7 @@ class Main extends Sprite
 	private function init(?E:Event):Void
 	{
 		if (hasEventListener(Event.ADDED_TO_STAGE))
-		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-		}
 
 		setupGame();
 	}
@@ -124,19 +111,23 @@ class Main extends Sprite
 		Controls.instance = new Controls();
 		ClientPrefs.loadDefaultKeys();
 		#if ACHIEVEMENTS_ALLOWED Achievements.load(); #end
-		addChild(new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen));
+
+		var game:FlxGame = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate, game.skipSplash, game.startFullscreen);
+		@:privateAccess game._customSoundTray = backend.CustomSoundTray;
+		addChild(game);
 
 		FlxSprite.defaultAntialiasing = ClientPrefs.data.antialiasing;
 
 		#if !mobile
 		fpsVar = new FPSCounter(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
+		if(fpsVar != null) fpsVar.visible = ClientPrefs.data.showFPS;
+
 		Lib.current.stage.align = "tl";
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		if(fpsVar != null) fpsVar.visible = ClientPrefs.data.showFPS;
 		#end
 
-		#if linux
+		#if (linux || mac)
 		var icon = Image.fromFile("icon.png");
 		Lib.current.stage.window.setIcon(icon);
 		#end
@@ -191,7 +182,7 @@ class Main extends Sprite
 		dateNow = dateNow.replace(" ", "_");
 		dateNow = dateNow.replace(":", "'");
 
-		path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
+		path = "./crash/" + "ImpostorPsych_" + dateNow + ".txt";
 
 		for (stackItem in callStack)
 		{
@@ -211,7 +202,7 @@ class Main extends Sprite
 		*/
 		// 
 		#if officialBuild
-		errMsg += "\nPlease report this error to the GitHub page: https://github.com/ShadowMario/FNF-PsychEngine\n\n> Crash Handler written by: sqirra-rng";
+		errMsg += "\nPlease report this error to the GitHub page:\nhttps://github.com/DMMaster636/impostor-psych-1.0\n\n> Crash Handler written by: sqirra-rng\n> Modified by: DM-kun";
 		#end
 
 		if (!FileSystem.exists("./crash/"))
