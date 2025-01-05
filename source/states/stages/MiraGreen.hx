@@ -3,13 +3,19 @@ package states.stages;
 
 import states.stages.objects.WalkingCrewmate;
 
+import shaders.BWShader;
+
 //import cutscenes.DialogueBoxImpostor;
 
 class MiraGreen extends BaseStage
 {
 	var speaker:BGSprite;
+	var bfVent:BGSprite;
+	var bgBlack:FlxSprite;
 	override function create()
 	{
+		camOffset = 20;
+
 		var bg:BGSprite = new BGSprite('mira/mirabg', -1600, 50, 1, 1);
 		bg.setGraphicSize(Std.int(bg.width * 1.06));
 		bg.updateHitbox();
@@ -32,9 +38,9 @@ class MiraGreen extends BaseStage
 
 		if(songName == 'lights-down')
 		{
-			var bfvent:BGSprite = new BGSprite('mira/bf_mira_vent', 70, 200, 1, 1, ['bf vent']);
-			bfvent.visible = false;
-			add(bfvent);
+			bfVent = new BGSprite('mira/bf_mira_vent', 70, 200, 1, 1, ['bf vent']);
+			bfVent.visible = false;
+			add(bfVent);
 		}
 
 		var table:BGSprite = new BGSprite('mira/table_bg', -1600, 50, 1, 1);
@@ -48,6 +54,11 @@ class MiraGreen extends BaseStage
 			speaker.visible = false;
 			add(speaker);
 		}
+
+		bgBlack = new FlxSprite().makeGraphic(FlxG.width * 4, FlxG.height * 2, FlxColor.BLACK);
+		bgBlack.screenCenter();
+		bgBlack.alpha = 0;
+		add(bgBlack);
 
 		if (isStoryMode)
 		{
@@ -72,15 +83,31 @@ class MiraGreen extends BaseStage
 	var powers:BGSprite;
 	override function createPost()
 	{
-		powers = new BGSprite('mira/cyan_toogus', -550, 275, 1, 1, ['Cyan Dancy'], true);
-		powers.visible = false;
-		add(powers);
+		if(songName == 'sussus-toogus')
+		{
+			powers = new BGSprite('mira/cyan_toogus', -550, 275, 1, 1, ['Cyan Dancy'], true);
+			powers.visible = false;
+			add(powers);
+		}
 	}
 
 	var goSax:Bool = false;
 	override function update(elapsed:Float)
 	{
-		if(goSax) powers.x = FlxMath.lerp(powers.x, powers.x + 15, FlxMath.bound(elapsed * 9 * game.playbackRate, 0, 1));
+		if(goSax && powers != null)
+			powers.x = FlxMath.lerp(powers.x, powers.x + 15, FlxMath.bound(elapsed * 9 * game.playbackRate, 0, 1));
+	}
+
+	var charShader:BWShader;
+	override function eventPushed(event:objects.Note.EventNote)
+	{
+		// used for preloading assets used on events that doesn't need different assets based on its values
+		switch(event.event)
+		{
+			case "Lights out":
+				if (charShader == null)
+					charShader = new BWShader(0.01, 0.12, true);
+		}
 	}
 
 	override function eventCalled(eventName:String, value1:String, value2:String, flValue1:Null<Float>, flValue2:Null<Float>, strumTime:Float)
@@ -88,9 +115,74 @@ class MiraGreen extends BaseStage
 		switch(eventName)
 		{
 			case "Toogus Sax":
-				powers.dance();
-				powers.visible = true;
+				if(powers != null)
+				{
+					powers.dance(true);
+					powers.visible = true;
+				}
 				goSax = true;
+
+			case "Lights out":
+				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 0.35);
+
+				if (boyfriend.curCharacter == 'bf') game.triggerEvent('Change Character', 'bf', 'whitebf');
+				else boyfriend.shader = charShader.shader;
+
+				if (dad.curCharacter == 'impostor3') game.triggerEvent('Change Character', 'dad', 'whitegreen');
+				else dad.shader = charShader.shader;
+
+				game.iconP1.shader = game.iconP2.shader = charShader.shader;
+
+				game.healthBar.setColors(FlxColor.BLACK, FlxColor.WHITE);
+				game.scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.WHITE, 1.25);
+
+				bgBlack.alpha = 1;
+				gf.alpha = 0;
+				// if(game.usingPet) pet.alpha = 0;
+
+			case "Lights on":
+				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.BLACK : 0x4C000000, 0.35);
+
+				if (boyfriend.curCharacter == 'whitebf') game.triggerEvent('Change Character', 'bf', 'bf');
+				else boyfriend.shader = null;
+
+				if (dad.curCharacter == 'whitegreen') game.triggerEvent('Change Character', 'dad', 'impostor3');
+				else dad.shader = null;
+
+				game.iconP1.shader = game.iconP2.shader = null;
+
+				game.scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 1.25);
+
+				bgBlack.alpha = 0;
+				gf.alpha = 1;
+				// if(game.usingPet) pet.alpha = 1;
+
+			case "Lights on Ending":
+				if (boyfriend.curCharacter == 'whitebf') game.triggerEvent('Change Character', 'bf', 'bf');
+				else boyfriend.shader = null;
+
+				if (dad.curCharacter == 'whitegreen') game.triggerEvent('Change Character', 'dad', 'impostor3');
+				else dad.shader = null;
+
+				game.iconP1.shader = game.iconP2.shader = null;
+
+				game.scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 1.25);
+
+				bgBlack.alpha = 0;
+				boyfriend.visible = gf.visible = camHUD.visible = false;
+				// if(game.usingPet) pet.visible = false;
+
+				game.triggerEvent('Play Animation', 'liveReaction', 'dad');
+				if(songName == 'lights-down')
+				{
+					bfVent.dance(true);
+					bfVent.visible = true;
+					speaker.dance(true);
+					speaker.visible = gf.curCharacter != 'ghostgf';
+				}
+
+			case "Lights Down OFF":
+				camGame.visible = false;
 		}
 	}
 

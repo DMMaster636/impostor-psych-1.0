@@ -65,8 +65,6 @@ class MainMenuState extends MusicBeatState
 		if(localFinaleState == NOT_PLAYED)
 			FlxG.sound.playMusic(Paths.music('finaleMenu'));
 
-		FlxG.mouse.visible = true;
-
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 		FlxG.camera.follow(camFollow, null, 0.15);
@@ -164,8 +162,9 @@ class MainMenuState extends MusicBeatState
 		#end
 		#end
 
-		changeItem(curSelected, false);
 		super.create();
+
+		changeItem(curSelected, false);
 	}
 
 	function createMenuItem(name:String, num:Int):FlxSpriteButton

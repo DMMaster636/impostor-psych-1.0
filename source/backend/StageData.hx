@@ -21,7 +21,15 @@ typedef StageFile = {
 	var camera_boyfriend:Array<Float>;
 	var camera_opponent:Array<Float>;
 	var camera_girlfriend:Array<Float>;
-	@:optional var camera_extraChar:Null<Array<Float>>;
+	@:optional var camera_extraChar:Array<Float>;
+
+	// forces cam positions to a specific spot
+	// if these are null, the character cam positions get used
+	@:optional var cam_pos_opponent:Array<Float>;
+	@:optional var cam_pos_player:Array<Float>;
+	@:optional var cam_pos_gf:Array<Float>;
+	@:optional var cam_pos_extraChar:Array<Float>;
+
 	var camera_speed:Null<Float>;
 
 	@:optional var preload:Dynamic;
@@ -56,6 +64,12 @@ class StageData {
 			camera_opponent: [0, 0],
 			camera_girlfriend: [0, 0],
 			camera_extraChar: [0, 0],
+
+			cam_pos_opponent: null,
+			cam_pos_player: null,
+			cam_pos_gf: null,
+			cam_pos_extraChar: null,
+
 			camera_speed: 1,
 
 			_editorMeta: {

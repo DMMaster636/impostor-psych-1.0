@@ -1,10 +1,14 @@
 {
-	"directory": "",
+	"directory": "impostor",
 	"defaultZoom": 0.9,
 	"isPixelStage": false,
+	"hide_girlfriend": true,
 
 	"boyfriend": [465, 112],
 	"girlfriend": [300, -1000],
 	"opponent": [180, 100],
-	"secondopp": [-60, 210]
+	"extraChar": [-60, 210],
+
+	"cam_pos_opponent": [500, 600],
+	"cam_pos_player": [500, 600]
 }

@@ -1080,10 +1080,10 @@ class CharacterEditorState extends MusicBeatState implements PsychUIEventHandler
 		/////////////
 		camEditor.bgColor = 0xFF666666;
 
-		var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
+		var bg:BGSprite = new BGSprite('editors/stageback', -600, -200, 0.9, 0.9);
 		add(bg);
 
-		var stageFront:BGSprite = new BGSprite('stagefront', -650, 600, 0.9, 0.9);
+		var stageFront:BGSprite = new BGSprite('editors/stagefront', -650, 600, 0.9, 0.9);
 		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 		stageFront.updateHitbox();
 		add(stageFront);

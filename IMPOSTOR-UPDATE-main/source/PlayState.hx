@@ -7478,8 +7478,7 @@ class PlayState extends MusicBeatState
 
 				case 'Reactor Beep':
 					var charType:Float = Std.parseFloat(value1);
-					if (Math.isNaN(charType))
-						charType = 0.4;
+					if (Math.isNaN(charType)) charType = 0.4;
 
 					flashSprite.alpha = charType;
 

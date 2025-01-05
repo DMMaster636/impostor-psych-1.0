@@ -82,7 +82,7 @@ class Song
 			if(Reflect.hasField(songJson, 'player3')) Reflect.deleteField(songJson, 'player3');
 		}
 
-		if(songJson.events == null)
+		if(songJson.events == null || songJson.events.length < 1)
 		{
 			songJson.events = [];
 			for (secNum in 0...songJson.notes.length)
@@ -120,10 +120,12 @@ class Song
 
 			for (note in section.sectionNotes)
 			{
+				if(note[1] < 0) continue;
+
 				var gottaHitNote:Bool = (note[1] < 4) ? section.mustHitSection : !section.mustHitSection;
 				note[1] = (note[1] % 4) + (gottaHitNote ? 0 : 4);
 
-				if(note[3] != null && !Std.isOfType(note[3], String))
+				if(!Std.isOfType(note[3], String))
 					note[3] = Note.defaultNoteTypes[note[3]]; //compatibility with Week 7 and 0.1-0.3 psych charts
 			}
 		}

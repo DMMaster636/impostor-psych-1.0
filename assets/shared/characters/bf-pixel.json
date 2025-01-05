@@ -3,7 +3,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "idle",
@@ -14,7 +14,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singLEFT",
@@ -25,7 +25,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singDOWN",
@@ -36,7 +36,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singUP",
@@ -47,7 +47,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singRIGHT",
@@ -58,7 +58,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singLEFTmiss",
@@ -69,7 +69,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singDOWNmiss",
@@ -80,7 +80,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singUPmiss",
@@ -91,7 +91,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "singRIGHTmiss",
@@ -102,7 +102,7 @@
 		{
 			"loop": false,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "hey",
@@ -113,7 +113,7 @@
 		{
 			"loop": true,
 			"offsets": [
-				8,
+				0,
 				0
 			],
 			"anim": "scared",
@@ -125,7 +125,7 @@
 	"no_antialiasing": true,
 	"image": "characters/bfPixel",
 	"position": [
-		-5,
+		3,
 		375
 	],
 	"healthicon": "bf-pixel",

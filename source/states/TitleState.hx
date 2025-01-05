@@ -69,6 +69,8 @@ class TitleState extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 
+		Paths.music('freakyMenu'); // cache the music!!!!
+
 		if(FlxG.save.data.flashing == null && !FlashingState.leftState)
 		{
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;

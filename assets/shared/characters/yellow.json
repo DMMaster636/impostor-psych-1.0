@@ -65,10 +65,43 @@
 			"anim": "death",
 			"loop": false,
 			"name": "death"
+		},
+		{
+			"offsets": [
+				29,
+				-75
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "first",
+			"indices": [],
+			"name": "yellow reaction first"
+		},
+		{
+			"offsets": [
+				16,
+				-81
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "second",
+			"indices": [],
+			"name": "yellow reaction second"
+		},
+		{
+			"offsets": [
+				29,
+				-75
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "third",
+			"indices": [],
+			"name": "yellow reaction third"
 		}
 	],
 	"no_antialiasing": false,
-	"image": "characters/yellow",
+	"image": "characters/yellow,characters/live_reaction",
 	"position": [
 		0,
 		160

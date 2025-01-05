@@ -340,12 +340,12 @@ class EditorPlayState extends MusicBeatSubstate
 					daBpm = PlayState.SONG.notes[noteSec].bpm;
 			}
 
-			var idx: Int = _noteList.indexOf(note);
+			var idx:Int = _noteList.indexOf(note);
 			if (idx != 0) {
 				// CLEAR ANY POSSIBLE GHOST NOTES
 				for (evilNote in unspawnNotes) {
 					var matches: Bool = note.noteData == evilNote.noteData && note.mustPress == evilNote.mustPress && note.noteType == evilNote.noteType;
-					if (matches && Math.abs(note.strumTime - evilNote.strumTime) == 0.0) {
+					if (matches && Math.abs(note.strumTime - evilNote.strumTime) < FlxMath.EPSILON) {
 						if (evilNote.tail.length > 0)
 							for (tail in evilNote.tail)
 							{

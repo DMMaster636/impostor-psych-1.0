@@ -164,7 +164,7 @@ class FreeplayState extends MusicBeatState
 		{
 			localWeeks = ClientPrefs.data.forceUnlockedSongs;
 			hasSavedData = true;
-			trace(localWeeks);
+			// trace(localWeeks);
 		}
 		else localWeeks = weeks;
 
@@ -700,7 +700,7 @@ class FreeplayState extends MusicBeatState
 
 		curWeek = FlxMath.wrap(curWeek + change, 0, 8);
 
-		trace(curWeek + ' ' + weeks.length);
+		trace(curWeek + '/' + weeks.length);
 		trace('created Weeks');
 
 		for (i in listOfButtons)
@@ -790,7 +790,7 @@ class FreeplayState extends MusicBeatState
 			portrait.color = FlxColor.WHITE;
 		}
 
-		trace(portrait.animation.name);
+		if(prevPort != portrait.animation.name) trace(portrait.animation.name);
 
 		if (!reset)
 		{

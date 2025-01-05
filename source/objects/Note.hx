@@ -22,9 +22,12 @@ typedef NoteSplashData = {
 	disabled:Bool,
 	texture:String,
 	useGlobalShader:Bool, //breaks r/g/b but makes it copy default colors for your custom note
-	useNoteShader:Bool,
 	useRGBShader:Bool,
+	useNoteRGB:Bool,
 	antialiasing:Bool,
+	r:FlxColor,
+	g:FlxColor,
+	b:FlxColor,
 	a:Float
 }
 
@@ -108,8 +111,11 @@ class Note extends FlxSprite
 		texture: null,
 		antialiasing: !PlayState.isPixelStage,
 		useGlobalShader: false,
-		useNoteShader: false,
 		useRGBShader: (PlayState.SONG != null) ? !(PlayState.SONG.disableNoteRGB == true) : true,
+		useNoteRGB: true,
+		r: -1,
+		g: -1,
+		b: -1,
 		a: ClientPrefs.data.splashAlpha
 	};
 
@@ -189,14 +195,17 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			rgbShader.r = 0xFFFF0000;
-			rgbShader.g = 0xFF00FF00;
-			rgbShader.b = 0xFF0000FF;
+			if (noteData > -1)
+			{
+				rgbShader.r = 0xFFFF0000;
+				rgbShader.g = 0xFF00FF00;
+				rgbShader.b = 0xFF0000FF;
+			}
 		}
 	}
 
 	private function set_noteType(value:String):String {
-		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : NoteSplash.DEFAULT_SKIN;
+		noteSplashData.texture = PlayState.SONG != null ? PlayState.SONG.splashSkin : NoteSplash.defaultNoteSplash;
 		defaultRGB();
 
 		if(noteData > -1 && noteType != value) {
@@ -213,8 +222,9 @@ class Note extends FlxSprite
 					rgbShader.b = 0xFF990022;
 
 					// splash data and colors
+					noteSplashData.r = 0xFFFF0000;
+					noteSplashData.g = 0xFF101010;
 					noteSplashData.texture = 'noteSplashes/noteSplashes-electric';
-					noteSplashData.useNoteShader = true;
 
 					// gameplay data
 					lowPriority = hitCausesMiss = true;
@@ -345,9 +355,12 @@ class Note extends FlxSprite
 			}
 			else
 			{
-				newRGB.r = 0xFFFF0000;
-				newRGB.g = 0xFF00FF00;
-				newRGB.b = 0xFF0000FF;
+				if (noteData > -1)
+				{
+					newRGB.r = 0xFFFF0000;
+					newRGB.g = 0xFF00FF00;
+					newRGB.b = 0xFF0000FF;
+				}
 			}
 			
 			globalRgbShaders[noteData] = newRGB;
@@ -513,15 +526,9 @@ class Note extends FlxSprite
 		if (!myStrum.downScroll) distance *= -1;
 
 		final angleDir = myStrum.direction * Math.PI / 180;
-		if (copyAngle)
-			angle = myStrum.direction - 90 + myStrum.angle + offsetAngle;
-
-		if(copyAlpha)
-			alpha = myStrum.alpha * multAlpha;
-
-		if(copyX)
-			x = myStrum.x + offsetX + Math.cos(angleDir) * distance;
-
+		if(copyAngle) angle = myStrum.direction - 90 + myStrum.angle + offsetAngle;
+		if(copyAlpha) alpha = myStrum.alpha * multAlpha;
+		if(copyX) x = myStrum.x + offsetX + Math.cos(angleDir) * distance;
 		if(copyY)
 		{
 			y = myStrum.y + offsetY + correctionOffset + Math.sin(angleDir) * distance;

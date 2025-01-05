@@ -34,9 +34,13 @@ class BaseStage extends FlxBasic
 	public var boyfriend(get, never):Character;
 	public var dad(get, never):Character;
 	public var gf(get, never):Character;
+	public var extraChar(get, never):Character;
+	//public var pet(get, never):Pet;
+
 	public var boyfriendGroup(get, never):FlxSpriteGroup;
 	public var dadGroup(get, never):FlxSpriteGroup;
 	public var gfGroup(get, never):FlxSpriteGroup;
+	public var extraCharGroup(get, never):FlxSpriteGroup;
 
 	public var unspawnNotes(get, never):Array<Note>;
 	
@@ -46,6 +50,9 @@ class BaseStage extends FlxBasic
 
 	public var defaultCamZoom(get, set):Float;
 	public var camFollow(get, never):FlxObject;
+
+	public var camMovement(get, set):Bool;
+	public var camOffset(get, set):Float;
 
 	public function new()
 	{
@@ -102,6 +109,8 @@ class BaseStage extends FlxBasic
 	public function addBehindGF(obj:FlxBasic) return insert(members.indexOf(game.gfGroup), obj);
 	public function addBehindBF(obj:FlxBasic) return insert(members.indexOf(game.boyfriendGroup), obj);
 	public function addBehindDad(obj:FlxBasic) return insert(members.indexOf(game.dadGroup), obj);
+	public function addBehindExtraChar(obj:FlxBasic) return insert(members.indexOf(game.extraCharGroup), obj);
+
 	public function setDefaultGF(name:String) //Fix for the Chart Editor on Base Game stages
 	{
 		var gfVersion:String = PlayState.SONG.gfVersion;
@@ -132,6 +141,8 @@ class BaseStage extends FlxBasic
 	function endSong() if(onPlayState)return PlayState.instance.endSong(); else return false;
 	function moveCameraSection() if(onPlayState) PlayState.instance.moveCameraSection();
 	function moveCamera(isDad:Bool) if(onPlayState) PlayState.instance.moveCamera(isDad);
+	function moveCameraToGirlfriend() if(onPlayState) PlayState.instance.moveCameraToGirlfriend();
+
 	inline private function get_paused() return game.paused;
 	inline private function get_songName() return game.songName;
 	inline private function get_isStoryMode() return PlayState.isStoryMode;
@@ -156,10 +167,12 @@ class BaseStage extends FlxBasic
 	inline private function get_boyfriend():Character return game.boyfriend;
 	inline private function get_dad():Character return game.dad;
 	inline private function get_gf():Character return game.gf;
+	inline private function get_extraChar():Character return game.extraChar;
 
 	inline private function get_boyfriendGroup():FlxSpriteGroup return game.boyfriendGroup;
 	inline private function get_dadGroup():FlxSpriteGroup return game.dadGroup;
 	inline private function get_gfGroup():FlxSpriteGroup return game.gfGroup;
+	inline private function get_extraCharGroup():FlxSpriteGroup return game.extraCharGroup;
 
 	inline private function get_unspawnNotes():Array<Note>
 	{
@@ -177,4 +190,18 @@ class BaseStage extends FlxBasic
 		return game.defaultCamZoom;
 	}
 	inline private function get_camFollow():FlxObject return game.camFollow;
+
+	inline private function get_camMovement():Bool return game.camMovement;
+	inline private function set_camMovement(value:Bool):Bool
+	{
+		game.camMovement = value;
+		return game.camMovement;
+	}
+
+	inline private function get_camOffset():Float return game.camOffset;
+	inline private function set_camOffset(value:Float):Float
+	{
+		game.camOffset = value;
+		return game.camOffset;
+	}
 }

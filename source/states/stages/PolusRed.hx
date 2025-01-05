@@ -3,12 +3,16 @@ package states.stages;
 import cutscenes.CutsceneHandler;
 //import cutscenes.DialogueBoxImpostor;
 
+import substates.GameOverSubstate;
+
 class PolusRed extends BaseStage
 {
 	var speaker:BGSprite;
 	var crowd:BGSprite;
 	override function create()
 	{
+		camOffset = 20;
+
 		var sky:BGSprite = new BGSprite('polus/polus_custom_sky', -400, -400, 0.5, 0.5);
 		sky.setGraphicSize(Std.int(sky.width * 1.4));
 		sky.updateHitbox();
@@ -31,7 +35,7 @@ class PolusRed extends BaseStage
 
 		if(songName == 'meltdown')
 		{
-			substates.GameOverSubstate.characterName = 'bfg-dead';
+			GameOverSubstate.characterName = 'bfg-dead';
 			var bfdead:BGSprite = new BGSprite('polus/bfdead', 600, 525, 1, 1);
 			bfdead.setGraphicSize(Std.int(bfdead.width * 0.8));
 			bfdead.updateHitbox();
@@ -87,6 +91,8 @@ class PolusRed extends BaseStage
 	var impostorCutscene:FlxAnimate;
 	function prepareCutscene()
 	{
+		Paths.sound('cartoonChomp');
+
 		cutsceneHandler = new CutsceneHandler();
 
 		gfGroup.alpha = dadGroup.alpha = boyfriendGroup.alpha = 0.00001;
@@ -152,8 +158,6 @@ class PolusRed extends BaseStage
 	{
 		prepareCutscene();
 
-		Paths.sound('cartoonChomp');
-
 		cutsceneHandler.endTime = 13;
 		cutsceneHandler.music = 'redStartCutscene';
 
@@ -163,21 +167,24 @@ class PolusRed extends BaseStage
 
 		FlxG.camera.zoom *= 1.2;
 
+		moveCamera(false);
+		camFollow.y -= 600;
+
 		// Cam Movement
 		cutsceneHandler.timer(3, function()
 		{
-			camFollow.x += 750;
-			camFollow.y += 100;
+			moveCamera(false);
 		});
 
 		// Cam Zoom
-		cutsceneHandler.timer(4.5, function()
+		cutsceneHandler.timer(5, function()
 		{
+			moveCameraToGirlfriend();
 			FlxG.camera.zoom *= 1.2;
 		});
 
 		// Hand comp'd
-		cutsceneHandler.timer(4.5, function()
+		cutsceneHandler.timer(8, function()
 		{
 			FlxG.sound.play(Paths.sound('cartoonChomp'));
 		});

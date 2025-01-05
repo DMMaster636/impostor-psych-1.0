@@ -170,7 +170,8 @@ class CreditsState extends MusicBeatState
 			['amongus\nfan',	 'cooper',		      "i did nothing for this mod but let them use red mungus but i get a quote for having cancer\nfly high cooper",																																									'https://x.com/amongusfan24'],
 			
 			['DM-kun',	 		 'dmkun',			  "this was a pain to make, but hey, it's now here and it's so awesome and cool and yeah!\ni hope y'all liked this port :>",																																						'https://www.youtube.com/@dm-kun'],
-			['5UP34',	 		 '5up34',		      "insert 5up quote here if she actually helps with icons",																																																							'https://x.com/5UP34']
+			['5UP34',	 		 '5up34',		      "insert 5up quote here if she actually helps with icons",																																																							'https://x.com/5UP34'],
+			['Wiizp',	 		 'wiizp',		      "insert wiizp quote here !!!!!!!!!!!!!!!!!!!!!!!!!!!",																																																							'https://x.com/Kaid621']
 		];
 
 		for(pal in impostorList)

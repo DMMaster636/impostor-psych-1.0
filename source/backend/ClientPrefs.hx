@@ -87,6 +87,9 @@ enum FinaleState
 	public var boughtArray:Array<Bool> = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
 	public var forceUnlockedSongs:Array<FreeplayWeek> = [];
 	public var finaleState:FinaleState = NOT_UNLOCKED;
+
+	// other stuff
+	public var darkBorder:Bool = false;
 }
 
 class ClientPrefs {

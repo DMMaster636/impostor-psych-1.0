@@ -54,10 +54,117 @@
 			"anim": "singUP",
 			"indices": [],
 			"name": "blue up"
+		},
+		{
+			"offsets": [
+				17,
+				-302
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT-hit",
+			"indices": [],
+			"name": "hit right"
+		},
+		{
+			"offsets": [
+				55,
+				-331
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN-hit",
+			"indices": [],
+			"name": "hit down"
+		},
+		{
+			"offsets": [
+				40,
+				-212
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT-hit",
+			"indices": [],
+			"name": "hit left"
+		},
+		{
+			"offsets": [
+				24,
+				-195
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP-hit",
+			"indices": [],
+			"name": "hit up"
+		},
+		{
+			"offsets": [
+				17,
+				-302
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singRIGHT-hit-loop",
+			"indices": [
+				2
+			],
+			"name": "hit right"
+		},
+		{
+			"offsets": [
+				55,
+				-331
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singDOWN-hit-loop",
+			"indices": [
+				2
+			],
+			"name": "hit down"
+		},
+		{
+			"offsets": [
+				40,
+				-212
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "singLEFT-hit-loop",
+			"indices": [
+				2
+			],
+			"name": "hit left"
+		},
+		{
+			"loop": true,
+			"offsets": [
+				24,
+				-195
+			],
+			"anim": "singUP-hit-loop",
+			"fps": 24,
+			"name": "hit up",
+			"indices": [
+				2
+			]
+		},
+		{
+			"loop": false,
+			"offsets": [
+				41,
+				-308
+			],
+			"anim": "idle-hit",
+			"fps": 24,
+			"name": "hit idle",
+			"indices": []
 		}
 	],
 	"no_antialiasing": false,
-	"image": "characters/blue",
+	"image": "characters/blue,characters/bluehit",
 	"position": [
 		40,
 		100

@@ -6,5 +6,8 @@
 	"boyfriend": [970, 50],
 	"girlfriend": [400, 80],
 	"opponent": [0, 50],
-	"secondopp": [-60, 210]
+	"extraChar": [-60, 210],
+
+	"cam_pos_opponent": [500, 475],
+	"cam_pos_player": [900, 475]
 }

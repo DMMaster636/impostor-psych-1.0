@@ -21,6 +21,7 @@ import lime.graphics.Image;
 
 #if desktop
 import backend.ALSoftConfig; // Just to make sure DCE doesn't remove this, since it's not directly referenced anywhere else.
+import hxwindowmode.WindowColorMode;
 #end
 
 //crash handler stuff
@@ -117,6 +118,9 @@ class Main extends Sprite
 		addChild(game);
 
 		FlxSprite.defaultAntialiasing = ClientPrefs.data.antialiasing;
+
+		WindowColorMode.setWindowColorMode(ClientPrefs.data.darkBorder);
+		WindowColorMode.redrawWindowHeader();
 
 		#if !mobile
 		fpsVar = new FPSCounter(10, 3, 0xFFFFFF);

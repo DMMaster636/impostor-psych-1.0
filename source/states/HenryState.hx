@@ -4,6 +4,8 @@ import backend.Song;
 import backend.StageData;
 import backend.WeekData;
 
+import objects.VideoSprite;
+
 class HenryState extends MusicBeatState
 {
     var freezeFrame:FlxSprite;

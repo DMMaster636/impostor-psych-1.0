@@ -84,7 +84,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		['Change Scroll Speed', "Value 1: Scroll Speed Multiplier (1 is default)\nValue 2: Time it takes to change fully in seconds."],
 		['Set Property', "Value 1: Variable name\nValue 2: New value"],
 		['Play Sound', "Value 1: Sound file name\nValue 2: Volume (Default: 1), ranges from 0 to 1"],
-		['Reactor Beep', "beep beep value 1 changes the type"],
+		['Reactor Beep', "Value 1: Flash start Alpha\nValue 2: Color Code (ex. #FF0000)"],
 		['Double Kill Events', "Events for Double Kill\nDarken - Slowly darkens screen\nBrighten - Removes darkness"],
 		['DefeatDark', "black thingy"],
 		['Finale Flashback Change', "eTHAN THINGY CODE IN GAME!!"],
@@ -96,11 +96,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		['Ellie Drop', "ellie dro p down"],
 		['Armed End', 'armed ending'],
 		['Meltdown Video', "'Dead Body Reported'"],
-		['Toogus Sax', "blow"],
-		['Lights out', "turn the lights off"],
-		['Lights on', "turn the lights on"],
-		['Lights on Ending', "turn the lights on ENDING"],
-		['Lights Down OFF', "turn the lights on ENDING"],
 		['Both Opponents', ""],
 		['Opponent Two', ""],
 		['Play On Left', ''],
@@ -114,7 +109,6 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		['bye gf', 'lol'],
 		['scream danger', 'danfer'],
 		['unscream danger', 'based and Black Pilled ha ha memes'],
-		['tuesdayblast', 'loud sound'],
 		['HUD Fade', 'fades da hud'],
 		['Identity Crisis line', 'dialogue'],
 		['Lights Down O2', "WHAT THE F-"],
@@ -130,8 +124,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		['Forehead2', 'start the actual song lol'],
 		['IdentityFade', 'fade in or out black in identity crisis.'],
 		['Orbyy', 'fade in or out black in identity crisis.'],
-		['Orbyy2', 'fade in or out black in identity crisis.'],
-		['tomongusdie', 'kill them.']
+		['Orbyy2', 'fade in or out black in identity crisis.']
 	];
 	
 	public static var keysArray:Array<FlxKey> = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT]; //Used for Vortex Editor
@@ -683,6 +676,15 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		StageData.loadDirectory(PlayState.SONG);
 
 		// DATA TAB
+		gameOverCharDropDown.selectedLabel = PlayState.SONG.gameOverChar;
+		gameOverSndInputText.text = PlayState.SONG.gameOverSound;
+		gameOverLoopInputText.text = PlayState.SONG.gameOverLoop;
+		gameOverRetryInputText.text = PlayState.SONG.gameOverEnd;
+
+		noRGBCheckBox.checked = (PlayState.SONG.disableNoteRGB == true);
+
+		noteTextureInputText.text = PlayState.SONG.arrowSkin;
+		noteSplashesInputText.text = PlayState.SONG.splashSkin;
 	}
 	
 	var noteSelectionSine:Float = 0;
@@ -3060,6 +3062,25 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			for (id => event in defaultEvents)
 				if(!eventsList.contains(event))
 					eventsList.insert(id, event);
+
+			if(Song.chartPath != null && Song.chartPath.length > 0)
+			{
+				var parentFolder:String = Song.chartPath.replace('\\', '/');
+				parentFolder = parentFolder.substr(0, Song.chartPath.lastIndexOf('/')+1);
+				var eventFile:Array<String> = CoolUtil.coolTextFile(parentFolder + 'events.txt');
+				if(eventFile.length > 0)
+				{
+					for (eventName in eventFile)
+					{
+						var name:String = eventName.trim();
+						for (event in eventsList)
+						{
+							if(!event[0].contains(name))
+								eventsList.push([name, "Song Specific Event"]);
+						}
+					}
+				}
+			}
 			
 			var displayEventsList:Array<String> = [];
 			for (id => data in eventsList)
