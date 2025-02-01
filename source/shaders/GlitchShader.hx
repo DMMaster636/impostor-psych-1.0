@@ -1,25 +1,21 @@
 package shaders;
 
-import flixel.FlxBasic;
-import flixel.system.FlxAssets.FlxShader;
-
-class GlitchShader extends FlxBasic
+class GlitchShader
 {
     public var shader(default, null):GlitchGLSL = new GlitchGLSL();
     public var amount(default, set):Float = 0;
 
     public function new(_amount:Float):Void
     {
-        super();
         shader.iResolution.value = [FlxG.stage.stageWidth, FlxG.stage.stageHeight];
         amount = _amount;
     }
 
-    override public function update(elapsed:Float):Void
+    /*override public function update(elapsed:Float):Void
     {
         super.update(elapsed);
         shader.iTime.value = [elapsed];
-    }
+    }*/
 
     function set_amount(v:Float):Float
     {

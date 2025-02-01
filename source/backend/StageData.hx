@@ -9,13 +9,15 @@ import psychlua.LuaUtils;
 typedef StageFile = {
 	var directory:String;
 	var defaultZoom:Float;
-	@:optional var isPixelStage:Null<Bool>;
 	var stageUI:String;
+	@:optional var isPixelStage:Null<Bool>;
+	@:optional var introSprites:Array<String>;
+	@:optional var introSounds:Array<String>;
 
 	var boyfriend:Array<Dynamic>;
 	var girlfriend:Array<Dynamic>;
 	var opponent:Array<Dynamic>;
-	@:optional var extraChar:Null<Array<Dynamic>>;
+	@:optional var extraChar:Array<Dynamic>;
 	var hide_girlfriend:Bool;
 
 	var camera_boyfriend:Array<Float>;
@@ -53,6 +55,8 @@ class StageData {
 			directory: "",
 			defaultZoom: 0.9,
 			stageUI: "normal",
+			introSprites: [null, "ready", "set", "go"],
+			introSounds: ["intro3", "intro2", "intro1", "introGo"],
 
 			boyfriend: [770, 100],
 			girlfriend: [400, 130],

@@ -1,6 +1,5 @@
 package states;
 
-import backend.Highscore;
 import backend.Song;
 import backend.StageData;
 import backend.WeekData;
@@ -53,23 +52,11 @@ class StoryMenuState extends MusicBeatState
 
 	// red[0] green[1] yellowWeek[2] black[3] maroon[4] grey[5] pink[6] jorsawsee?[7] henry[8] tomong[9] loggo[10] alpha[11]
 	var unlockedWeek:Array<Bool> = [true, false, false, false, true, false, false, true, false, false, false, false]; //weeks in order of files in preload/weeks
-	
-	//var unlockedWeek:Array<Bool> = [true, true, true, true, true, true, true, true, true, true, true, true];
 
 	var localFinaleState:FinaleState;
 	var finaleAura:FlxSprite;
 
 	var caShader:ChromaticAbberation;
-
-	function checkUnlocks()
-	{
-		if(Highscore.getScore('meltdown', 2) != 0) unlockedWeek[1] = true;
-		if(Highscore.getScore('double-kill', 2) != 0) unlockedWeek[3] = true;
-		if(Highscore.getScore('boiling-point', 2) != 0) unlockedWeek[5] = true;
-		if(Highscore.getScore('neurotic', 2) != 0) unlockedWeek[6] = true;
-		if(Highscore.getScore('titular', 2) != 0) unlockedWeek[8] = true;
-		if(Highscore.getScore('ejected', 2) != 0) unlockedWeek[2] = unlockedWeek[9] = unlockedWeek[10] = true;
-	}
 
 	override function create()
 	{
@@ -87,7 +74,7 @@ class StoryMenuState extends MusicBeatState
 
 		localFinaleState = ClientPrefs.data.finaleState;
 
-		checkUnlocks();
+		unlockedWeek = ClientPrefs.data.unlockedWeek;
 
 		persistentUpdate = persistentDraw = true;
 
@@ -101,10 +88,8 @@ class StoryMenuState extends MusicBeatState
 		if(localFinaleState == NOT_PLAYED)
 		{
 			caShader = new ChromaticAbberation(0);
-			add(caShader);
 			caShader.amount = 0;
-			var filter2:ShaderFilter = new ShaderFilter(caShader.shader);
-			camSpace.filters = [filter2];
+			camSpace.filters = [new ShaderFilter(caShader.shader)];
 		}
 
 		var starBG:FlxBackdrop = new FlxBackdrop(Paths.image('freeplay/starBG', 'impostor'));
@@ -164,16 +149,12 @@ class StoryMenuState extends MusicBeatState
 		rankText.screenCenter(X);
 
 		weekHealthIcon = new HealthIcon('impostor', true);
-		weekHealthIcon.x = FlxG.width / 2.4 - 115;
-		weekHealthIcon.y = 55;
-		weekHealthIcon.flipX = true;
-		weekHealthIcon.cameras = [camScreen];
-
 		weekHealthIconLose = new HealthIcon('impostor', true);
+		weekHealthIcon.x = FlxG.width / 2.4 - 115;
 		weekHealthIconLose.x = FlxG.width / 2.4 + 200;
-		weekHealthIconLose.y = 55;
-		weekHealthIconLose.flipX = true;
-		weekHealthIconLose.cameras = [camScreen];
+		weekHealthIcon.y = weekHealthIconLose.y = 55;
+		weekHealthIcon.flipX = weekHealthIconLose.flipX = true;
+		weekHealthIcon.cameras = weekHealthIconLose.cameras = [camScreen];
 
 		var border:FlxSprite = new FlxSprite().loadGraphic(Paths.image('storymenu/border', 'impostor'));
 		add(border);
@@ -446,40 +427,40 @@ class StoryMenuState extends MusicBeatState
 
 					case 2:
 						if (controls.UI_LEFT_P) changeWeek(1);
-						else if (controls.UI_RIGHT_P && unlockedWeek[2]) changeWeek(1);
+						else if (controls.UI_RIGHT_P && unlockedWeek[2]) changeWeek(3);
 						else if (controls.UI_UP_P && unlockedWeek[10]) changeWeek(9);
 						else if (controls.UI_DOWN_P && unlockedWeek[9]) changeWeek(8);
 
 					case 3:
-						if (controls.UI_LEFT_P) changeWeek(-1);
-						else if (controls.UI_RIGHT_P && unlockedWeek[3]) changeWeek(1);
-						else if (controls.UI_DOWN_P && unlockedWeek[8]) changeWeek(6);
+						if (controls.UI_LEFT_P) changeWeek(2);
+						else if (controls.UI_RIGHT_P && unlockedWeek[3]) changeWeek(4);
+						else if (controls.UI_DOWN_P && unlockedWeek[8]) changeWeek(7);
 
 					case 4:
-						if (controls.UI_LEFT_P) changeWeek(-1);
+						if (controls.UI_LEFT_P) changeWeek(3);
 
 					case 5:
 						if (controls.UI_LEFT_P && unlockedWeek[5]) changeWeek(1);
-						else if (controls.UI_UP_P) changeWeek(-5);
+						else if (controls.UI_UP_P) changeWeek(0);
 
 					case 6:
 						if (controls.UI_LEFT_P && unlockedWeek[6]) changeWeek(1);
-						else if (controls.UI_RIGHT_P && unlockedWeek[5]) changeWeek(-1);
+						else if (controls.UI_RIGHT_P && unlockedWeek[5]) changeWeek(0);
 
 					case 7:
-						if (controls.UI_RIGHT_P) changeWeek(-1);
+						if (controls.UI_RIGHT_P) changeWeek(0);
 
 					case 8:
-						if (controls.UI_DOWN_P) changeWeek(-8);
+						if (controls.UI_DOWN_P) changeWeek(0);
 
 					case 9:
-						if (controls.UI_UP_P) changeWeek(-6);
+						if (controls.UI_UP_P) changeWeek(0);
 
 					case 10:
-						if (controls.UI_UP_P) changeWeek(-8);
+						if (controls.UI_UP_P) changeWeek(0);
 
 					case 11:
-						if (controls.UI_DOWN_P) changeWeek(-9);
+						if (controls.UI_DOWN_P) changeWeek(0);
 				}
 
 				if (curWeek != 0)
@@ -534,6 +515,12 @@ class StoryMenuState extends MusicBeatState
 			LoadingState.loadNextDirectory();
 			StageData.forceNextDirectory = directory;
 
+			@:privateAccess
+			if(PlayState._lastLoadedModDirectory != Mods.currentModDirectory)
+			{
+				trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+				Paths.freeGraphicsFromMemory();
+			}
 			LoadingState.prepareToSong();
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
@@ -557,7 +544,7 @@ class StoryMenuState extends MusicBeatState
 			case 0: moveDirs = [false, true, true, true];
 			case 1: moveDirs = [true, false, false, true];
 			case 2: moveDirs = [true, true, true, true];
-			case 3: moveDirs = [true, true, true, true];
+			case 3: moveDirs = [true, false, false, true];
 			case 4: moveDirs = [true, true, true, true];
 			case 5: moveDirs = [true, true, true, true];
 			case 6: moveDirs = [true, true, true, true];
@@ -576,12 +563,10 @@ class StoryMenuState extends MusicBeatState
 		var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[curWeek]);
 		WeekData.setDirectoryFromWeek(leWeek);
 
-		var leName:String = leWeek.storyName;
-		var leWeekName:String = leWeek.weekName;
-		txtWeekTitle.text = leName.toUpperCase();
+		txtWeekTitle.text = leWeek.storyName.toUpperCase();
 		txtWeekTitle.setFormat(Paths.font('AmaticSC-Bold.ttf'), 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		txtWeekNumber.text = leWeekName.toUpperCase();
-		if(!leWeekName.startsWith("Week")) 
+		txtWeekNumber.text = leWeek.weekName.toUpperCase();
+		if(!leWeek.weekName.startsWith("Week")) 
 			txtWeekNumber.x = ((FlxG.width / 2) - (txtWeekNumber.width / 2));
 		else
 			txtWeekNumber.x = FlxG.width / 2.4;
@@ -608,9 +593,9 @@ class StoryMenuState extends MusicBeatState
 
 		weekHealthIcon.changeIcon(leWeek.songs[0][1]);
 		weekHealthIconLose.changeIcon(leWeek.songs[0][1]);
-		txtWeekNumber.updateHitbox();
 		weekHealthIcon.animation.curAnim.curFrame = 0;
 		weekHealthIconLose.animation.curAnim.curFrame = 1;
+		txtWeekNumber.updateHitbox();
 
 		switch (leWeek.songs.length)
 		{
@@ -641,43 +626,35 @@ class StoryMenuState extends MusicBeatState
 			case 4:
 				weekHealthIcon.x = FlxG.width / 2.4 - 115;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 180;
-				weekHealthIcon.y = 55;
-				weekHealthIconLose.y = 55;
+				weekHealthIcon.y = weekHealthIconLose.y = 55;
 			case 5:
 				weekHealthIcon.x = FlxG.width / 2.4 - 135;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 220;
-				weekHealthIcon.y = 45;
-				weekHealthIconLose.y = 45;
+				weekHealthIcon.y = weekHealthIconLose.y = 45;
 			case 6:
 				weekHealthIcon.x = FlxG.width / 2.4 - 135;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 220;
-				weekHealthIcon.y = 45;
-				weekHealthIconLose.y = 45;
+				weekHealthIcon.y = weekHealthIconLose.y = 45;
 			case 7:
 				weekHealthIcon.x = FlxG.width / 2.4 - 135;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 220;
-				weekHealthIcon.y = 40;
-				weekHealthIconLose.y = 40;
+				weekHealthIcon.y = weekHealthIconLose.y = 40;
 			case 9:
 				weekHealthIcon.x = FlxG.width / 2.4 - 115;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 180;
-				weekHealthIcon.y = 40;
-				weekHealthIconLose.y = 40;
+				weekHealthIcon.y = weekHealthIconLose.y = 40;
 			case 10:
 				weekHealthIcon.x = FlxG.width / 2.4 - 205;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 270;
-				weekHealthIcon.y = 55;
-				weekHealthIconLose.y = 55;
+				weekHealthIcon.y = weekHealthIconLose.y = 55;
 			case 11:
 				weekHealthIcon.x = FlxG.width / 2.4 - 115;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 170;
-				weekHealthIcon.y = 45;
-				weekHealthIconLose.y = 45;
+				weekHealthIcon.y = weekHealthIconLose.y = 45;
 			default:
 				weekHealthIcon.x = FlxG.width / 2.4 - 115;
 				weekHealthIconLose.x = FlxG.width / 2.4 + 200;
-				weekHealthIcon.y = 55;
-				weekHealthIconLose.y = 55;
+				weekHealthIcon.y = weekHealthIconLose.y = 55;
 		}
 
 		new FlxTimer().start(0.08, function(tmr:FlxTimer)
@@ -832,6 +809,12 @@ class DeathSubstate extends MusicBeatSubstate
 			LoadingState.loadNextDirectory();
 			StageData.forceNextDirectory = directory;
 
+			@:privateAccess
+			if(PlayState._lastLoadedModDirectory != Mods.currentModDirectory)
+			{
+				trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+				Paths.freeGraphicsFromMemory();
+			}
 			LoadingState.prepareToSong();
 			FlxTween.tween(camUpper, {alpha: 0}, 0.25, {
 				ease: FlxEase.circOut,

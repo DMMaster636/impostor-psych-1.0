@@ -72,8 +72,12 @@ class HealthIcon extends FlxSprite
 		super.updateHitbox();
 		if(autoAdjustOffset)
 		{
-			offset.x = iconOffsets[0];
-			offset.y = iconOffsets[1];
+			if(!isAnimated)
+			{
+				offset.x = iconOffsets[0];
+				offset.y = iconOffsets[1];
+			}
+			else centerOffsets();
 		}
 	}
 

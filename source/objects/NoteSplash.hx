@@ -2,7 +2,6 @@ package objects;
 
 import backend.animation.PsychAnimationController;
 import shaders.RGBPalette;
-import flixel.system.FlxAssets.FlxShader;
 
 typedef RGB = {
 	r:Null<Int>,
@@ -63,16 +62,23 @@ class NoteSplash extends FlxSprite
 		config = null;
 		maxAnims = 0;
 
-		texture = splash;
-		if (texture == null || texture.length < 1) texture = defaultNoteSplash;
-		if (texture == defaultNoteSplash) texture += getSplashSkinPostfix();
+		if(splash == null || splash.length < 1)
+		{
+			splash = defaultNoteSplash + getSplashSkinPostfix();
+			if (PlayState.SONG != null && PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) splash = PlayState.SONG.splashSkin;
+		}
 
+		texture = splash;
 		frames = Paths.getSparrowAtlas(texture);
 		if (frames == null)
 		{
-			texture = defaultNoteSplash;
+			texture = defaultNoteSplash + getSplashSkinPostfix();
 			frames = Paths.getSparrowAtlas(texture);
-			// if (frames == null) active = visible = false;
+			if (frames == null)
+			{
+				texture = defaultNoteSplash;
+				frames = Paths.getSparrowAtlas(texture);
+			}
 		}
 
 		var path:String = 'images/$texture';

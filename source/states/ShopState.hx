@@ -7,8 +7,6 @@ import haxe.Json;
 import flixel.FlxObject;
 import flixel.input.mouse.FlxMouseEvent;
 
-import backend.Highscore;
-
 import objects.Character;
 import objects.Pet;
 import objects.HealthIcon;
@@ -39,8 +37,8 @@ class ShopState extends MusicBeatState
     var overlays:FlxTypedGroup<FlxSprite>;
     var texts:FlxTypedGroup<FlxText>;
 
-    var clickPos:FlxPoint;
-    var clickPosScreen:FlxPoint;
+    var clickPos:FlxPoint = FlxPoint.get();
+    var clickPosScreen:FlxPoint = FlxPoint.get();
 
     private var camFollow:FlxObject;
 
@@ -49,7 +47,7 @@ class ShopState extends MusicBeatState
 
     var isFocused:Bool = false;
     var canUnfocus:Bool = false;
-    var focusTarget:FlxPoint;
+    var focusTarget:FlxPoint = FlxPoint.get(0, 0);
     var focusedNode:ShopNode;
 
     var topBean:FlxSprite;
@@ -150,13 +148,11 @@ class ShopState extends MusicBeatState
 		DiscordClient.changePresence("Shopping in the Shop", null);
 		#end
 
-        for(i => nodeD in nodeData) nodeD[4] = ClientPrefs.data.boughtArray[i];
+        for(i => nodeD in nodeData) nodeD[4] = ClientPrefs.data.boughtArray.contains(nodeD[2]);
 
         localBeans = ClientPrefs.data.beans;
 
         FlxG.mouse.visible = true;
-
-        focusTarget = FlxPoint.get(0, 0);
 
         //i dont care
         camGame = initPsychCamera();
@@ -187,9 +183,6 @@ class ShopState extends MusicBeatState
         starFG.scrollFactor.set(0.5, 0.5);
 		starFG.velocity.set(-24, 0);
         add(starFG);
-
-        clickPos = new FlxPoint();
-        clickPosScreen = new FlxPoint();
 
         add(connectors);
         add(outlines);
@@ -302,12 +295,9 @@ class ShopState extends MusicBeatState
         equipbutton.animation.play('equipped');
         switch(id)
         {
-            case 0:
-                ClientPrefs.data.charOverrides[0] = 'bf';
-            case 1:
-                ClientPrefs.data.charOverrides[1] = 'gf';
-            case 2:
-                ClientPrefs.data.charOverrides[2] = 'none';
+            case 0: ClientPrefs.data.charOverrides[0] = 'bf';
+            case 1: ClientPrefs.data.charOverrides[1] = 'gf';
+            case 2: ClientPrefs.data.charOverrides[2] = 'none';
         }
     }
 
@@ -324,14 +314,10 @@ class ShopState extends MusicBeatState
             var finalPos:Array<Float> = grabNodePos(node.connection);
             switch(node.connectionDirection)
             {
-                case 'top':
-                    finalPos[1] += offset;
-                case 'bottom':
-                    finalPos[1] -= offset;
-                case 'left':
-                    finalPos[0] -= offset;
-                case 'right':
-                    finalPos[0] += offset;
+                case 'top': finalPos[1] += offset;
+                case 'bottom': finalPos[1] -= offset;
+                case 'left': finalPos[0] -= offset;
+                case 'right': finalPos[0] += offset;
             }
             node.setPosition(finalPos[0], finalPos[1]);
             node.connector.visible = true;
@@ -492,8 +478,8 @@ class ShopState extends MusicBeatState
 
     override function update(elapsed:Float)
     {
-        if(FlxG.sound.music.volume < 0.3) FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-        if(FlxG.sound.music.volume > 0.3) FlxG.sound.music.volume -= 0.5 * FlxG.elapsed;
+        if(FlxG.sound.music.volume < 0.3) FlxG.sound.music.volume += 0.5 * elapsed;
+        if(FlxG.sound.music.volume > 0.3) FlxG.sound.music.volume -= 0.5 * elapsed;
 
         equipbutton.setPosition(panel.getGraphicMidpoint().x - (equipbutton.width / 2), FlxG.height * 0.75);
         equipText.setPosition(panel.getGraphicMidpoint().x - (equipText.width / 2), FlxG.height * 0.785);
@@ -623,11 +609,12 @@ class ShopState extends MusicBeatState
         blockInput = true;
         nodes.forEach(function(node:ShopNode)
         {
-            ClientPrefs.data.boughtArray[node.ID] = node.bought;
+            if(node.bought && !ClientPrefs.data.boughtArray.contains(node.name))
+                ClientPrefs.data.boughtArray.push(node.name);
         });
         ClientPrefs.data.beans = localBeans;
-
         ClientPrefs.saveSettings();
+
         FlxG.sound.play(Paths.sound('cancelMenu'));
         MusicBeatState.switchState(new MainMenuState());
     }

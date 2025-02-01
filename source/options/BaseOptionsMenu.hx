@@ -39,8 +39,8 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		#end
 		
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.color = 0xff190053;
-		bg.alpha = 0.25;
+		bg.color = 0xff2284bd;
+		bg.alpha = 0.8;
 		bg.screenCenter();
 		add(bg);
 
@@ -77,7 +77,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 			optionText.yMult = 90;*/
 			optionText.targetY = i;
 			grpOptions.add(optionText);
-			for(fuck in optionText) fuck.color = FlxColor.fromRGB(255, 255, 255, 255);
 
 			if(optionsArray[i].type == BOOL)
 			{

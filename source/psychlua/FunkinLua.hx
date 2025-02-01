@@ -2,7 +2,6 @@
 package psychlua;
 
 import backend.WeekData;
-import backend.Highscore;
 import backend.Song;
 
 import openfl.Lib;
@@ -197,6 +196,7 @@ class FunkinLua {
 		set('healthBarAlpha', ClientPrefs.data.healthBarAlpha);
 		set('noResetButton', ClientPrefs.data.noReset);
 		set('lowQuality', ClientPrefs.data.lowQuality);
+		set('antialiasing', ClientPrefs.data.antialiasing);
 		set('shadersEnabled', ClientPrefs.data.shaders);
 		set('scriptName', scriptName);
 		set('currentModDirectory', Mods.currentModDirectory);
@@ -293,6 +293,9 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "getVar", function(varName:String) {
 			return MusicBeatState.getVariables().get(varName);
 		});
+		Lua_helper.add_callback(lua, "removeVar", function(varName:String) {
+			return MusicBeatState.getVariables().remove(varName);
+		});
 
 		Lua_helper.add_callback(lua, "addLuaScript", function(luaFile:String, ?ignoreAlreadyRunning:Bool = false) {
 			var luaPath:String = findScript(luaFile);
@@ -378,10 +381,8 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "loadSong", function(?name:String = null, ?difficultyNum:Int = -1) {
-			if(name == null || name.length < 1)
-				name = Song.loadedSongName;
-			if (difficultyNum == -1)
-				difficultyNum = PlayState.storyDifficulty;
+			if(name == null || name.length < 1) name = Song.loadedSongName;
+			if(difficultyNum == -1) difficultyNum = PlayState.storyDifficulty;
 
 			var poop = Highscore.formatSong(name, difficultyNum);
 			Song.loadFromJson(poop, name);
@@ -391,10 +392,18 @@ class FunkinLua {
 
 			FlxG.sound.music.pause();
 			FlxG.sound.music.volume = 0;
-			if(game != null && game.vocals != null)
+			if(game != null)
 			{
-				game.vocals.pause();
-				game.vocals.volume = 0;
+				if(game.vocals != null)
+				{
+					game.vocals.pause();
+					game.vocals.volume = 0;
+				}
+				if(game.opponentVocals != null)
+				{
+					game.opponentVocals.pause();
+					game.opponentVocals.volume = 0;
+				}
 			}
 			FlxG.camera.followLerp = 0;
 		});
@@ -425,10 +434,21 @@ class FunkinLua {
 				LuaUtils.loadFrames(spr, image, spriteType);
 			}
 		});
+		Lua_helper.add_callback(lua, "loadMultipleFrames", function(variable:String, images:Array<String>) {
+			var split:Array<String> = variable.split('.');
+			var spr:FlxSprite = LuaUtils.getObjectDirectly(split[0]);
+			if(split.length > 1) {
+				spr = LuaUtils.getVarInArray(LuaUtils.getPropertyLoop(split), split[split.length-1]);
+			}
+			if(spr != null && images != null && images.length > 0)
+			{
+				spr.frames = Paths.getMultiAtlas(images);
+			}
+		});
 
 		//shitass stuff for epic coders like me B)  *image of obama giving himself a medal*
 		Lua_helper.add_callback(lua, "getObjectOrder", function(obj:String, ?group:String = null) {
-			var leObj:FlxSprite = LuaUtils.getObjectDirectly(obj);
+			var leObj:FlxBasic = LuaUtils.getObjectDirectly(obj);
 			if(leObj != null)
 			{
 				if(group != null)
@@ -450,13 +470,14 @@ class FunkinLua {
 						return -1;
 					}
 				}
-				return LuaUtils.getTargetInstance().members.indexOf(leObj);
+				var groupOrArray:Dynamic = CustomSubstate.instance != null ? CustomSubstate.instance : LuaUtils.getTargetInstance();
+				return groupOrArray.members.indexOf(leObj);
 			}
 			luaTrace('getObjectOrder: Object $obj doesn\'t exist!', false, false, FlxColor.RED);
 			return -1;
 		});
 		Lua_helper.add_callback(lua, "setObjectOrder", function(obj:String, position:Int, ?group:String = null) {
-			var leObj:FlxSprite = LuaUtils.getObjectDirectly(obj);
+			var leObj:FlxBasic = LuaUtils.getObjectDirectly(obj);
 			if(leObj != null)
 			{
 				if(group != null)
@@ -478,7 +499,7 @@ class FunkinLua {
 				}
 				else
 				{
-					var groupOrArray:FlxState = LuaUtils.getTargetInstance();
+					var groupOrArray:Dynamic = CustomSubstate.instance != null ? CustomSubstate.instance : LuaUtils.getTargetInstance();
 					groupOrArray.remove(leObj, true);
 					groupOrArray.insert(position, leObj);
 				}
@@ -567,15 +588,19 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "doTweenColor", function(tag:String, vars:String, targetColor:String, duration:Float, ?ease:String = 'linear') {
 			var penisExam:Dynamic = LuaUtils.tweenPrepare(tag, vars);
 			if(penisExam != null) {
+				targetColor = targetColor.trim();
+				var newColor:FlxColor = CoolUtil.colorFromString(targetColor);
+				if(targetColor.startsWith('0x') && targetColor.length == 8 || !FlxColor.colorLookup.exists(targetColor.toUpperCase()) && targetColor.length == 6) newColor.alphaFloat = penisExam.alpha;
+
 				var curColor:FlxColor = penisExam.color;
 				curColor.alphaFloat = penisExam.alpha;
-				
+
 				if(tag != null)
 				{
 					var originalTag:String = tag;
 					tag = LuaUtils.formatVariable('tween_$tag');
 					var variables = MusicBeatState.getVariables();
-					variables.set(tag, FlxTween.color(penisExam, duration, curColor, CoolUtil.colorFromString(targetColor), {ease: LuaUtils.getTweenEaseByString(ease),
+					variables.set(tag, FlxTween.color(penisExam, duration, curColor, newColor, {ease: LuaUtils.getTweenEaseByString(ease),
 						onComplete: function(twn:FlxTween)
 						{
 							variables.remove(tag);
@@ -950,7 +975,9 @@ class FunkinLua {
 			LuaUtils.destroyObject(tag);
 			var leSprite:ModchartSprite = new ModchartSprite(x, y);
 
-			LuaUtils.loadFrames(leSprite, image, spriteType);
+			if(image != null && image.length > 0)
+				LuaUtils.loadFrames(leSprite, image, spriteType);
+
 			MusicBeatState.getVariables().set(tag, leSprite);
 		});
 
@@ -1024,8 +1051,7 @@ class FunkinLua {
 			if(mySprite == null) return;
 
 			var instance = LuaUtils.getTargetInstance();
-			if(inFront)
-				instance.add(mySprite);
+			if(inFront) instance.add(mySprite);
 			else
 			{
 				if(PlayState.instance == null || !PlayState.instance.isDead)
@@ -1098,9 +1124,8 @@ class FunkinLua {
 
 		Lua_helper.add_callback(lua, "removeLuaSprite", function(tag:String, destroy:Bool = true, ?group:String = null) {
 			var obj:FlxSprite = LuaUtils.getObjectDirectly(tag);
-			if(obj == null || obj.destroy == null)
-				return;
-			
+			if(obj == null || obj.destroy == null) return;
+
 			var groupObj:Dynamic = null;
 			if(group == null) groupObj = LuaUtils.getTargetInstance();
 			else groupObj = LuaUtils.getObjectDirectly(group);
@@ -1200,16 +1225,11 @@ class FunkinLua {
 			{
 				switch(pos.trim().toLowerCase())
 				{
-					case 'x':
-						spr.screenCenter(X);
-						return;
-					case 'y':
-						spr.screenCenter(Y);
-						return;
-					default:
-						spr.screenCenter(XY);
-						return;
+					case 'x': spr.screenCenter(X);
+					case 'y': spr.screenCenter(Y);
+					default: spr.screenCenter(XY);
 				}
+				return;
 			}
 			luaTrace("screenCenter: Object " + obj + " doesn't exist!", false, false, FlxColor.RED);
 		});
@@ -1269,14 +1289,50 @@ class FunkinLua {
 			else
 			{
 				luaTrace('startDialogue: Dialogue file not found', false, false, FlxColor.RED);
-				if(game.endingSong)
-					game.endSong();
-				else
-					game.startCountdown();
+				if(game.endingSong) game.endSong();
+				else game.startCountdown();
 			}
 			return false;
 		});
-		Lua_helper.add_callback(lua, "startVideo", function(videoFile:String, ?canSkip:Bool = true) {
+		Lua_helper.add_callback(lua, "startImpDialogue", function(dialogueFile:String, ?music:String = null) {
+			var path:String;
+			var songPath:String = Paths.formatToSongPath(Song.loadedSongName);
+			#if TRANSLATIONS_ALLOWED
+			path = Paths.getPath('data/$songPath/${dialogueFile}_${ClientPrefs.data.language}.json', TEXT);
+			#if MODS_ALLOWED
+			if(!FileSystem.exists(path))
+			#else
+			if(!Assets.exists(path, TEXT))
+			#end
+			#end
+				path = Paths.getPath('data/$songPath/$dialogueFile.json', TEXT);
+
+			luaTrace('startDialogue: Trying to load dialogue: ' + path);
+
+			#if MODS_ALLOWED
+			if(FileSystem.exists(path))
+			#else
+			if(Assets.exists(path, TEXT))
+			#end
+			{
+				var shit:DialogueFile = DialogueBoxPsych.parseDialogue(path);
+				if(shit.dialogue.length > 0)
+				{
+					game.startDialogue(shit, music);
+					luaTrace('startDialogue: Successfully loaded dialogue', false, false, FlxColor.GREEN);
+					return true;
+				}
+				else luaTrace('startDialogue: Your dialogue file is badly formatted!', false, false, FlxColor.RED);
+			}
+			else
+			{
+				luaTrace('startDialogue: Dialogue file not found', false, false, FlxColor.RED);
+				if(game.endingSong) game.endSong();
+				else game.startCountdown();
+			}
+			return false;
+		});
+		Lua_helper.add_callback(lua, "startVideo", function(videoFile:String, ?canSkip:Bool = true, ?forMidSong:Bool = false, ?shouldLoop:Bool = false, ?playOnLoad:Bool = true) {
 			#if VIDEOS_ALLOWED
 			if(FileSystem.exists(Paths.video(videoFile)))
 			{
@@ -1285,7 +1341,7 @@ class FunkinLua {
 					game.remove(game.videoCutscene);
 					game.videoCutscene.destroy();
 				}
-				game.videoCutscene = game.startVideo(videoFile, false, canSkip);
+				game.videoCutscene = game.startVideo(videoFile, forMidSong, canSkip, shouldLoop, playOnLoad);
 				return true;
 			}
 			else
@@ -1293,16 +1349,13 @@ class FunkinLua {
 				luaTrace('startVideo: Video file not found: ' + videoFile, false, false, FlxColor.RED);
 			}
 			return false;
-
 			#else
 			PlayState.instance.inCutscene = true;
 			new FlxTimer().start(0.1, function(tmr:FlxTimer)
 			{
 				PlayState.instance.inCutscene = false;
-				if(game.endingSong)
-					game.endSong();
-				else
-					game.startCountdown();
+				if(game.endingSong) game.endSong();
+				else game.startCountdown();
 			});
 			return true;
 			#end
@@ -1552,10 +1605,10 @@ class FunkinLua {
 			return closed;
 		});
 
+		HScript.implement(this);
 		#if DISCORD_ALLOWED DiscordClient.addLuaCallbacks(lua); #end
 		#if ACHIEVEMENTS_ALLOWED Achievements.addLuaCallbacks(lua); #end
 		#if TRANSLATIONS_ALLOWED Language.addLuaCallbacks(lua); #end
-		#if HSCRIPT_ALLOWED HScript.implement(this); #end
 		#if flxanimate FlxAnimateFunctions.implement(this); #end
 		ReflectionFunctions.implement(this);
 		TextFunctions.implement(this);

@@ -74,7 +74,7 @@ class LoadingState extends MusicBeatState
 		}
 
 		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Loading into a Song", null);
+		DiscordClient.changePresence("Loading into a Song...", null);
 		#end
 
 		var bg = new FlxSprite().makeGraphic(1, 1, 0xFFCAFF4D);
@@ -84,8 +84,9 @@ class LoadingState extends MusicBeatState
 		add(bg);
 
 		funkay = new FlxSprite(0, 0).loadGraphic(Paths.image('funkay'));
-		funkay.setGraphicSize(0, FlxG.height);
+		funkay.setGraphicSize(FlxG.width);
 		funkay.updateHitbox();
+		funkay.screenCenter();
 		add(funkay);
 	
 		loadingText = new FlxText(520, 600, 400, Language.getPhrase('now_loading', 'Now Loading', ['...']), 32);
@@ -149,6 +150,9 @@ class LoadingState extends MusicBeatState
 	var finishedLoading:Bool = false;
 	function onLoad()
 	{
+		loaded = loadMax = 0;
+		initialThreadCompleted = true;
+
 		if (stopMusic && FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -169,7 +173,7 @@ class LoadingState extends MusicBeatState
 		}
 		requestedBitmaps.clear();
 		originalBitmapKeys.clear();
-		return (loaded == loadMax && initialThreadCompleted);
+		return (loaded >= loadMax && initialThreadCompleted);
 	}
 
 	public static function loadNextDirectory()
@@ -457,7 +461,7 @@ class LoadingState extends MusicBeatState
 			catch(e:Dynamic) {
 				trace('ERROR! fail on preloading $traceData');
 			}
-			mutex.acquire();
+			mutex.tryAcquire();
 			loaded++;
 			mutex.release();
 		});
@@ -532,7 +536,7 @@ class LoadingState extends MusicBeatState
 			if (#if sys FileSystem.exists(file) || #end OpenFlAssets.exists(file, SOUND))
 			{
 				var sound:Sound = #if sys Sound.fromFile(file) #else OpenFlAssets.getSound(file, false) #end;
-				mutex.acquire();
+				mutex.tryAcquire();
 				Paths.currentTrackedSounds.set(file, sound);
 				mutex.release();
 			}
@@ -543,7 +547,7 @@ class LoadingState extends MusicBeatState
 				return FlxAssets.getSound('flixel/sounds/beep');
 			}
 		}
-		mutex.acquire();
+		mutex.tryAcquire();
 		Paths.localTrackedAssets.push(file);
 		mutex.release();
 
@@ -568,7 +572,7 @@ class LoadingState extends MusicBeatState
 					#else
 					var bitmap:BitmapData = OpenFlAssets.getBitmapData(file, false);
 					#end
-					mutex.acquire();
+					mutex.tryAcquire();
 					requestedBitmaps.set(file, bitmap);
 					originalBitmapKeys.set(file, requestKey);
 					mutex.release();

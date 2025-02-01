@@ -7,6 +7,7 @@ class Bar extends FlxSpriteGroup
 	public var leftBar:FlxSprite;
 	public var rightBar:FlxSprite;
 	public var bg:FlxSprite;
+
 	public var valueFunction:Void->Float = null;
 	public var percent(default, set):Float = 0;
 	public var bounds:Dynamic = {min: 0, max: 1};
@@ -21,12 +22,13 @@ class Bar extends FlxSpriteGroup
 	public function new(x:Float, y:Float, bgImage:String = 'healthBar', barImage:String = null, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1)
 	{
 		super(x, y);
-		
+
 		this.valueFunction = valueFunction;
 		setBounds(boundX, boundY);
-		
+
 		bg = new FlxSprite().loadGraphic(Paths.image(bgImage));
 		bg.updateHitbox();
+
 		barWidth = Std.int(bg.width - barOffset.x * 2);
 		barHeight = Std.int(bg.height - barOffset.y * 2);
 
@@ -36,7 +38,10 @@ class Bar extends FlxSpriteGroup
 		if(barImage != null && barImage.length > 0)
 		{
 			leftBar.loadGraphic(Paths.image(barImage));
+			leftBar.updateHitbox();
+
 			rightBar.loadGraphic(Paths.image(barImage));
+			rightBar.updateHitbox();
 		}
 
 		//leftBar.color = FlxColor.WHITE;
@@ -116,12 +121,14 @@ class Bar extends FlxSpriteGroup
 			leftBar.updateHitbox();
 			leftBar.clipRect = new FlxRect(0, 0, Std.int(bg.width), Std.int(bg.height));
 		}
+
 		if(rightBar != null)
 		{
 			rightBar.setGraphicSize(Std.int(bg.width), Std.int(bg.height));
 			rightBar.updateHitbox();
 			rightBar.clipRect = new FlxRect(0, 0, Std.int(bg.width), Std.int(bg.height));
 		}
+
 		updateBar();
 	}
 

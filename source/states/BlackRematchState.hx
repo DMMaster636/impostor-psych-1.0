@@ -2,7 +2,7 @@ package states;
 
 import objects.VideoSprite;
 
-class PlayVideoState extends MusicBeatState
+class BlackRematchState extends MusicBeatState
 {
 	override function create()
 	{

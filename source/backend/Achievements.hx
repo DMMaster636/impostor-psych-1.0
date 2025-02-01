@@ -17,6 +17,9 @@ typedef Achievement =
 	@:optional var maxScore:Float;
 	@:optional var maxDecimals:Int;
 
+	//beans!!! but not for now...
+	@:optional var reward:Int;
+
 	//handled automatically, ignore these two
 	@:optional var mod:String;
 	@:optional var ID:Int; 

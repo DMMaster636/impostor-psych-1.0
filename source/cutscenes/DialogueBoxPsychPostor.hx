@@ -44,10 +44,9 @@ class DialogueBoxPsychPostor extends FlxSpriteGroup
 	var bgFade:FlxSprite = null;
 
 	var boxGroup:FlxSpriteGroup;
-
-	var rgbShader:RGBPalette;
-	var box:FlxSprite;
 	var boxBack:FlxSprite;
+	var box:FlxSprite;
+	var rgbShader:RGBPalette;
 
 	var swagDialogue:FlxTypeText;
 	var textToType:String = '';
@@ -353,7 +352,7 @@ class DialogueBoxPsychPostor extends FlxSpriteGroup
 			case MIDDLE:
 				// change middle char
 				lastCharacter = 1;
-			case RIGHT:
+			default:
 				// change right char
 				lastCharacter = 2;
 		}
@@ -387,9 +386,7 @@ class DialogueBoxPsychPostor extends FlxSpriteGroup
 			if(char.animation.curAnim != null)
 			{
 				var rate:Float = 24 - (((curDialogue.speed - 0.05) / 5) * 480);
-				if(rate < 12) rate = 12;
-				else if(rate > 48) rate = 48;
-				char.animation.curAnim.frameRate = rate;
+				char.animation.curAnim.frameRate = FlxMath.bound(rate, 12, 48);
 			}
 		}
 		currentText++;

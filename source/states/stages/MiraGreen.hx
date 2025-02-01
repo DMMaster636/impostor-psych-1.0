@@ -12,6 +12,12 @@ class MiraGreen extends BaseStage
 	var speaker:BGSprite;
 	var bfVent:BGSprite;
 	var bgBlack:FlxSprite;
+
+	var goSax:Bool = false;
+	var powers:BGSprite;
+
+	var charShader:BWShader;
+
 	override function create()
 	{
 		camOffset = 20;
@@ -80,7 +86,6 @@ class MiraGreen extends BaseStage
 		}
 	}
 
-	var powers:BGSprite;
 	override function createPost()
 	{
 		if(songName == 'sussus-toogus')
@@ -91,22 +96,18 @@ class MiraGreen extends BaseStage
 		}
 	}
 
-	var goSax:Bool = false;
 	override function update(elapsed:Float)
 	{
 		if(goSax && powers != null)
 			powers.x = FlxMath.lerp(powers.x, powers.x + 15, FlxMath.bound(elapsed * 9 * game.playbackRate, 0, 1));
 	}
 
-	var charShader:BWShader;
 	override function eventPushed(event:objects.Note.EventNote)
 	{
-		// used for preloading assets used on events that doesn't need different assets based on its values
 		switch(event.event)
 		{
 			case "Lights out":
-				if (charShader == null)
-					charShader = new BWShader(0.01, 0.12, true);
+				charShader = new BWShader(0.01, 0.12, true);
 		}
 	}
 
@@ -114,7 +115,7 @@ class MiraGreen extends BaseStage
 	{
 		switch(eventName)
 		{
-			case "Toogus Sax":
+			case 'Toogus Sax':
 				if(powers != null)
 				{
 					powers.dance(true);
@@ -122,7 +123,7 @@ class MiraGreen extends BaseStage
 				}
 				goSax = true;
 
-			case "Lights out":
+			case 'Lights out':
 				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 0.35);
 
 				if (boyfriend.curCharacter == 'bf') game.triggerEvent('Change Character', 'bf', 'whitebf');
@@ -140,7 +141,7 @@ class MiraGreen extends BaseStage
 				gf.alpha = 0;
 				// if(game.usingPet) pet.alpha = 0;
 
-			case "Lights on":
+			case 'Lights on':
 				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.BLACK : 0x4C000000, 0.35);
 
 				if (boyfriend.curCharacter == 'whitebf') game.triggerEvent('Change Character', 'bf', 'bf');
@@ -157,7 +158,7 @@ class MiraGreen extends BaseStage
 				gf.alpha = 1;
 				// if(game.usingPet) pet.alpha = 1;
 
-			case "Lights on Ending":
+			case 'Lights on Ending':
 				if (boyfriend.curCharacter == 'whitebf') game.triggerEvent('Change Character', 'bf', 'bf');
 				else boyfriend.shader = null;
 
@@ -181,7 +182,7 @@ class MiraGreen extends BaseStage
 					speaker.visible = gf.curCharacter != 'ghostgf';
 				}
 
-			case "Lights Down OFF":
+			case 'Lights Down OFF':
 				camGame.visible = false;
 		}
 	}

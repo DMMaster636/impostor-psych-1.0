@@ -1,4 +1,3 @@
-
 package states.stages;
 
 import shaders.ColorShader;
@@ -6,9 +5,11 @@ import states.HenryState;
 
 class AirshipCockpit extends BaseStage
 {
-	var canPress:Bool = true;
 	var whiteAwkward:BGSprite;
+
+	var canPress:Bool = true;
 	var henryTeleporter:FlxSpriteButton;
+
 	override function create()
 	{
 		Paths.sound('teleport_sound');
@@ -84,7 +85,7 @@ class AirshipCockpit extends BaseStage
 
 		FlxTween.tween(camHUD, {alpha: 0}, 0.7, {ease: FlxEase.quadInOut});
 
-		game.triggerEventNote('Camera Follow Pos', '750', '500');
+		game.triggerEvent('Camera Follow Pos', '750', '500');
 		game.stopEvents = true;
 
 		dad.setPosition(-240, 175);
@@ -99,6 +100,11 @@ class AirshipCockpit extends BaseStage
 			FlxTween.tween(colorShader, {amount: 0}, 0.73, {ease: FlxEase.expoOut});
 			// dad.stunned = true;
 		});
+
+		/*new FlxTimer().start(1.25, function(tmr:FlxTimer)
+		{
+			FlxTween.tween(colorShader, {amount: 1}, 2.25, {ease: FlxEase.expoOut});
+		});*/
 
 		new FlxTimer().start(1.28, function(tmr:FlxTimer)
 		{
@@ -127,27 +133,22 @@ class AirshipCockpit extends BaseStage
 			FlxTween.tween(colorShader, {amount: 0.8}, 0.05, {ease: FlxEase.expoOut});
 		});
 
-		/*new FlxTimer().start(1.25, function(tmr:FlxTimer)
-		{
-			FlxTween.tween(colorShader, {amount: 1}, 2.25, {ease: FlxEase.expoOut});
-		});*/
-
 		new FlxTimer().start(2.7, function(tmr:FlxTimer)
 		{
 			colorShader.amount = 1;
-			FlxTween.tween(boyfriend, {"scale.x": 3.5, "scale.y": 0}, 0.7, {ease: FlxEase.expoOut});
-			FlxTween.tween(henryTeleporter, {"scale.x": 3.5, "scale.y": 0}, 0.7, {ease: FlxEase.expoOut});
-		});
-
-		new FlxTimer().start(2.8, function(tmr:FlxTimer)
-		{
-			FlxTween.tween(gf, {"scale.x": 3.5, "scale.y": 0}, 0.7, {ease: FlxEase.expoOut});
+			FlxTween.tween(boyfriend, {'scale.x': 3.5, 'scale.y': 0}, 0.7, {ease: FlxEase.expoOut});
+			FlxTween.tween(henryTeleporter, {'scale.x': 3.5, 'scale.y': 0}, 0.7, {ease: FlxEase.expoOut});
 		});
 
 		/*new FlxTimer().start(2.75, function(tmr:FlxTimer)
 		{
-			FlxTween.tween(pet, {"scale.x": 3.5, "scale.y": 0}, 0.7, {ease: FlxEase.expoOut});
+			FlxTween.tween(pet, {'scale.x': 3.5, 'scale.y': 0}, 0.7, {ease: FlxEase.expoOut});
 		});*/
+
+		new FlxTimer().start(2.8, function(tmr:FlxTimer)
+		{
+			FlxTween.tween(gf, {'scale.x': 3.5, 'scale.y': 0}, 0.7, {ease: FlxEase.expoOut});
+		});
 
 		new FlxTimer().start(2.9, function(tmr:FlxTimer)
 		{

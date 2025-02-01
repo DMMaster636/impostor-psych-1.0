@@ -3,10 +3,10 @@ package backend;
 #if DISCORD_ALLOWED
 import Sys.sleep;
 import sys.thread.Thread;
-import lime.app.Application;
 
 import hxdiscord_rpc.Discord;
 import hxdiscord_rpc.Types;
+import hxdiscord_rpc.Types.DiscordButton;
 
 import flixel.util.FlxStringUtil;
 
@@ -27,20 +27,21 @@ class DiscordClient
 
 	public static function prepare()
 	{
-		if (!isInitialized && ClientPrefs.data.discordRPC)
+		if(!isInitialized && ClientPrefs.data.discordRPC)
 			initialize();
 
-		Application.current.window.onClose.add(function() {
-			if(isInitialized) shutdown();
-		});
+		if (FlxG.stage.window.onClose.has(shutdown))
+			FlxG.stage.window.onClose.add(shutdown);
 	}
 
 	public dynamic static function shutdown()
 	{
+		if(!isInitialized) return;
+
 		isInitialized = false;
 		Discord.Shutdown();
 	}
-	
+
 	private static function onReady(request:cpp.RawConstPointer<DiscordUser>):Void
 	{
 		final user = cast (request[0].username, String);
@@ -68,15 +69,17 @@ class DiscordClient
 
 	public static function initialize()
 	{
+		if(isInitialized) return;
+
 		var discordHandlers:DiscordEventHandlers = DiscordEventHandlers.create();
 		discordHandlers.ready = cpp.Function.fromStaticFunction(onReady);
 		discordHandlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
 		discordHandlers.errored = cpp.Function.fromStaticFunction(onError);
 		Discord.Initialize(clientID, cpp.RawPointer.addressOf(discordHandlers), 1, null);
 
-		if(!isInitialized) trace("Discord Client initialized");
+		trace("Discord Client initialized");
 
-		if (__thread == null)
+		if(__thread == null)
 		{
 			__thread = Thread.create(() ->
 			{
@@ -115,6 +118,12 @@ class DiscordClient
 		updatePresence();
 
 		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp, $largeImageKey');
+	}
+
+	public static function makeDiscordButton(id:Int, label:String, url:String)
+	{
+		presence.makeButton(id, label, url);
+		updatePresence();
 	}
 
 	public static function updatePresence()
@@ -161,6 +170,7 @@ class DiscordClient
 			if(newID == null) newID = _defaultID;
 			clientID = newID;
 		});
+		Lua_helper.add_callback(lua, "makeDiscordButton", makeDiscordButton);
 	}
 	#end
 }
@@ -171,6 +181,7 @@ private final class DiscordPresence
 	public var state(get, set):String;
 	public var details(get, set):String;
 	public var smallImageKey(get, set):String;
+	public var smallImageText(get, set):String;
 	public var largeImageKey(get, set):String;
 	public var largeImageText(get, set):String;
 	public var startTimestamp(get, set):Int;
@@ -183,12 +194,22 @@ private final class DiscordPresence
 		__presence = DiscordRichPresence.create();
 	}
 
+	public function makeButton(id:Int, label:String, url:String):DiscordButton
+	{
+		id = Std.int(FlxMath.bound(id, 0, 1));
+		final button = DiscordButton.create();
+		button.label = label;
+		button.url = url;
+		return __presence.buttons[id] = button;
+	}
+
 	public function toString():String
 	{
 		return FlxStringUtil.getDebugString([
 			LabelValuePair.weak("state", state),
 			LabelValuePair.weak("details", details),
 			LabelValuePair.weak("smallImageKey", smallImageKey),
+			LabelValuePair.weak("smallImageText", smallImageText),
 			LabelValuePair.weak("largeImageKey", largeImageKey),
 			LabelValuePair.weak("largeImageText", largeImageText),
 			LabelValuePair.weak("startTimestamp", startTimestamp),
@@ -224,6 +245,16 @@ private final class DiscordPresence
 	@:noCompletion inline function set_smallImageKey(value:String):String
 	{
 		return __presence.smallImageKey = value;
+	}
+
+	@:noCompletion inline function get_smallImageText():String
+	{
+		return __presence.smallImageText;
+	}
+
+	@:noCompletion inline function set_smallImageText(value:String):String
+	{
+		return __presence.smallImageText = value;
 	}
 
 	@:noCompletion inline function get_largeImageKey():String

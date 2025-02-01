@@ -33,6 +33,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 	var gf:Character;
 	var dad:Character;
 	var boyfriend:Character;
+	var extraChar:Character;
+
 	var stageJson:StageFile;
 
 	var camGame:PsychCamera;
@@ -84,6 +86,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		gf.scrollFactor.set(0.95, 0.95);
 		dad = new Character(0, 0, stageJson._editorMeta != null ? stageJson._editorMeta.dad : 'dad');
 		boyfriend = new Character(0, 0, stageJson._editorMeta != null ? stageJson._editorMeta.boyfriend : 'bf', true);
+		extraChar = new Character(0, 0, stageJson._editorMeta != null ? stageJson._editorMeta.extraChar : 'mom');
 
 		for (i in 0...4)
 		{
@@ -96,13 +99,14 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		repositionGirlfriend();
 		repositionDad();
 		repositionBoyfriend();
+		repositionExtraChar();
 		var point = focusOnTarget('boyfriend');
 		FlxG.camera.scroll.set(point.x - FlxG.width/2, point.y - FlxG.height/2);
 
 		screenUI();
 		spriteCreatePopup();
 		editorUI();
-		
+
 		add(camFollow);
 		updateSpriteList();
 
@@ -178,7 +182,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		var list:Map<String, FlxSprite> = [];
 		if(stageJson.objects != null && stageJson.objects.length > 0)
 		{
-			list = StageData.addObjectsToState(stageJson.objects, gf, dad, boyfriend, null, null, true);
+			list = StageData.addObjectsToState(stageJson.objects, gf, dad, boyfriend, extraChar, null, true);
 			for (key => spr in list)
 				stageSprites[spr.ID] = new StageEditorMetaSprite(stageJson.objects[spr.ID], spr);
 
@@ -186,7 +190,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 				trace('$num: ${spr.type}, ${spr.name}');*/
 		}
 
-		for (character in ['gf', 'dad', 'boyfriend'])
+		for (character in ['gf', 'dad', 'boyfriend', 'extraChar'])
 			if(!list.exists(character))
 				stageSprites.push(new StageEditorMetaSprite({type: character}, Reflect.field(this, character)));
 
@@ -235,7 +239,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		targetTxt.active = false;
 		add(targetTxt);
 
-		focusRadioGroup = new PsychUIRadioGroup(targetTxt.x, FlxG.height - 24, ['dad', 'boyfriend', 'gf'], 10, 0, true);
+		focusRadioGroup = new PsychUIRadioGroup(targetTxt.x, FlxG.height - 24, ['dad', 'boyfriend', 'gf', 'extraChar'], 10, 0, true);
 		focusRadioGroup.onClick = function() {
 			//trace('Changed focus to $target');
 			var point = focusOnTarget(focusRadioGroup.labels[focusRadioGroup.checked]);
@@ -245,6 +249,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		focusRadioGroup.radios[0].label = 'Opponent';
 		focusRadioGroup.radios[1].label = 'Boyfriend';
 		focusRadioGroup.radios[2].label = 'Girlfriend';
+		focusRadioGroup.radios[3].label = 'Extra Char';
 
 		for (radio in focusRadioGroup.radios)
 			radio.text.size = 11;
@@ -548,6 +553,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 					nameList.push('- Boyfriend -');
 				case 'dad':
 					nameList.push('- Opponent -');
+				case 'extraChar':
+					nameList.push('- Extra Char -');
 				default:
 					nameList.push(spr.name);
 			}
@@ -570,7 +577,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 
 	function editorUI()
 	{
-		UI_box = new PsychUIBox(FlxG.width - 225, 10, 200, 400, ['Meta', 'Data', 'Object']);
+		UI_box = new PsychUIBox(FlxG.width - 225, 10, 200, 400, ['Meta', 'Extra Data', 'Data', 'Object']);
 		UI_box.cameras = [camHUD];
 		UI_box.scrollFactor.set();
 		add(UI_box);
@@ -582,10 +589,116 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		add(UI_stagebox);
 		UI_box.y += UI_stagebox.y + UI_stagebox.height;
 
+		addExtraDataTab();
 		addDataTab();
 		addObjectTab();
 		addMetaTab();
 		addStageTab();
+	}
+
+	var camPosDadStepperX:PsychUINumericStepper;
+	var camPosDadStepperY:PsychUINumericStepper;
+	var camPosGfStepperX:PsychUINumericStepper;
+	var camPosGfStepperY:PsychUINumericStepper;
+	var camPosBfStepperX:PsychUINumericStepper;
+	var camPosBfStepperY:PsychUINumericStepper;
+	var camPosExtStepperX:PsychUINumericStepper;
+	var camPosExtStepperY:PsychUINumericStepper;
+
+	function addExtraDataTab()
+	{
+		var tab_group = UI_box.getTab('Extra Data').menu;
+
+		var saveButton:PsychUIButton = new PsychUIButton(UI_box.width - 90, UI_box.height - 50, 'Save', function() {
+			saveData();
+		});
+		tab_group.add(saveButton);
+
+		var objX = 10;
+		var objY = 20;
+		tab_group.add(new FlxText(objX, objY - 18, 100, 'Camera Positions:'));
+
+		objY += 20;
+		tab_group.add(new FlxText(objX, objY - 18, 100, 'Opponent:'));
+
+		var cx:Float = 0;
+		var cy:Float = 0;
+		if(stageJson.cam_pos_opponent != null && stageJson.cam_pos_opponent.length > 1)
+		{
+			cx = stageJson.cam_pos_opponent[0];
+			cy = stageJson.cam_pos_opponent[0];
+		}
+		camPosDadStepperX = new PsychUINumericStepper(objX, objY, 50, cx, -10000, 10000, 0);
+		camPosDadStepperY = new PsychUINumericStepper(objX + 80, objY, 50, cy, -10000, 10000, 0);
+		camPosDadStepperX.onValueChange = camPosDadStepperY.onValueChange = function() {
+			if(stageJson.cam_pos_opponent == null) stageJson.cam_pos_opponent = [0, 0];
+			stageJson.cam_pos_opponent[0] = camPosDadStepperX.value;
+			stageJson.cam_pos_opponent[1] = camPosDadStepperY.value;
+			_updateCamera();
+		};
+
+		objY += 38;
+		var cx:Float = 0;
+		var cy:Float = 0;
+		if(stageJson.cam_pos_player != null && stageJson.cam_pos_player.length > 1)
+		{
+			cx = stageJson.cam_pos_player[0];
+			cy = stageJson.cam_pos_player[0];
+		}
+		tab_group.add(new FlxText(objX, objY - 18, 100, 'Boyfriend:'));
+		camPosBfStepperX = new PsychUINumericStepper(objX, objY, 50, cx, -10000, 10000, 0);
+		camPosBfStepperY = new PsychUINumericStepper(objX + 80, objY, 50, cy, -10000, 10000, 0);
+		camPosBfStepperX.onValueChange = camPosBfStepperY.onValueChange = function() {
+			if(stageJson.cam_pos_player == null) stageJson.cam_pos_player = [0, 0];
+			stageJson.cam_pos_player[0] = camPosBfStepperX.value;
+			stageJson.cam_pos_player[1] = camPosBfStepperY.value;
+			_updateCamera();
+		};
+
+		objY += 38;
+		var cx:Float = 0;
+		var cy:Float = 0;
+		if(stageJson.cam_pos_gf != null && stageJson.cam_pos_gf.length > 1)
+		{
+			cx = stageJson.cam_pos_gf[0];
+			cy = stageJson.cam_pos_gf[0];
+		}
+		tab_group.add(new FlxText(objX, objY - 18, 100, 'Girlfriend:'));
+		camPosGfStepperX = new PsychUINumericStepper(objX, objY, 50, cx, -10000, 10000, 0);
+		camPosGfStepperY = new PsychUINumericStepper(objX + 80, objY, 50, cy, -10000, 10000, 0);
+		camPosGfStepperX.onValueChange = camPosGfStepperY.onValueChange = function() {
+			if(stageJson.cam_pos_gf == null) stageJson.cam_pos_gf = [0, 0];
+			stageJson.cam_pos_gf[0] = camPosGfStepperX.value;
+			stageJson.cam_pos_gf[1] = camPosGfStepperY.value;
+			_updateCamera();
+		};
+
+		objY += 38;
+		var cx:Float = 0;
+		var cy:Float = 0;
+		if(stageJson.cam_pos_extraChar != null && stageJson.cam_pos_extraChar.length > 1)
+		{
+			cx = stageJson.cam_pos_extraChar[0];
+			cy = stageJson.cam_pos_extraChar[0];
+		}
+		tab_group.add(new FlxText(objX, objY - 18, 100, 'Extra Char:'));
+		camPosExtStepperX = new PsychUINumericStepper(objX, objY, 50, cx, -10000, 10000, 0);
+		camPosExtStepperY = new PsychUINumericStepper(objX + 80, objY, 50, cy, -10000, 10000, 0);
+		camPosExtStepperX.onValueChange = camPosExtStepperY.onValueChange = function() {
+			if(stageJson.cam_pos_extraChar == null) stageJson.cam_pos_extraChar = [0, 0];
+			stageJson.cam_pos_extraChar[0] = camPosExtStepperX.value;
+			stageJson.cam_pos_extraChar[1] = camPosExtStepperY.value;
+			_updateCamera();
+		};
+
+		tab_group.add(camPosDadStepperX);
+		tab_group.add(camPosDadStepperY);
+		tab_group.add(camPosBfStepperX);
+		tab_group.add(camPosBfStepperY);
+		tab_group.add(camPosGfStepperX);
+		tab_group.add(camPosGfStepperY);
+		tab_group.add(camPosExtStepperX);
+		tab_group.add(camPosExtStepperY);
 	}
 
 	var directoryDropDown:PsychUIDropDownMenu;
@@ -599,6 +712,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 	var camGfStepperY:PsychUINumericStepper;
 	var camBfStepperX:PsychUINumericStepper;
 	var camBfStepperY:PsychUINumericStepper;
+	var camExtStepperX:PsychUINumericStepper;
+	var camExtStepperY:PsychUINumericStepper;
 
 	function addDataTab()
 	{
@@ -628,12 +743,12 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		});
 		directoryDropDown.selectedLabel = stageJson.directory;
 
-		objY += 50;
+		objY += 45;
 		tab_group.add(new FlxText(objX, objY - 18, 100, 'UI Style:'));
 		uiInputText = new PsychUIInputText(objX, objY, 100, stageJson.stageUI != null ? stageJson.stageUI : '', 8);
 		uiInputText.onChange = function(old:String, cur:String) stageJson.stageUI = uiInputText.text;
 
-		objY += 30;
+		objY += 25;
 		hideGirlfriendCheckbox = new PsychUICheckBox(objX, objY, 'Hide Girlfriend?', 100);
 		hideGirlfriendCheckbox.onClick = function()
 		{
@@ -647,7 +762,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		};
 		hideGirlfriendCheckbox.checked = !gf.visible;
 
-		objY += 50;
+		objY += 40;
 		tab_group.add(new FlxText(objX, objY - 18, 100, 'Camera Offsets:'));
 
 		objY += 20;
@@ -669,7 +784,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 			_updateCamera();
 		};
 
-		objY += 40;
+		objY += 38;
 		var cx:Float = 0;
 		var cy:Float = 0;
 		if(stageJson.camera_girlfriend != null && stageJson.camera_girlfriend.length > 1)
@@ -687,7 +802,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 			_updateCamera();
 		};
 
-		objY += 40;
+		objY += 38;
 		var cx:Float = 0;
 		var cy:Float = 0;
 		if(stageJson.camera_boyfriend != null && stageJson.camera_boyfriend.length > 1)
@@ -705,9 +820,27 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 			_updateCamera();
 		};
 
-		objY += 50;
+		objY += 38;
+		var cx:Float = 0;
+		var cy:Float = 0;
+		if(stageJson.camera_extraChar != null && stageJson.camera_extraChar.length > 1)
+		{
+			cx = stageJson.camera_extraChar[0];
+			cy = stageJson.camera_extraChar[0];
+		}
+		tab_group.add(new FlxText(objX, objY - 18, 100, 'Extra Char:'));
+		camExtStepperX = new PsychUINumericStepper(objX, objY, 50, cx, -10000, 10000, 0);
+		camExtStepperY = new PsychUINumericStepper(objX + 80, objY, 50, cy, -10000, 10000, 0);
+		camExtStepperX.onValueChange = camExtStepperY.onValueChange = function() {
+			if(stageJson.camera_extraChar == null) stageJson.camera_extraChar = [0, 0];
+			stageJson.camera_extraChar[0] = camExtStepperX.value;
+			stageJson.camera_extraChar[1] = camExtStepperY.value;
+			_updateCamera();
+		};
+
+		objY += 40;
 		tab_group.add(new FlxText(objX, objY - 18, 100, 'Camera Data:'));
-		objY += 20;
+		objY += 15;
 		tab_group.add(new FlxText(objX, objY - 18, 100, 'Zoom:'));
 		zoomStepper = new PsychUINumericStepper(objX, objY, 0.05, stageJson.defaultZoom, minZoom, maxZoom, 2);
 		zoomStepper.onValueChange = function() {
@@ -730,6 +863,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		tab_group.add(camGfStepperY);
 		tab_group.add(camBfStepperX);
 		tab_group.add(camBfStepperY);
+		tab_group.add(camExtStepperX);
+		tab_group.add(camExtStepperY);
 		tab_group.add(zoomStepper);
 		tab_group.add(cameraSpeedStepper);
 		
@@ -999,6 +1134,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 	var oppDropdown:PsychUIDropDownMenu;
 	var gfDropdown:PsychUIDropDownMenu;
 	var plDropdown:PsychUIDropDownMenu;
+	var extDropdown:PsychUIDropDownMenu;
 	function addMetaTab()
 	{
 		var tab_group = UI_box.getTab('Meta').menu;
@@ -1062,7 +1198,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 
 		function setMetaData(data:String, char:String)
 		{
-			if(stageJson._editorMeta == null) stageJson._editorMeta = {dad: 'dad', gf: 'gf', boyfriend: 'bf'};
+			if(stageJson._editorMeta == null) stageJson._editorMeta = {dad: 'dad', gf: 'gf', boyfriend: 'bf', extraChar: 'extraChar'};
 			Reflect.setField(stageJson._editorMeta, data, char);
 		}
 
@@ -1096,6 +1232,16 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		});
 		plDropdown.selectedLabel = boyfriend.curCharacter;
 
+		objY += 60;
+		extDropdown = new PsychUIDropDownMenu(objX, objY, characterList, function(sel:Int, selected:String)
+		{
+			if(selected == null || selected.length < 1) return;
+			extraChar.changeCharacter(selected);
+			setMetaData('extraChar', selected);
+			repositionExtraChar();
+		});
+		extDropdown.selectedLabel = extraChar.curCharacter;
+
 		tab_group.add(openPreloadButton);
 		tab_group.add(new FlxText(plDropdown.x, plDropdown.y - 18, 100, 'Player:'));
 		tab_group.add(plDropdown);
@@ -1103,6 +1249,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		tab_group.add(gfDropdown);
 		tab_group.add(new FlxText(oppDropdown.x, oppDropdown.y - 18, 100, 'Opponent:'));
 		tab_group.add(oppDropdown);
+		tab_group.add(new FlxText(extDropdown.x, extDropdown.y - 18, 100, 'Extra Char:'));
+		tab_group.add(extDropdown);
 	}
 
 	var stageDropDown:PsychUIDropDownMenu;
@@ -1205,6 +1353,13 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		}
 		else camBfStepperX.value = camBfStepperY.value = 0;
 
+		if(stageJson.camera_extraChar != null && stageJson.camera_extraChar.length > 1)
+		{
+			camExtStepperX.value = stageJson.camera_extraChar[0];
+			camExtStepperY.value = stageJson.camera_extraChar[1];
+		}
+		else camExtStepperX.value = camExtStepperY.value = 0;
+
 		if(focusRadioGroup.checked > -1)
 		{
 			var point = focusOnTarget(focusRadioGroup.labels[focusRadioGroup.checked]);
@@ -1278,10 +1433,12 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 			gf.changeCharacter(stageJson._editorMeta.gf);
 			dad.changeCharacter(stageJson._editorMeta.dad);
 			boyfriend.changeCharacter(stageJson._editorMeta.boyfriend);
+			extraChar.changeCharacter(stageJson._editorMeta.extraChar);
 		}
 		repositionGirlfriend();
 		repositionDad();
 		repositionBoyfriend();
+		repositionExtraChar();
 
 		focusRadioGroup.checked = -1;
 		FlxG.camera.target = null;
@@ -1291,6 +1448,7 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		oppDropdown.selectedLabel = dad.curCharacter;
 		gfDropdown.selectedLabel = gf.curCharacter;
 		plDropdown.selectedLabel = boyfriend.curCharacter;
+		extDropdown.selectedLabel = extraChar.curCharacter;
 	}
 	
 	function reloadStageDropDown()
@@ -1485,6 +1643,9 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 					case 'dad':
 						stageJson.opponent[0] = displayX = spr.x - char.positionArray[0];
 						stageJson.opponent[1] = displayY = spr.y - char.positionArray[1];
+					case 'extraChar':
+						stageJson.extraChar[0] = displayX = spr.x - char.positionArray[0];
+						stageJson.extraChar[1] = displayY = spr.y - char.positionArray[1];
 				}
 				posTxt.text = 'X: $displayX\nY: $displayY';
 			}
@@ -1517,32 +1678,72 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		switch(target)
 		{
 			case 'boyfriend':
-				focusPoint.x += boyfriend.getMidpoint().x - boyfriend.cameraPosition[0] - 100;
-				focusPoint.y += boyfriend.getMidpoint().y + boyfriend.cameraPosition[1] - 100;
-				if(stageJson.camera_boyfriend != null && stageJson.camera_boyfriend.length > 1)
+				if(stageJson.cam_pos_player != null && stageJson.cam_pos_player.length > 1)
 				{
-					focusPoint.x += stageJson.camera_boyfriend[0];
-					focusPoint.y += stageJson.camera_boyfriend[1];
+					focusPoint.x += stageJson.cam_pos_player[0];
+					focusPoint.y += stageJson.cam_pos_player[1];
+				}
+				else
+				{
+					focusPoint.x += boyfriend.getMidpoint().x - boyfriend.cameraPosition[0] - 100;
+					focusPoint.y += boyfriend.getMidpoint().y + boyfriend.cameraPosition[1] - 100;
+					if(stageJson.camera_boyfriend != null && stageJson.camera_boyfriend.length > 1)
+					{
+						focusPoint.x += stageJson.camera_boyfriend[0];
+						focusPoint.y += stageJson.camera_boyfriend[1];
+					}
 				}
 			case 'dad':
-				focusPoint.x += dad.getMidpoint().x + dad.cameraPosition[0] + 150;
-				focusPoint.y += dad.getMidpoint().y + dad.cameraPosition[1] - 100;
-				if(stageJson.camera_opponent != null && stageJson.camera_opponent.length > 1)
+				if(stageJson.cam_pos_opponent != null && stageJson.cam_pos_opponent.length > 1)
 				{
-					focusPoint.x += stageJson.camera_opponent[0];
-					focusPoint.y += stageJson.camera_opponent[1];
+					focusPoint.x += stageJson.cam_pos_opponent[0];
+					focusPoint.y += stageJson.cam_pos_opponent[1];
+				}
+				else
+				{
+					focusPoint.x += dad.getMidpoint().x + dad.cameraPosition[0] + 150;
+					focusPoint.y += dad.getMidpoint().y + dad.cameraPosition[1] - 100;
+					if(stageJson.camera_opponent != null && stageJson.camera_opponent.length > 1)
+					{
+						focusPoint.x += stageJson.camera_opponent[0];
+						focusPoint.y += stageJson.camera_opponent[1];
+					}
 				}
 			case 'gf':
-				if(gf.visible)
+				if(stageJson.cam_pos_gf != null && stageJson.cam_pos_gf.length > 1)
 				{
-					focusPoint.x += gf.getMidpoint().x + gf.cameraPosition[0];
-					focusPoint.y += gf.getMidpoint().y + gf.cameraPosition[1];
+					focusPoint.x += stageJson.cam_pos_gf[0];
+					focusPoint.y += stageJson.cam_pos_gf[1];
 				}
-
-				if(stageJson.camera_girlfriend != null && stageJson.camera_girlfriend.length > 1)
+				else
 				{
-					focusPoint.x += stageJson.camera_girlfriend[0];
-					focusPoint.y += stageJson.camera_girlfriend[1];
+					if(gf.visible)
+					{
+						focusPoint.x += gf.getMidpoint().x + gf.cameraPosition[0];
+						focusPoint.y += gf.getMidpoint().y + gf.cameraPosition[1];
+					}
+
+					if(stageJson.camera_girlfriend != null && stageJson.camera_girlfriend.length > 1)
+					{
+						focusPoint.x += stageJson.camera_girlfriend[0];
+						focusPoint.y += stageJson.camera_girlfriend[1];
+					}
+				}
+			case 'extraChar':
+				if(stageJson.cam_pos_extraChar != null && stageJson.cam_pos_extraChar.length > 1)
+				{
+					focusPoint.x += stageJson.cam_pos_extraChar[0];
+					focusPoint.y += stageJson.cam_pos_extraChar[1];
+				}
+				else
+				{
+					focusPoint.x += extraChar.getMidpoint().x + extraChar.cameraPosition[0];
+					focusPoint.y += extraChar.getMidpoint().y + extraChar.cameraPosition[1];
+					if(stageJson.camera_extraChar != null && stageJson.camera_extraChar.length > 1)
+					{
+						focusPoint.x += stageJson.camera_extraChar[0];
+						focusPoint.y += stageJson.camera_extraChar[1];
+					}
 				}
 		}
 		return focusPoint;
@@ -1566,6 +1767,13 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		boyfriend.x += boyfriend.positionArray[0];
 		boyfriend.y += boyfriend.positionArray[1];
 	}
+	function repositionExtraChar()
+	{
+		if(stageJson.extraChar == null) stageJson.extraChar = [0, 0];
+		extraChar.setPosition(stageJson.extraChar[0], stageJson.extraChar[1]);
+		extraChar.x += extraChar.positionArray[0];
+		extraChar.y += extraChar.positionArray[1];
+	}
 	
 	public function drawDebugOnCamera(spr:FlxSprite):Void
 	{
@@ -1575,8 +1783,8 @@ class StageEditorState extends MusicBeatState implements PsychUIEventHandler.Psy
 		@:privateAccess
 		var lineSize:Int = Std.int(Math.max(2, Math.floor(3 / FlxG.camera.zoom)));
 
-		var sprX:Float = spr.x + spr.offset.x;
-		var sprY:Float = spr.y + spr.offset.y;
+		var sprX:Float = spr.x - spr.offset.x;
+		var sprY:Float = spr.y - spr.offset.y;
 		var sprWidth:Int = Std.int(spr.frameWidth * spr.scale.x);
 		var sprHeight:Int = Std.int(spr.frameHeight * spr.scale.y);
 		for (num => sel in selectionSprites.members)

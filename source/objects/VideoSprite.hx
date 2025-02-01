@@ -7,30 +7,32 @@ import hxvlc.flixel.FlxVideo;
 import hxvlc.flixel.FlxVideoSprite;
 #end
 
+import psychlua.LuaUtils;
+
 class VideoSprite extends FlxSpriteGroup
 {
 	#if VIDEOS_ALLOWED
+	public static var _videos:Array<VideoSprite> = [];
+
 	public var overallFinish:Void->Void = null;
 	public var finishCallback:Void->Void = null;
 	public var onSkip:Void->Void = null;
 
+	public var canPause:Bool = false;
 	public var canSkip(default, set):Bool = false;
+
 	final _timeToSkip:Float = 1;
-	final _timeToPause:Float = 0.2;
 	public var holdingTime:Float = 0;
+
+	public var videoSprite:FlxVideoSprite;
+	public var cover:FlxSprite;
 	public var skipSprite:FlxPieDial;
 
 	private var videoName:String;
-	public var videoSprite:FlxVideoSprite;
-	public var cover:FlxSprite;
 
 	public var isWaiting:Bool = false;
 	public var isPlaying:Bool = false;
 	public var isPaused:Bool = false;
-	public var didPlay:Bool = false;
-
-	public var canPause(default, set):Bool = true;
-	public var pauseText:FlxText;
 
 	public function new(videoName:String, isWaiting:Bool, canSkip:Bool = false, shouldLoop:Dynamic = false)
 	{
@@ -40,7 +42,6 @@ class VideoSprite extends FlxSpriteGroup
 		this.isWaiting = isWaiting;
 
 		scrollFactor.set();
-
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 		if(!isWaiting)
@@ -54,36 +55,13 @@ class VideoSprite extends FlxSpriteGroup
 
 		// initialize sprites
 		videoSprite = new FlxVideoSprite();
+		videoSprite.antialiasing = ClientPrefs.data.antialiasing;
 		add(videoSprite);
 
 		this.canSkip = canSkip;
-		canPause = !isWaiting;
 
 		// callbacks
-		if(!shouldLoop)
-		{
-			videoSprite.bitmap.onEndReached.add(function()
-			{
-				if(alreadyDestroyed) return;
-		
-				trace('Video destroyed');
-				if(cover != null)
-				{
-					remove(cover);
-					cover.destroy();
-				}
-
-				if(pauseText != null)
-				{
-					remove(pauseText);
-					pauseText.destroy();
-				}
-
-				psychlua.LuaUtils.getTargetInstance().remove(this);
-				destroy();
-				alreadyDestroyed = true;
-			});
-		}
+		if(!shouldLoop) videoSprite.bitmap.onEndReached.add(destroy);
 
 		videoSprite.bitmap.onFormatSetup.add(function()
 		{
@@ -95,13 +73,14 @@ class VideoSprite extends FlxSpriteGroup
 			videoSprite.scale.set(FlxG.width / wd, FlxG.height / hg);
 			#end
 			*/
-			videoSprite.setGraphicSize(FlxG.width, FlxG.height);
+			videoSprite.setGraphicSize(FlxG.width);
 			videoSprite.updateHitbox();
 			videoSprite.screenCenter();
 		});
 
 		// start video and adjust resolution to screen size
 		videoSprite.load(videoName, shouldLoop ? ['input-repeat=65545'] : null);
+		_videos.push(this);
 	}
 
 	var skippedVideo:Bool = false;
@@ -114,17 +93,10 @@ class VideoSprite extends FlxSpriteGroup
 			return;
 		}
 
-		trace('Video destroyed');
 		if(cover != null)
 		{
 			remove(cover);
 			cover.destroy();
-		}
-
-		if(pauseText != null)
-		{
-			remove(pauseText);
-			pauseText.destroy();
 		}
 
 		if(skippedVideo)
@@ -140,43 +112,40 @@ class VideoSprite extends FlxSpriteGroup
 
 		if(overallFinish != null) overallFinish();
 
-		psychlua.LuaUtils.getTargetInstance().remove(this);
+		trace('Video Destroyed');
+		LuaUtils.getTargetInstance().remove(this);
+		_videos.remove(this);
+
+		// This often crashes for some reason
+		//super.destroy();
+
+		alreadyDestroyed = true;
 	}
 
 	override function update(elapsed:Float)
 	{
-		if(!isWaiting)
+		if(canSkip)
 		{
-			if(Controls.instance.pressed('accept'))
-				holdingTime = Math.max(0, Math.min(_timeToSkip, holdingTime + elapsed));
-			else if (holdingTime > 0)
-				holdingTime = Math.max(0, FlxMath.lerp(holdingTime, -0.1, FlxMath.bound(elapsed * 3, 0, 1)));
+			if(Controls.instance.pressed('accept')) holdingTime = Math.max(0, Math.min(_timeToSkip, holdingTime + elapsed));
+			else if(holdingTime > 0) holdingTime = Math.max(0, FlxMath.lerp(holdingTime, -0.1, FlxMath.bound(elapsed * 3, 0, 1)));
 
-			if(canSkip)
+			updateSkipAlpha();
+
+			if(holdingTime >= _timeToSkip)
 			{
-				updateSkipAlpha();
-
-				if(holdingTime >= _timeToSkip)
-				{
-					skippedVideo = true;
-					videoSprite.bitmap.onEndReached.dispatch();
-					trace('Skipped video');
-					destroy();
-					super.destroy();
-					return;
-				}
-			}
-
-			if(canPause)
-			{
-				if(Controls.instance.justReleased('accept') && holdingTime <= _timeToPause && holdingTime > 0)
-				{
-					if(isPaused) resume();
-					else pause();
-					pauseText.visible = isPaused;
-				}
+				trace('Skipped Video');
+				skippedVideo = true;
+				videoSprite.bitmap.onEndReached.dispatch();
+				return;
 			}
 		}
+
+		/*// Maybe later    - DM-kun
+		if(canPause)
+		{
+			if(Controls.instance.justPressed('accept'))
+				LuaUtils.getTargetInstance().openSubState(new VideoPauseSubstate());
+		}*/
 
 		super.update(elapsed);
 	}
@@ -213,32 +182,6 @@ class VideoSprite extends FlxSpriteGroup
 		skipSprite.alpha = FlxMath.remapToRange(skipSprite.amount, 0.025, 1, 0, 1);
 	}
 
-	function set_canPause(newValue:Bool)
-	{
-		canPause = newValue;
-		if(canPause)
-		{
-			if(pauseText == null)
-			{
-				pauseText = new FlxText(0, 0, FlxG.width, "|| Paused");
-				pauseText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
-				pauseText.borderSize = 1.25;
-				pauseText.scrollFactor.set();
-				pauseText.updateHitbox();
-				pauseText.y = FlxG.height - pauseText.height;
-				pauseText.visible = false;
-				add(pauseText);
-			}
-		}
-		else if(pauseText != null)
-		{
-			remove(pauseText);
-			pauseText.destroy();
-			pauseText = null;
-		}
-		return canPause;
-	}
-
 	public function play()
 	{
 		isPlaying = true;
@@ -253,6 +196,20 @@ class VideoSprite extends FlxSpriteGroup
 	{
 		isPaused = true;
 		videoSprite?.pause();
+	}
+
+	public static function clearVideos()
+	{
+		try
+		{
+			for (vid in _videos) vid.destroy();
+			_videos = [];
+			trace("Cleared Videos!");
+		}
+		catch(e:Dynamic)
+		{
+			trace("Failed Clearing Videos!");
+		}
 	}
 	#end
 }

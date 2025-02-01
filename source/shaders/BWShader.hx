@@ -1,12 +1,9 @@
 package shaders;
 
-import flixel.FlxObject;
-import flixel.system.FlxAssets.FlxShader;
-
-//hi fabs
+// hi fabs
 // thanks rozebud
 
-class BWShader extends FlxObject
+class BWShader
 {
 	public var shader(default, null):BWShaderGLSL = new BWShaderGLSL();
 
@@ -16,16 +13,9 @@ class BWShader extends FlxObject
 
 	public function new(_lowerBound:Float = 0.01, _upperBound:Float = 0.15, _invert:Bool = false):Void
 	{
-		super();
-
 		lowerBound = _lowerBound;
 		upperBound = _upperBound;
 		invert = _invert;
-	}
-
-	override public function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
 	}
 
 	function set_invert(v:Bool):Bool
@@ -52,33 +42,36 @@ class BWShader extends FlxObject
 
 class BWShaderGLSL extends FlxShader
 {
-	@:glFragmentSource('
+	@:glFragmentHeader('
 		#pragma header
 
 		uniform bool invert;
 		uniform float lowerBound;
 		uniform float upperBound;
 
-		void main()
-		{
-			vec4 textureColor = texture2D(bitmap, openfl_TextureCoordv);
-
+		vec4 flixel_texture2DCustom(sampler2D bitmap, vec2 coord) {
+			vec4 textureColor = texture2D(bitmap, coord);
 			float gray = 0.21 * textureColor.r + 0.71 * textureColor.g + 0.07 * textureColor.b;
-
 			float outColor = 0;
 
-			if(gray > upperBound){
+			if(gray > upperBound) {
 				outColor = 1;
 			}
-			else if(!(gray < lowerBound) && (upperBound - lowerBound) != 0){
+			else if(!(gray < lowerBound) && (upperBound - lowerBound) != 0) {
 				outColor = (gray - lowerBound) / (upperBound - lowerBound);
 			}
 
-			if(invert){
+			if(invert) {
 				outColor = (1 - outColor) * textureColor.a;
 			}
+			return vec4(outColor, outColor, outColor, textureColor.a);
+		}')
 
-			gl_FragColor = vec4(outColor, outColor, outColor, textureColor.a);
+	@:glFragmentSource('
+		#pragma header
+
+		void main() {
+			gl_FragColor = flixel_texture2DCustom(bitmap, openfl_TextureCoordv);
 		}')
 
 	public function new()

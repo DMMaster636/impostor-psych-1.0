@@ -8,15 +8,10 @@ import openfl.Assets;
 
 import objects.VideoSprite;
 
-import states.StoryMenuState;
 import states.MainMenuState;
 
 class TitleState extends MusicBeatState
 {
-	public static var muteKeys:Array<FlxKey> = [FlxKey.ZERO];
-	public static var volumeDownKeys:Array<FlxKey> = [FlxKey.NUMPADMINUS, FlxKey.MINUS];
-	public static var volumeUpKeys:Array<FlxKey> = [FlxKey.NUMPADPLUS, FlxKey.PLUS];
-
 	public static var initialized:Bool = false;
 	var canPressEnter:Bool = false;
 
@@ -28,7 +23,7 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 
 	var logoBl:FlxSprite;
-	var titleText:FlxSprite;
+	var titleText:FlxOffsetSprite;
 
 	var skippedIntro:Bool = false;
 	var transitioning:Bool = false;
@@ -42,13 +37,6 @@ class TitleState extends MusicBeatState
 		super.create();
 		Paths.clearUnusedMemory();
 
-		if(!initialized)
-		{
-			ClientPrefs.loadPrefs();
-			Language.reloadPhrases();
-			Difficulty.resetList();
-		}
-
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("On the Title Screen", null);
@@ -56,22 +44,9 @@ class TitleState extends MusicBeatState
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
-		if(!initialized)
-		{
-			if(FlxG.save.data != null && FlxG.save.data.fullscreen)
-				FlxG.fullscreen = FlxG.save.data.fullscreen;
-
-			persistentUpdate = persistentDraw = true;
-		}
-
-		if (FlxG.save.data.weekCompleted != null)
-			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
-
-		FlxG.mouse.visible = false;
-
 		Paths.music('freakyMenu'); // cache the music!!!!
 
-		if(FlxG.save.data.flashing == null && !FlashingState.leftState)
+		if(FlxG.save.data.flashing == null)
 		{
 			FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
 			MusicBeatState.switchState(new FlashingState());
@@ -113,21 +88,21 @@ class TitleState extends MusicBeatState
 		starFG.velocity.set(-24, 0);
 		add(starFG);
 
-		logoBl = new FlxSprite(-150, -35);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
-		logoBl.screenCenter(X);
+		logoBl = new FlxSprite(0, 0).loadGraphic(Paths.image('logoBumpin'));
+		logoBl.screenCenter();
+		logoBl.centerOffsets();
 		add(logoBl);
+		logoBl.y -= 40;
 
-		titleText = new FlxSprite(300, FlxG.height * 0.855);
+		titleText = new FlxOffsetSprite(300, FlxG.height * 0.85);
 		titleText.frames = Paths.getSparrowAtlas('menuBooba/startText', 'impostor');
 		titleText.animation.addByPrefix('idle', "EnterIdle", 24, false);
-		titleText.animation.addByPrefix('press', "EnterStart", 24, false);		
-		titleText.animation.play('idle');
+		titleText.animation.addByPrefix('press', "EnterStart", 24, false);
 		titleText.updateHitbox();
-		titleText.y -= 80;
+		titleText.addOffset('idle', 0, 0);
+		titleText.addOffset('press', 278, 2);
+		titleText.playAnim('idle');
+		titleText.y -= 60;
 		add(titleText);
 
 		add(credGroup);
@@ -200,8 +175,7 @@ class TitleState extends MusicBeatState
 		{
 			if(pressedEnter && canPressEnter)
 			{
-				if(titleText != null) titleText.animation.play('press');
-				titleText.offset.set(278, 2);
+				if(titleText != null) titleText.playAnim('press', true);
 
 				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
@@ -217,6 +191,12 @@ class TitleState extends MusicBeatState
 
 		if (initialized && pressedEnter && !skippedIntro)
 			skipIntro();
+
+		if (logoBl != null)
+		{
+			var mult:Float = FlxMath.lerp(1, logoBl.scale.x, Math.exp(-elapsed * 9));
+			logoBl.scale.set(mult, mult);
+		}
 
 		super.update(elapsed);
 	}
@@ -260,7 +240,7 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if(logoBl != null) logoBl.animation.play('bump', true);
+		if(logoBl != null) logoBl.scale.set(1.05, 1.05);
 
 		if(!closedState)
 		{
@@ -306,7 +286,8 @@ class TitleState extends MusicBeatState
 
 		remove(logoSpr);
 		remove(credGroup);
-		FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 4);
+
+		if (!closedState) FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 4);
 
 		skippedIntro = true;
 	}
@@ -320,7 +301,6 @@ class TitleState extends MusicBeatState
 		{
 			var videoCutscene:VideoSprite = new VideoSprite(fileName, false, skipVid, false);
 			videoCutscene.overallFinish = startIntro;
-			videoCutscene.canPause = false;
 			add(videoCutscene);
 
 			videoCutscene.play();

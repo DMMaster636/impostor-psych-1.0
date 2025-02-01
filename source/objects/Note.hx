@@ -434,8 +434,7 @@ class Note extends FlxSprite
 
 		updateHitbox();
 
-		if(animName != null)
-			animation.play(animName, true);
+		if(animName != null) animation.play(animName, true);
 	}
 
 	public static function getNoteSkinPostfix()
@@ -528,10 +527,15 @@ class Note extends FlxSprite
 		final angleDir = myStrum.direction * Math.PI / 180;
 		if(copyAngle) angle = myStrum.direction - 90 + myStrum.angle + offsetAngle;
 		if(copyAlpha) alpha = myStrum.alpha * multAlpha;
-		if(copyX) x = myStrum.x + offsetX + Math.cos(angleDir) * distance;
+		if(copyX)
+		{
+			@:privateAccess
+			x = myStrum.x + offsetX + myStrum._dirCos * distance;
+		}
 		if(copyY)
 		{
-			y = myStrum.y + offsetY + correctionOffset + Math.sin(angleDir) * distance;
+			@:privateAccess
+			y = myStrum.y + offsetY + correctionOffset + myStrum._dirSin * distance;
 			if(myStrum.downScroll && isSustainNote)
 			{
 				if(PlayState.isPixelStage)

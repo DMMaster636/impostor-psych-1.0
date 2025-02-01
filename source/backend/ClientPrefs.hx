@@ -4,7 +4,7 @@ import flixel.util.FlxSave;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepadInputID;
 
-import states.TitleState;
+import states.InitState;
 import states.FreeplayState.FreeplayWeek;
 
 enum FinaleState
@@ -47,6 +47,7 @@ enum FinaleState
 	public var hitsoundVolume:Float = 0;
 	public var pauseMusic:String = 'Sussus Muzak';
 	public var checkForUpdates:Bool = true;
+	public var comboGameCam:Bool = true;
 	public var comboStacking:Bool = true;
 	public var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
@@ -71,10 +72,10 @@ enum FinaleState
 	];
 
 	public var comboOffset:Array<Int> = [0, 0, 0, 0];
-	public var ratingOffset:Int = 0;
-	public var sickWindow:Int = 45;
-	public var goodWindow:Int = 90;
-	public var badWindow:Int = 135;
+	public var ratingOffset:Float = 0;
+	public var sickWindow:Float = 45;
+	public var goodWindow:Float = 90;
+	public var badWindow:Float = 135;
 	public var safeFrames:Float = 10;
 	public var guitarHeroSustains:Bool = true;
 	public var discordRPC:Bool = true;
@@ -82,13 +83,16 @@ enum FinaleState
 	public var language:String = 'en-US';
 
 	// imposter stuff
-	public var charOverrides:Array<String> = ['', '', ''];
+	// red[0] green[1] yellowWeek[2] black[3] maroon[4] grey[5] pink[6] jorsawsee?[7] henry[8] tomong[9] loggo[10] alpha[11]
+	public var unlockedWeek:Array<Bool> = [true, false, false, false, true, false, false, true, false, false, false, false];
 	public var beans:Int = 0;
-	public var boughtArray:Array<Bool> = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+	public var charOverrides:Array<String> = ['', '', ''];
+	public var boughtArray:Array<String> = [];
 	public var forceUnlockedSongs:Array<FreeplayWeek> = [];
 	public var finaleState:FinaleState = NOT_UNLOCKED;
 
 	// other stuff
+	public var missSoundVolume:Float = 0.6;
 	public var darkBorder:Bool = false;
 }
 
@@ -255,16 +259,16 @@ class ClientPrefs {
 
 	public static function reloadVolumeKeys()
 	{
-		TitleState.muteKeys = keyBinds.get('volume_mute').copy();
-		TitleState.volumeDownKeys = keyBinds.get('volume_down').copy();
-		TitleState.volumeUpKeys = keyBinds.get('volume_up').copy();
+		InitState.muteKeys = keyBinds.get('volume_mute').copy();
+		InitState.volumeDownKeys = keyBinds.get('volume_down').copy();
+		InitState.volumeUpKeys = keyBinds.get('volume_up').copy();
 		toggleVolumeKeys(true);
 	}
 	public static function toggleVolumeKeys(?turnOn:Bool = true)
 	{
 		final emptyArray = [];
-		FlxG.sound.muteKeys = turnOn ? TitleState.muteKeys : emptyArray;
-		FlxG.sound.volumeDownKeys = turnOn ? TitleState.volumeDownKeys : emptyArray;
-		FlxG.sound.volumeUpKeys = turnOn ? TitleState.volumeUpKeys : emptyArray;
+		FlxG.sound.muteKeys = turnOn ? InitState.muteKeys : emptyArray;
+		FlxG.sound.volumeDownKeys = turnOn ? InitState.volumeDownKeys : emptyArray;
+		FlxG.sound.volumeUpKeys = turnOn ? InitState.volumeUpKeys : emptyArray;
 	}
 }

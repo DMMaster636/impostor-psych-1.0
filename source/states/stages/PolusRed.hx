@@ -9,6 +9,7 @@ class PolusRed extends BaseStage
 {
 	var speaker:BGSprite;
 	var crowd:BGSprite;
+
 	override function create()
 	{
 		camOffset = 20;

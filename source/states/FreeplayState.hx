@@ -1,7 +1,6 @@
 package states;
 
 import backend.WeekData;
-import backend.Highscore;
 import backend.Song;
 
 import objects.HealthIcon;
@@ -229,7 +228,6 @@ class FreeplayState extends MusicBeatState
 		add(bottomText);
 
 		rimlight = new RimlightShader(315, 10, 0xFFFF6600, portrait);
-		add(rimlight);
 		portrait.shader = rimlight.shader;
 
 		topBean = new FlxSprite(30, 100).loadGraphic(Paths.image('shop/bean', 'impostor'));
@@ -278,10 +276,12 @@ class FreeplayState extends MusicBeatState
 	public static var opponentVocals:FlxSound = null;
 	override function update(elapsed:Float)
 	{
-		if(WeekData.weeksList.length < 1) return;
+		if (WeekData.weeksList.length < 1) return;
 
 		if (FlxG.sound.music.volume < 0.7)
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			FlxG.sound.music.volume += 0.5 * elapsed;
+
+		if (rimlight != null) rimlight.uvUpdate();
 
 		if (!inSubstate/* && !player.playingMusic*/)
 		{
@@ -850,6 +850,12 @@ class FreeplayState extends MusicBeatState
 
 		trace('CURRENT WEEK: ' + WeekData.getWeekFileName());
 
+		@:privateAccess
+		if(PlayState._lastLoadedModDirectory != Mods.currentModDirectory)
+		{
+			trace('CHANGED MOD DIRECTORY, RELOADING STUFF');
+			Paths.freeGraphicsFromMemory();
+		}
 		LoadingState.prepareToSong();
 		new FlxTimer().start(0.25, function(tmr:FlxTimer)
 		{

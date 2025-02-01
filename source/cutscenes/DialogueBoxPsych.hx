@@ -406,9 +406,7 @@ class DialogueBoxPsych extends FlxSpriteGroup
 			if(char.animation.curAnim != null)
 			{
 				var rate:Float = 24 - (((curDialogue.speed - 0.05) / 5) * 480);
-				if(rate < 12) rate = 12;
-				else if(rate > 48) rate = 48;
-				char.animation.curAnim.frameRate = rate;
+				char.animation.curAnim.frameRate = FlxMath.bound(rate, 12, 48);
 			}
 		}
 		currentText++;

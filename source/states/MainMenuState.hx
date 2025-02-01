@@ -6,8 +6,10 @@ import options.OptionsState;
 
 class MainMenuState extends MusicBeatState
 {
+	public static var impostorPortVersion:String = '0.2';
 	public static var impostorModVersion:String = '4.1.0';
-	public static var psychEngineVersion:String = '1.0';
+	public static var psychEngineVersion:String = '1.0.1';
+
 	public static var curSelected:Int = 0;
 
 	var localFinaleState:FinaleState;
@@ -130,22 +132,25 @@ class MainMenuState extends MusicBeatState
 		for(num => option in optionShit)
 		{
 			var item:FlxSpriteButton = createMenuItem(option, num);
+			if(curSelected == num) item.animation.play('hover', true);
 		}
 
-		var logo:FlxSprite = new FlxSprite(0, 0);
-		logo.frames = Paths.getSparrowAtlas('logoBumpin');
-		logo.animation.addByPrefix('bump', 'logo bumpin', 24, false);
-		logo.screenCenter();
-		logo.updateHitbox();
+		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logoBumpin'));
 		logo.scrollFactor.set();
 		logo.scale.set(0.65, 0.65);
-		logo.y -= 150;
+		logo.updateHitbox();
+		logo.screenCenter();
+		logo.y -= 140;
 		add(logo);
 
-		var imposVer:FlxText = new FlxText(12, FlxG.height - 44, 0, 'VS Impostor v$impostorModVersion', 12);
-		imposVer.scrollFactor.set();
-		imposVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(imposVer);
+		var portVer:FlxText = new FlxText(12, FlxG.height - 64, 0, 'Mod Port v$impostorPortVersion', 12);
+		portVer.scrollFactor.set();
+		portVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(portVer);
+		var impVer:FlxText = new FlxText(12, FlxG.height - 44, 0, 'VS Impostor v$impostorModVersion', 12);
+		impVer.scrollFactor.set();
+		impVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(impVer);
 		var psychVer:FlxText = new FlxText(12, FlxG.height - 24, 0, 'Psych Engine v$psychEngineVersion', 12);
 		psychVer.scrollFactor.set();
 		psychVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -214,7 +219,7 @@ class MainMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.7)
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			FlxG.sound.music.volume += 0.5 * elapsed;
 
 		timerThing += elapsed;
 		glowyThing.alpha = Math.sin(timerThing) + 0.4;
@@ -311,7 +316,7 @@ class MainMenuState extends MusicBeatState
 		if(playSound) FlxG.sound.play(Paths.sound('scrollMenu'));
 		curSelected = change;
 
-		for(item in menuItems) item.animation.play('idle');
-		menuItems.members[curSelected].animation.play('hover');
+		for(item in menuItems) item.animation.play('idle', true);
+		menuItems.members[curSelected].animation.play('hover', true);
 	}
 }

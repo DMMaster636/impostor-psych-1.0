@@ -7613,8 +7613,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('tomongus_Shot'));
 				case 'HUD Fade':
 					var charType:Int = Std.parseInt(value1);
-					if (Math.isNaN(charType))
-						charType = 0;
+					if (Math.isNaN(charType)) charType = 0;
 
 					switch (charType)
 					{

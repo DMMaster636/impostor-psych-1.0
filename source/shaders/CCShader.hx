@@ -1,7 +1,5 @@
 package shaders;
 
-import flixel.system.FlxAssets.FlxShader;
-
 class CCShader
 {
 	public var shader(default, null):CCShaderGLSL = new CCShaderGLSL();
@@ -129,37 +127,35 @@ class CCShaderGLSL extends FlxShader
 
 			vec3 intensity = dot(color.rgb, vec3(0.299, 0.587, 0.114));
             color.rgb = mix(intensity, color.rgb, (1.0 + (saturation / 100)));
-			
+
             return color;
         }
 
-		void main(){
+		void main() {
 			vec4 textureColor = flixel_texture2D(bitmap, openfl_TextureCoordv);
 			vec4 overlapColor;
 
 			vec2 overlapCoord = vec2(openfl_TextureCoordv.x - distance.x, openfl_TextureCoordv.y - distance.y);
-			if(overlapCoord.x < bounds.x || overlapCoord.x > bounds.z || overlapCoord.y < bounds.y || overlapCoord.y > bounds.w){
+			if(overlapCoord.x < bounds.x || overlapCoord.x > bounds.z || overlapCoord.y < bounds.y || overlapCoord.y > bounds.w) {
 				overlapColor = vec4(0);
-			}
-			else{
+			} else {
 				overlapColor = flixel_texture2D(bitmap, overlapCoord);
 			}
 
 			vec3 outColor = textureColor.rgb;
 
-			if(muliply.a > 0){
+			if(muliply.a > 0) {
 				vec3 multiplyColor = mix(textureColor.rgb, muliply.rgb, muliply.a);
 				outColor = mix(applyHSBEffect(textureColor).rgb * multiplyColor, textureColor, overlapColor.a * rimlightColor.a);
-			}else{
+			} else {
 				outColor = mix(applyHSBEffect(textureColor), textureColor, overlapColor.a * rimlightColor.a);
 			}
-			
 
-			if(muliply.a > 0){
+			if(muliply.a > 0) {
 				vec3 multiplyColor = mix(textureColor.rgb, muliply.rgb, muliply.a);
 				textureColor.rgb *= multiplyColor;
 			}
-	
+
 			gl_FragColor = vec4(outColor.rgb * textureColor.a, textureColor.a);
 		}')
 

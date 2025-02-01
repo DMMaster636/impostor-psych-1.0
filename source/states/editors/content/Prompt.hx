@@ -98,8 +98,7 @@ class BasePrompt extends MusicBeatSubstate
 		titleText.cameras = cameras;
 		add(titleText);
 		
-		if(onCreate != null)
-			onCreate(this);
+		if(onCreate != null) onCreate(this);
 		super.create();
 	}
 
@@ -115,8 +114,7 @@ class BasePrompt extends MusicBeatSubstate
 			return;
 		}
 
-		if(onUpdate != null)
-			onUpdate(this, elapsed);
+		if(onUpdate != null) onUpdate(this, elapsed);
 	}
 
 	override function destroy()

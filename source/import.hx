@@ -34,12 +34,23 @@ import backend.Difficulty;
 import backend.Mods;
 import backend.Language;
 import backend.PsychCamera;
+import backend.Highscore;
+
+// the same as FlxText, just with antialiasing automated
+import objects.FlxTextAA as FlxText;
+// sadly we have to import all this now (no, flixel.text.FlxText.* does not work)
+import flixel.text.FlxText.FlxTextAlign;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.text.FlxText.FlxTextFormat;
+import flixel.text.FlxText.FlxTextFormatMarkerPair;
 
 import backend.ui.*; //Psych-UI
 
 import objects.Alphabet;
 import objects.BGSprite;
 import objects.FlxOffsetSprite;
+
+// import shaders.ShaderHelper;
 
 import states.PlayState;
 import states.LoadingState;
@@ -54,7 +65,7 @@ import flixel.sound.FlxSound;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
-import flixel.text.FlxText;
+// import flixel.text.FlxText;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
@@ -64,6 +75,7 @@ import flixel.tweens.FlxTween;
 import flixel.ui.FlxSpriteButton;
 import flixel.group.FlxSpriteGroup;
 import flixel.addons.display.FlxBackdrop;
+import flixel.system.FlxAssets.FlxShader;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.transition.FlxTransitionableState;
 

@@ -16,6 +16,11 @@ class CoolUtil
 	inline public static function capitalize(text:String)
 		return text.charAt(0).toUpperCase() + text.substr(1).toLowerCase();
 
+	public static function playSoundSafe(sound:flixel.system.FlxAssets.FlxSoundAsset, volume:Float = 1.0)
+	{
+		if(sound != null) FlxG.sound.play(sound, volume);
+	}
+
 	inline public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:String = null;
@@ -31,7 +36,7 @@ class CoolUtil
 	{
 		var hideChars = ~/[\t\n\r]/;
 		var color:String = hideChars.split(color).join('').trim();
-		if(color.startsWith('0x')) color = color.substring(color.length - 6);
+		if(color.startsWith('0x')) color = color.substring(color.length - (color.length >= 10 ? 8 : 6));
 
 		var colorNum:Null<FlxColor> = FlxColor.fromString(color);
 		if(colorNum == null) colorNum = FlxColor.fromString('#$color');

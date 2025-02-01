@@ -165,6 +165,10 @@ class MusicBeatState extends FlxState
 		return cast (FlxG.state, MusicBeatState);
 	}
 
+	public static function getSubState():MusicBeatSubstate {
+		return cast (FlxG.state.subState, MusicBeatSubstate);
+	}
+
 	public function stepHit():Void
 	{
 		stagesFunc(function(stage:BaseStage) {

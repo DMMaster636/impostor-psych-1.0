@@ -1,7 +1,5 @@
 package states.stages;
 
-import objects.Note;
-
 class OwStage extends BaseStage
 {
 	override function create()
@@ -12,7 +10,7 @@ class OwStage extends BaseStage
 		add(bg);
 	}
 
-	override function opponentNoteHit(note:Note)
+	override function opponentNoteHit(note:objects.Note)
 	{
 		var animName:String = dad.getAnimationName() + '-hit';
 		if(boyfriend.hasAnimation(animName))

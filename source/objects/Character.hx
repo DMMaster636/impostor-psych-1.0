@@ -24,6 +24,7 @@ typedef CharacterFile = {
 	var no_antialiasing:Bool;
 	var healthbar_colors:Array<Int>;
 	var vocals_file:String;
+
 	@:optional var _editor_isPlayer:Null<Bool>;
 }
 
@@ -303,8 +304,10 @@ class Character extends FlxSprite
 		if(isAnimationFinished() && hasAnimation('$name-loop'))
 			playAnim('$name-loop');
 
-		for (ghost in ghostSprites)
-			ghost.update(elapsed);
+		for(ghost in ghostSprites)
+		{
+			if(ghost != null) ghost.update(elapsed);
+		}
 
 		super.update(elapsed);
 	}
@@ -365,16 +368,14 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		if (!debugMode && !skipDance && !specialAnim)
+		if(!debugMode && !skipDance && !specialAnim)
 		{
 			if(danceIdle)
 			{
 				danced = !danced;
 
-				if (danced)
-					playAnim('danceRight' + idleSuffix);
-				else
-					playAnim('danceLeft' + idleSuffix);
+				if(!danced) playAnim('danceLeft' + idleSuffix);
+				else playAnim('danceRight' + idleSuffix);
 			}
 			else if(hasAnimation('idle' + idleSuffix))
 				playAnim('idle' + idleSuffix);
@@ -385,7 +386,7 @@ class Character extends FlxSprite
 	{
 		specialAnim = false;
 
-		if (AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
+		if(AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
 			AnimName = AnimName.split('-')[0];
 
 		if(!isAnimateAtlas)
@@ -399,34 +400,31 @@ class Character extends FlxSprite
 		}
 		_lastPlayedAnimation = AnimName;
 
-		if (hasAnimation(AnimName))
+		if(hasAnimation(AnimName))
 		{
 			final daOffset = animOffsets.get(AnimName);
 			offset.set(daOffset[0], daOffset[1]);
 		}
 		//else offset.set(0, 0);
 
-		if (curCharacter.startsWith('gf-') || curCharacter == 'gf')
+		if(curCharacter.startsWith('gf-') || curCharacter == 'gf')
 		{
-			if (AnimName == 'singLEFT')
-				danced = true;
+			if(AnimName == 'singLEFT') danced = true;
+			else if(AnimName == 'singRIGHT') danced = false;
 
-			else if (AnimName == 'singRIGHT')
-				danced = false;
-
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
+			if(AnimName == 'singUP' || AnimName == 'singDOWN')
 				danced = !danced;
 		}
 	}
 
 	public function playGhostAnim(GhostNum:Int, AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		if(!allowGhost) return;
+		if(!allowGhost || ghostSprites[GhostNum] == null) return;
 
-		if (AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
+		if(AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
 			AnimName = AnimName.split('-')[0];
 
-		if (ghostTweens[GhostNum] != null)
+		if(ghostTweens[GhostNum] != null)
 			ghostTweens[GhostNum].cancel();
 
 		var ghost:FlxSprite = ghostSprites[GhostNum];
@@ -445,7 +443,7 @@ class Character extends FlxSprite
 		ghost.color = color;
 
 		ghost.animation.play(AnimName, Force, Reversed, Frame);
-		if (hasAnimation(AnimName))
+		if(hasAnimation(AnimName))
 		{
 			final daOffset = animOffsets.get(AnimName);
 			ghost.offset.set(daOffset[0], daOffset[1]);
@@ -469,7 +467,8 @@ class Character extends FlxSprite
 
 	public var danceEveryNumBeats:Int = 2;
 	private var settingCharacterUp:Bool = true;
-	public function recalculateDanceIdle() {
+	public function recalculateDanceIdle()
+	{
 		var lastDanceIdle:Bool = danceIdle;
 		danceIdle = (hasAnimation('danceLeft' + idleSuffix) && hasAnimation('danceRight' + idleSuffix));
 
@@ -480,10 +479,8 @@ class Character extends FlxSprite
 		else if(lastDanceIdle != danceIdle)
 		{
 			var calc:Float = danceEveryNumBeats;
-			if(danceIdle)
-				calc /= 2;
-			else
-				calc *= 2;
+			if(danceIdle) calc /= 2;
+			else calc *= 2;
 
 			danceEveryNumBeats = Math.round(Math.max(calc, 1));
 		}
@@ -519,7 +516,7 @@ class Character extends FlxSprite
 
 		for(ghost in ghostSprites)
 		{
-			if(ghost.visible && ghost.alpha != 0)
+			if(ghost != null && ghost.visible && ghost.alpha != 0)
 				ghost.draw();
 		}
 

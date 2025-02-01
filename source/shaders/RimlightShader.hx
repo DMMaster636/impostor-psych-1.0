@@ -1,11 +1,7 @@
 package shaders;
 
-import flixel.FlxBasic;
-import flixel.system.FlxAssets.FlxShader;
-
-//Written by Rozebud, teehee!!
-
-class RimlightShader extends FlxBasic
+// Written by Rozebud, teehee!!
+class RimlightShader
 {
 	public var shader(default, null):RimlightShaderGLSL = new RimlightShaderGLSL();
 
@@ -16,25 +12,17 @@ class RimlightShader extends FlxBasic
 
 	public function new(_angle:Float = 0, _distance:Float = 10, _rimlightColor:FlxColor = 0xFFFFFFFF, _refSprite:FlxSprite):Void
 	{
-		super();
-
 		angle = _angle;
 		distance = _distance;
 		rimlightColor = _rimlightColor;
 		refSprite = _refSprite;
 
-		shader.pixelSize.value = [1/refSprite.graphic.width, 1/refSprite.graphic.height];
-	}
-
-	override public function update(elapsed:Float):Void
-	{
-		super.update(elapsed);
-		uvUpdate();
+		shader.pixelSize.value = [1 / refSprite.graphic.width, 1 / refSprite.graphic.height];
 	}
 
 	public function uvUpdate()
 	{
-		shader.bounds.value = [refSprite.frame.uv.left, refSprite.frame.uv.top, refSprite.frame.uv.right, refSprite.frame.uv.bottom];
+		shader.bounds.value = [refSprite.frame.uv.left,refSprite.frame.uv.top, refSprite.frame.uv.right, refSprite.frame.uv.bottom];
 	}
 
 	function set_angle(v:Float):Float

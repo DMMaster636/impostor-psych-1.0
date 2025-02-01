@@ -90,37 +90,37 @@ class CreditsState extends MusicBeatState
 		// Name - Icon name - Description - Link - BG Color
 		/*var defaultList:Array<Array<String>> = [
 			["Psych Engine Team"],
-			["Shadow Mario",		"shadowmario",		"Main Programmer and Head of Psych Engine",					"https://ko-fi.com/shadowmario",	"444444"],
-			["Riveren",				"riveren",			"Main Artist/Animator of Psych Engine",						"https://x.com/riverennn",			"14967B"],
+			["Shadow Mario",				"shadowmario",		"Main Programmer and Head of Psych Engine",						"https://ko-fi.com/shadowmario",				"444444"],
+			["Riveren",						"riveren",			"Main Artist/Animator of Psych Engine",							"https://x.com/riverennn",						"14967B"],
 			[""],
 			["Former Engine Members"],
-			["bb-panzu",			"bb",				"Ex-Programmer of Psych Engine",							"https://x.com/bbsub3",				"3E813A"],
+			["bb-panzu",					"bb",				"Ex-Programmer of Psych Engine",								"https://x.com/bbsub3",							"3E813A"],
 			[""],
 			["Engine Contributors"],
-			["crowplexus",			"crowplexus",		"HScript Iris, Input System v3, and Other PRs",				"https://github.com/crowplexus",	"CFCFCF"],
-			["Kamizeta",			"kamizeta",			"Creator of Pessy, Psych Engine's mascot.",				"https://www.instagram.com/cewweey/",	"D21C11"],
-			["MaxNeton",			"maxneton",			"Loading Screen Easter Egg Artist/Animator.",	"https://bsky.app/profile/maxneton.bsky.social","3C2E4E"],
-			["Keoiki",				"keoiki",			"Note Splash Animations and Latin Alphabet",				"https://x.com/Keoiki_",			"D2D2D2"],
-			["SqirraRNG",			"sqirra",			"Crash Handler and Base code for\nChart Editor's Waveform",	"https://x.com/gedehari",			"E1843A"],
-			["EliteMasterEric",		"mastereric",		"Runtime Shaders support and Other PRs",					"https://x.com/EliteMasterEric",	"FFBD40"],
-			["MAJigsaw77",			"majigsaw",			".MP4 Video Loader Library (hxvlc)",						"https://x.com/MAJigsaw77",			"5F5F5F"],
-			["Tahir Toprak Karabekiroglu",	"tahir",	"Note Splash Editor and Other PRs",							"https://x.com/TahirKarabekir",		"A04397"],
-			["iFlicky",				"flicky",			"Composer of Psync and Tea Time\nAnd some sound effects",	"https://x.com/flicky_i",			"9E29CF"],
-			["KadeDev",				"kade",				"Fixed some issues on Chart Editor and Other PRs",			"https://x.com/kade0912",			"64A250"],
-			["superpowers04",		"superpowers04",	"LUA JIT Fork",												"https://x.com/superpowers04",		"B957ED"],
-			["CheemsAndFriends",	"cheems",			"Creator of FlxAnimate",									"https://x.com/CheemsnFriendos",	"E1E1E1"],
+			["crowplexus",					"crowplexus",		"Linux Support, HScript Iris, Input System v3, and Other PRs",	"https://twitter.com/IamMorwen",				"CFCFCF"],
+			["Kamizeta",					"kamizeta",			"Creator of Pessy, Psych Engine's mascot.",						"https://www.instagram.com/cewweey/",			"D21C11"],
+			["MaxNeton",					"maxneton",			"Loading Screen Easter Egg Artist/Animator.",					"https://bsky.app/profile/maxneton.bsky.social","3C2E4E"],
+			["Keoiki",						"keoiki",			"Note Splash Animations and Latin Alphabet",					"https://x.com/Keoiki_",						"D2D2D2"],
+			["SqirraRNG",					"sqirra",			"Crash Handler and Base code for\nChart Editor's Waveform",		"https://x.com/gedehari",						"E1843A"],
+			["EliteMasterEric",				"mastereric",		"Runtime Shaders support and Other PRs",						"https://x.com/EliteMasterEric",				"FFBD40"],
+			["MAJigsaw77",					"majigsaw",			".MP4 Video Loader Library (hxvlc)",							"https://x.com/MAJigsaw77",						"5F5F5F"],
+			["Tahir Toprak Karabekiroglu",	"tahir",			"Mac Support, Note Splash Editor\nand Other PRs",				"https://x.com/TahirKarabekir",					"A04397"],
+			["iFlicky",						"flicky",			"Composer of Psync and Tea Time\nAnd some sound effects",		"https://x.com/flicky_i",						"9E29CF"],
+			["KadeDev",						"kade",				"Fixed some issues on Chart Editor and Other PRs",				"https://x.com/kade0912",						"64A250"],
+			["superpowers04",				"superpowers04",	"LUA JIT Fork",													"https://x.com/superpowers04",					"B957ED"],
+			["CheemsAndFriends",			"cheems",			"Creator of FlxAnimate",										"https://x.com/CheemsnFriendos",				"E1E1E1"],
 			[""],
 			["Funkin' Crew"],
-			["ninjamuffin99",		"ninjamuffin99",	"Programmer of Friday Night Funkin'",						"https://x.com/ninja_muffin99",		"CF2D2D"],
-			["PhantomArcade",		"phantomarcade",	"Animator of Friday Night Funkin'",							"https://x.com/PhantomArcade3K",	"FADC45"],
-			["evilsk8r",			"evilsk8r",			"Artist of Friday Night Funkin'",							"https://x.com/evilsk8r",			"5ABD4B"],
-			["kawaisprite",			"kawaisprite",		"Composer of Friday Night Funkin'",							"https://x.com/kawaisprite",		"378FC7"],
-			[""],
+			["ninjamuffin99",				"ninjamuffin99",	"Programmer of Friday Night Funkin'",							"https://x.com/ninja_muffin99",					"CF2D2D"],
+			["PhantomArcade",				"phantomarcade",	"Animator of Friday Night Funkin'",								"https://x.com/PhantomArcade3K",				"FADC45"],
+			["evilsk8r",					"evilsk8r",			"Artist of Friday Night Funkin'",								"https://x.com/evilsk8r",						"5ABD4B"],
+			["kawaisprite",					"kawaisprite",		"Composer of Friday Night Funkin'",								"https://x.com/kawaisprite",					"378FC7"],
+			[""],		
 			["Psych Engine Discord"],
-			["Join the Psych Ward!", "discord", "", "https://discord.gg/2ka77eMXDv", "5165F6"]
+			["Join the Psych Ward!",		"discord",			"", 															"https://discord.gg/2ka77eMXDv",				"5165F6"]
 		];*/
 		// Name - Portrait name - Description - Link
-		var impostorList:Array<Dynamic> = [
+		var impostorList:Array<Array<String>> = [
 			//WE ARE ALL IMPORTANT PEOPLE
 			['Clowfoe',		     'clow',	          'im clowfoe.... i directed the mod and i coded a SHIT TON of it\nim really proud of this whole team ty all for playing and hope it was worth the wait',																															'https://x.com/Clowfoe'],		
 			['Ethan\nTheDoodler','ethan',		      'im a real doodler now, mama',																																																													'https://x.com/D00dlerEthan'],        
@@ -170,7 +170,7 @@ class CreditsState extends MusicBeatState
 			['amongus\nfan',	 'cooper',		      "i did nothing for this mod but let them use red mungus but i get a quote for having cancer\nfly high cooper",																																									'https://x.com/amongusfan24'],
 			
 			['DM-kun',	 		 'dmkun',			  "this was a pain to make, but hey, it's now here and it's so awesome and cool and yeah!\ni hope y'all liked this port :>",																																						'https://www.youtube.com/@dm-kun'],
-			['5UP34',	 		 '5up34',		      "insert 5up quote here if she actually helps with icons",																																																							'https://x.com/5UP34'],
+			// ['5UP34',	 		 '5up34',		      "insert 5up quote here if she actually helps with icons",																																																							'https://x.com/5UP34'],
 			['Wiizp',	 		 'wiizp',		      "insert wiizp quote here !!!!!!!!!!!!!!!!!!!!!!!!!!!",																																																							'https://x.com/Kaid621']
 		];
 
@@ -189,7 +189,7 @@ class CreditsState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.7)
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			FlxG.sound.music.volume += 0.5 * elapsed;
 
 		if(!quitting)
 		{

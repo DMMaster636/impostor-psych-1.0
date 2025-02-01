@@ -247,14 +247,14 @@ class LuaUtils
 		{
 			case 'this' | 'instance' | 'game':
 				return PlayState.instance;
-			
+
 			default:
 				var obj:Dynamic = MusicBeatState.getVariables().get(objectName);
-				if(obj == null) obj = getVarInArray(MusicBeatState.getState(), objectName, allowMaps);
+				if(obj == null) obj = getVarInArray(LuaUtils.getTargetInstance(), objectName, allowMaps);
 				return obj;
 		}
 	}
-	
+
 	public static function isOfTypes(value:Any, types:Array<Dynamic>)
 	{
 		for (type in types)
@@ -263,11 +263,10 @@ class LuaUtils
 		}
 		return false;
 	}
-	
+
 	public static function getTargetInstance()
 	{
-		if(PlayState.instance != null) return PlayState.instance.isDead ? GameOverSubstate.instance : PlayState.instance;
-		return MusicBeatState.getState();
+		return MusicBeatState.getSubState() != null ? MusicBeatState.getSubState() : MusicBeatState.getState();
 	}
 
 	public static inline function getLowestCharacterGroup():FlxSpriteGroup
@@ -296,8 +295,7 @@ class LuaUtils
 		var obj:FlxSprite = cast LuaUtils.getObjectDirectly(obj);
 		if(obj != null && obj.animation != null)
 		{
-			if(indices == null)
-				indices = [0];
+			if(indices == null) indices = [0];
 			else if(Std.isOfType(indices, String))
 			{
 				var strIndices:Array<String> = cast (indices, String).trim().split(',');
@@ -309,7 +307,7 @@ class LuaUtils
 			}
 
 			if(prefix != null) obj.animation.addByIndices(name, prefix, indices, '', framerate, loop);
-			else obj.animation.addByIndices(name, prefix, indices, '', framerate, loop);
+			else obj.animation.add(name, indices, framerate, loop);
 
 			if(obj.animation.curAnim == null)
 			{
