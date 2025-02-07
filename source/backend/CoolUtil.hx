@@ -5,6 +5,40 @@ import lime.utils.Assets as LimeAssets;
 
 class CoolUtil
 {
+	public static function checkForUpdates(url:String = null):String
+	{
+		if(url == null || url.length == 0)
+			url = "https://raw.githubusercontent.com/DMMaster636/impostor-psych-1.0/main/gitVersion.txt";
+
+		var version:String = states.MainMenuState.impostorPortVersion.trim();
+		if(ClientPrefs.data.checkForUpdates)
+		{
+			trace('Checking for updates...');
+
+			var http = new haxe.Http(url);
+			http.onData = function(data:String)
+			{
+				trace('Current Version: $version');
+				final newVersion:String = data.split('\n')[0].trim();
+				trace('Version Online: $newVersion');
+				if(newVersion != version)
+				{
+					trace('Update Found!');
+					version = newVersion;
+					http.onData = null;
+					http.onError = null;
+					http = null;
+				}
+			}
+			http.onError = function(error)
+			{
+				trace('error: $error');
+			}
+			http.request();
+		}
+		return version;
+	}
+
 	inline public static function quantize(f:Float, snap:Float)
 	{
 		// changed so this actually works lol

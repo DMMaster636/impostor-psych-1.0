@@ -463,8 +463,6 @@ class FreeplayState extends MusicBeatState
 	{
 		FlxG.sound.play(Paths.sound('select'), 0.5);
 
-		persistentUpdate = false;
-
 		ClientPrefs.data.beans = localBeans;
 		ClientPrefs.data.forceUnlockedSongs = localWeeks;
 		ClientPrefs.saveSettings();

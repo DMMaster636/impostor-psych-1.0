@@ -5,7 +5,7 @@ import backend.Mods;
 
 import flixel.FlxBasic;
 import flixel.graphics.FlxGraphic;
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 import haxe.Json;
 
 import flixel.util.FlxSpriteUtil;
@@ -57,6 +57,7 @@ class ModsMenuState extends MusicBeatState
 	{
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
+
 		persistentUpdate = false;
 
 		modsList = Mods.parseList();

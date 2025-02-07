@@ -729,7 +729,7 @@ class PsychUIInputText extends FlxSpriteGroup
 				case CUSTOM_FILTER:
 					pattern = customFilterPattern;
 				default:
-					throw new flash.errors.Error("FlxInputText: Unknown filterMode (" + filterMode + ")");
+					throw new openfl.errors.Error("FlxInputText: Unknown filterMode (" + filterMode + ")");
 			}
 			text = pattern.replace(text, "");
 		}

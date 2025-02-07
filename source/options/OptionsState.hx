@@ -15,11 +15,14 @@ class OptionsState extends MusicBeatState
 		#if TRANSLATIONS_ALLOWED , 'Language' #end
 	];
 	private var grpOptions:FlxTypedGroup<Alphabet>;
+	private var inSubstate:Bool = false;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
 	public static var onPlayState:Bool = false;
 
-	function openSelectedSubstate(label:String) {
+	function openSelectedSubstate(label:String)
+	{
+		inSubstate = true;
 		switch(label)
 		{
 			case 'Note Colors':
@@ -47,6 +50,8 @@ class OptionsState extends MusicBeatState
 		#if DISCORD_ALLOWED
 		DiscordClient.changePresence("In the Options Menu", null);
 		#end
+
+		persistentUpdate = persistentDraw = true;
 
 		var starBG:FlxBackdrop = new FlxBackdrop(Paths.image('freeplay/starBG', 'impostor'));
 		starBG.setPosition(111.3, 67.95);
@@ -87,6 +92,7 @@ class OptionsState extends MusicBeatState
 	override function closeSubState()
 	{
 		super.closeSubState();
+		inSubstate = false;
 		ClientPrefs.saveSettings();
 		#if DISCORD_ALLOWED
 		DiscordClient.changePresence("Options Menu", null);
@@ -97,21 +103,24 @@ class OptionsState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (controls.UI_UP_P) changeSelection(-1);
-		if (controls.UI_DOWN_P) changeSelection(1);
-
-		if (controls.BACK)
+		if (!inSubstate)
 		{
-			FlxG.sound.play(Paths.sound('cancelMenu'));
-			if(onPlayState)
+			if (controls.UI_UP_P) changeSelection(-1);
+			if (controls.UI_DOWN_P) changeSelection(1);
+
+			if (controls.BACK)
 			{
-				StageData.loadDirectory(PlayState.SONG);
-				LoadingState.loadAndSwitchState(new PlayState());
-				FlxG.sound.music.volume = 0;
+				FlxG.sound.play(Paths.sound('cancelMenu'));
+				if(onPlayState)
+				{
+					StageData.loadDirectory(PlayState.SONG);
+					LoadingState.loadAndSwitchState(new PlayState());
+					FlxG.sound.music.volume = 0;
+				}
+				else MusicBeatState.switchState(new MainMenuState());
 			}
-			else MusicBeatState.switchState(new MainMenuState());
+			else if (controls.ACCEPT) openSelectedSubstate(options[curSelected]);
 		}
-		else if (controls.ACCEPT) openSelectedSubstate(options[curSelected]);
 	}
 	
 	function changeSelection(change:Int = 0)

@@ -1344,10 +1344,7 @@ class FunkinLua {
 				game.videoCutscene = game.startVideo(videoFile, forMidSong, canSkip, shouldLoop, playOnLoad);
 				return true;
 			}
-			else
-			{
-				luaTrace('startVideo: Video file not found: ' + videoFile, false, false, FlxColor.RED);
-			}
+			else luaTrace('startVideo: Video file not found: ' + videoFile, false, false, FlxColor.RED);
 			return false;
 			#else
 			PlayState.instance.inCutscene = true;

@@ -1,13 +1,14 @@
 package objects;
 
 import flixel.addons.display.FlxPieDial;
-
 #if hxvlc
 import hxvlc.flixel.FlxVideo;
 import hxvlc.flixel.FlxVideoSprite;
 #end
 
 import psychlua.LuaUtils;
+
+import substates.VideoPauseSubstate;
 
 class VideoSprite extends FlxSpriteGroup
 {
@@ -18,8 +19,11 @@ class VideoSprite extends FlxSpriteGroup
 	public var finishCallback:Void->Void = null;
 	public var onSkip:Void->Void = null;
 
-	public var canPause:Bool = false;
 	public var canSkip(default, set):Bool = false;
+	public var canPause:Bool = false;
+	public var canExit:Bool = false;
+
+	public var playbackRate(default, set):Float = 1;
 
 	final _timeToSkip:Float = 1;
 	public var holdingTime:Float = 0;
@@ -33,6 +37,8 @@ class VideoSprite extends FlxSpriteGroup
 	public var isWaiting:Bool = false;
 	public var isPlaying:Bool = false;
 	public var isPaused:Bool = false;
+	public var skippedVideo:Bool = false;
+	var alreadyDestroyed:Bool = false;
 
 	public function new(videoName:String, isWaiting:Bool, canSkip:Bool = false, shouldLoop:Dynamic = false)
 	{
@@ -83,14 +89,14 @@ class VideoSprite extends FlxSpriteGroup
 		_videos.push(this);
 	}
 
-	var skippedVideo:Bool = false;
-	var alreadyDestroyed:Bool = false;
 	override function destroy()
 	{
-		if(alreadyDestroyed)
+		if(alreadyDestroyed) return;
+
+		if(videoSprite != null)
 		{
-			super.destroy();
-			return;
+			remove(videoSprite);
+			videoSprite.destroy();
 		}
 
 		if(cover != null)
@@ -116,36 +122,40 @@ class VideoSprite extends FlxSpriteGroup
 		LuaUtils.getTargetInstance().remove(this);
 		_videos.remove(this);
 
-		// This often crashes for some reason
-		//super.destroy();
+		super.destroy();
 
 		alreadyDestroyed = true;
 	}
 
 	override function update(elapsed:Float)
 	{
-		if(canSkip)
+		if(canSkip || canPause)
 		{
 			if(Controls.instance.pressed('accept')) holdingTime = Math.max(0, Math.min(_timeToSkip, holdingTime + elapsed));
 			else if(holdingTime > 0) holdingTime = Math.max(0, FlxMath.lerp(holdingTime, -0.1, FlxMath.bound(elapsed * 3, 0, 1)));
 
-			updateSkipAlpha();
-
-			if(holdingTime >= _timeToSkip)
+			if(canSkip)
 			{
-				trace('Skipped Video');
-				skippedVideo = true;
-				videoSprite.bitmap.onEndReached.dispatch();
-				return;
+				updateSkipAlpha();
+
+				if(holdingTime >= _timeToSkip)
+				{
+					trace('Skipped Video');
+					skippedVideo = true;
+					videoSprite.bitmap.onEndReached.dispatch();
+					return;
+				}
+			}
+
+			if(canPause)
+			{
+				if(Controls.instance.justReleased('accept') && holdingTime < _timeToSkip)
+				{
+					pause();
+					LuaUtils.getTargetInstance().openSubState(new VideoPauseSubstate(this, canSkip, canExit));
+				}
 			}
 		}
-
-		/*// Maybe later    - DM-kun
-		if(canPause)
-		{
-			if(Controls.instance.justPressed('accept'))
-				LuaUtils.getTargetInstance().openSubState(new VideoPauseSubstate());
-		}*/
 
 		super.update(elapsed);
 	}
@@ -182,6 +192,13 @@ class VideoSprite extends FlxSpriteGroup
 		skipSprite.alpha = FlxMath.remapToRange(skipSprite.amount, 0.025, 1, 0, 1);
 	}
 
+	function set_playbackRate(newValue:Float)
+	{
+		playbackRate = newValue;
+		videoSprite.bitmap.rate = newValue;
+		return playbackRate;
+	}
+
 	public function play()
 	{
 		isPlaying = true;
@@ -202,7 +219,7 @@ class VideoSprite extends FlxSpriteGroup
 	{
 		try
 		{
-			for (vid in _videos) vid.destroy();
+			for(vid in _videos) vid.videoSprite.bitmap.onEndReached.dispatch();
 			_videos = [];
 			trace("Cleared Videos!");
 		}

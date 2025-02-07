@@ -633,7 +633,6 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
-		updateScore(false);
 		uiGroup.add(scoreTxt);
 		reloadScoreTextColors();
 
@@ -693,7 +692,7 @@ class PlayState extends MusicBeatState
 		}
 
 		startCallback();
-		RecalculateRating();
+		RecalculateRating(false, false);
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
@@ -763,9 +762,8 @@ class PlayState extends MusicBeatState
 		Conductor.offset = Reflect.hasField(PlayState.SONG, 'offset') ? (PlayState.SONG.offset / value) : 0;
 		Conductor.safeZoneOffset = (ClientPrefs.data.safeFrames / 60) * 1000 * value;
 		#if VIDEOS_ALLOWED
-		if(videoCutscene != null) videoCutscene.videoSprite.bitmap.rate = value;
 		for(vid in VideoSprite._videos) {
-			if(vid.isPlaying) vid.videoSprite.bitmap.rate = value;
+			if(vid.isPlaying) vid.playbackRate = value;
 		}
 		#end
 		setOnScripts('playbackRate', playbackRate);
@@ -907,8 +905,7 @@ class PlayState extends MusicBeatState
 		#end
 		{
 			scriptFile = Paths.getSharedPath(scriptFile);
-			if(FileSystem.exists(scriptFile))
-				doPush = true;
+			if(FileSystem.exists(scriptFile)) doPush = true;
 		}
 
 		if(doPush)
@@ -947,7 +944,7 @@ class PlayState extends MusicBeatState
 		if (Paths.fileExistsAbsolute(fileName))
 		{
 			videoCutscene = new VideoSprite(fileName, forMidSong, canSkip, loop);
-			videoCutscene.videoSprite.bitmap.rate = playbackRate;
+			videoCutscene.playbackRate = playbackRate;
 
 			// Finish callback
 			if (!forMidSong)
@@ -1264,13 +1261,13 @@ class PlayState extends MusicBeatState
 	// `updateScore = function(miss:Bool = false) { ... }
 	// its like if it was a variable but its just a function!
 	// cool right? -Crow
-	public dynamic function updateScore(miss:Bool = false)
+	public dynamic function updateScore(miss:Bool = false, scoreBop:Bool = true)
 	{
 		var ret:Dynamic = callOnScripts('preUpdateScore', [miss], true);
 		if (ret == LuaUtils.Function_Stop) return;
 
 		updateScoreText();
-		if (!miss && !cpuControlled) doScoreBop();
+		if (!miss && !cpuControlled && scoreBop) doScoreBop();
 
 		callOnScripts('onUpdateScore', [miss]);
 	}
@@ -1893,10 +1890,8 @@ class PlayState extends MusicBeatState
 		#if DISCORD_ALLOWED
 		if(!autoUpdateRPC) return;
 
-		if (showTime)
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.data.noteOffset, curPortrait);
-		else
-			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), false, 0, curPortrait);
+		if (!showTime) DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), false, 0, curPortrait);
+		else DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.data.noteOffset, curPortrait);
 		#end
 	}
 
@@ -3869,7 +3864,7 @@ class PlayState extends MusicBeatState
 	public var ratingName:String = '?';
 	public var ratingPercent:Float;
 	public var ratingFC:String;
-	public function RecalculateRating(badHit:Bool = false) {
+	public function RecalculateRating(badHit:Bool = false, scoreBop:Bool = true) {
 		setOnScripts('score', songScore);
 		setOnScripts('misses', songMisses);
 		setOnScripts('hits', songHits);
@@ -3902,7 +3897,7 @@ class PlayState extends MusicBeatState
 		setOnScripts('ratingFC', ratingFC);
 		setOnScripts('totalPlayed', totalPlayed);
 		setOnScripts('totalNotesHit', totalNotesHit);
-		updateScore(badHit); // score will only update after rating is calculated, if it's a badHit, it shouldn't bounce
+		updateScore(badHit, scoreBop); // score will only update after rating is calculated, if it's a badHit, it shouldn't bounce
 	}
 
 	#if ACHIEVEMENTS_ALLOWED

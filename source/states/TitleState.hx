@@ -9,6 +9,7 @@ import openfl.Assets;
 import objects.VideoSprite;
 
 import states.MainMenuState;
+import substates.OutdatedSubState;
 
 class TitleState extends MusicBeatState
 {
@@ -30,6 +31,7 @@ class TitleState extends MusicBeatState
 
 	private var sickBeats:Int = 0; //Basically curBeat but won't be skipped if you hold the tab or resize the screen
 	public static var closedState:Bool = false;
+	static var showOutdatedWarning:Bool = true;
 
 	override public function create():Void
 	{
@@ -175,17 +177,27 @@ class TitleState extends MusicBeatState
 		{
 			if(pressedEnter && canPressEnter)
 			{
-				if(titleText != null) titleText.playAnim('press', true);
-
-				FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
-				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
-
-				transitioning = true;
-				new FlxTimer().start(1, function(tmr:FlxTimer)
+				#if CHECK_FOR_UPDATES
+				if (showOutdatedWarning && ClientPrefs.data.checkForUpdates && OutdatedSubState.updateVersion != MainMenuState.impostorPortVersion)
 				{
-					MusicBeatState.switchState(new MainMenuState());
-					closedState = true;
-				});
+					persistentUpdate = showOutdatedWarning = false;
+					openSubState(new OutdatedSubState());
+				}
+				else
+				#end
+				{
+					if(titleText != null) titleText.playAnim('press', true);
+
+					FlxG.camera.flash(ClientPrefs.data.flashing ? FlxColor.WHITE : 0x4CFFFFFF, 1);
+					FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+
+					transitioning = true;
+					new FlxTimer().start(1, function(tmr:FlxTimer)
+					{
+						MusicBeatState.switchState(new MainMenuState());
+						closedState = true;
+					});
+				}
 			}
 		}
 
@@ -300,6 +312,7 @@ class TitleState extends MusicBeatState
 		if(Paths.fileExistsAbsolute(fileName))
 		{
 			var videoCutscene:VideoSprite = new VideoSprite(fileName, false, skipVid, false);
+			#if debug videoCutscene.canPause = true; #end
 			videoCutscene.overallFinish = startIntro;
 			add(videoCutscene);
 

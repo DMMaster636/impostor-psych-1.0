@@ -1,9 +1,11 @@
 package substates;
 
+import objects.VideoSprite;
+
 import states.StoryMenuState;
 import states.FreeplayState;
 
-class VideoPauseSubState extends MusicBeatSubstate
+class VideoPauseSubstate extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
@@ -15,10 +17,12 @@ class VideoPauseSubState extends MusicBeatSubstate
 
 	var camPause:PsychCamera;
 
+	var videoCutscene:VideoSprite = null;
 	var canSkip:Bool = false;
 	var canExit:Bool = false;
-	public function new(canSkip:Bool = true, canExit:Bool = false)
+	public function new(videoCutscene:VideoSprite, canSkip:Bool = true, canExit:Bool = false)
 	{
+		this.videoCutscene = videoCutscene;
 		this.canSkip = canSkip;
 		this.canExit = canExit;
 		super();
@@ -91,13 +95,6 @@ class VideoPauseSubState extends MusicBeatSubstate
 					}
 				});
 			}
-
-			if(FlxG.keys.justPressed.F5)
-			{
-				FlxTransitionableState.skipNextTransIn = FlxTransitionableState.skipNextTransOut = true;
-				PlayState.nextReloadAll = true;
-				MusicBeatState.resetState();
-			}
 		}
 
 		if (controls.UI_UP_P) changeSelection(-1);
@@ -105,24 +102,35 @@ class VideoPauseSubState extends MusicBeatSubstate
 
 		if (controls.ACCEPT && (cantUnpause <= 0 || !controls.controllerMode))
 		{
-			switch (daSelected)
+			switch (menuItems[curSelected])
 			{
 				case "Resume":
 					FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
 						ease: FlxEase.linear,
 						onComplete: function(twn:FlxTween)
 						{
+							videoCutscene.resume();
 							close();
 						}
 					});
 				case "Restart cutscene":
-					// restartVideo();
-				case "Skip cutscene":
-					// skip cutscene
+					videoCutscene.videoSprite.bitmap.time = 0;
 					FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
 						ease: FlxEase.linear,
 						onComplete: function(twn:FlxTween)
 						{
+							videoCutscene.resume();
+							close();
+						}
+					});
+				case "Skip cutscene":
+					trace('Skipped Video');
+					videoCutscene.skippedVideo = true;
+					FlxTween.tween(camPause, {zoom: 0.1}, 0.1, {
+						ease: FlxEase.linear,
+						onComplete: function(twn:FlxTween)
+						{
+							videoCutscene.videoSprite.bitmap.onEndReached.dispatch();
 							close();
 						}
 					});
@@ -131,7 +139,6 @@ class VideoPauseSubState extends MusicBeatSubstate
 					PlayState.deathCounter = 0;
 					PlayState.seenCutscene = false;
 
-					PlayState.instance.canResync = false;
 					Mods.loadTopMod();
 					if(PlayState.isStoryMode)
 						MusicBeatState.switchState(new StoryMenuState());
@@ -143,11 +150,6 @@ class VideoPauseSubState extends MusicBeatSubstate
 					FlxG.camera.followLerp = 0;
 			}
 		}
-	}
-
-	public static function restartVideo()
-	{
-		// restart video
 	}
 
 	override function destroy()

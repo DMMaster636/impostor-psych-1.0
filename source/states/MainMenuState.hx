@@ -8,7 +8,7 @@ class MainMenuState extends MusicBeatState
 {
 	public static var impostorPortVersion:String = '0.2';
 	public static var impostorModVersion:String = '4.1.0';
-	public static var psychEngineVersion:String = '1.0.1';
+	public static var psychEngineVersion:String = '1.0.2h';
 
 	public static var curSelected:Int = 0;
 
@@ -47,6 +47,8 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
+
 		#if MODS_ALLOWED
 		Mods.pushGlobalMods();
 		#end
@@ -61,11 +63,8 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		if (!FlxG.sound.music.playing)
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
-
-		if(localFinaleState == NOT_PLAYED)
-			FlxG.sound.playMusic(Paths.music('finaleMenu'));
+		if(!FlxG.sound.music.playing)
+			FlxG.sound.playMusic(Paths.music(localFinaleState == NOT_PLAYED ? 'finaleMenu' : 'freakyMenu'));
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
@@ -270,8 +269,6 @@ class MainMenuState extends MusicBeatState
 			case 'Innersloth':
 				FlxG.openURL('https://www.innersloth.com/');
 				return;
-			default: 
-				// nothing.
 		}
 
 		selectedSomethin = true;

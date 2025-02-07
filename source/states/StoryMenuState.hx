@@ -76,8 +76,6 @@ class StoryMenuState extends MusicBeatState
 
 		unlockedWeek = ClientPrefs.data.unlockedWeek;
 
-		persistentUpdate = persistentDraw = true;
-
 		camSpace = initPsychCamera();
 		camSpace.y = 100;
 		camSpace.zoom = 0.7;

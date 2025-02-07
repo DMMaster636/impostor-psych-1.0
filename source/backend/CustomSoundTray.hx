@@ -55,9 +55,9 @@ class CustomSoundTray extends FlxSoundTray
 
 	override public function update(MS:Float):Void
 	{
-		y = coolLerp(y, lerpYPos, 0.1, MS);
-		alpha = coolLerp(alpha, alphaTarget, 0.25, MS);
-		slider.x = coolLerp(slider.x, defaultBarX + positions[globalVolume] * graphicScale, 0.1, MS);
+		y = coolLerp(y, lerpYPos, 0.1);
+		alpha = coolLerp(alpha, alphaTarget, 0.25);
+		slider.x = coolLerp(slider.x, defaultBarX + positions[globalVolume] * graphicScale, 0.1);
 
 		if (_timer > 0)
 		{
@@ -92,8 +92,8 @@ class CustomSoundTray extends FlxSoundTray
 
 	}
 
-	public function coolLerp(base:Float, target:Float, ratio:Float, elapsed:Float):Float
+	public function coolLerp(base:Float, target:Float, ratio:Float):Float
 	{
-		return base + (ratio  * (elapsed / (1 / 60))) * (target - base);
+		return base + (ratio  * (FlxG.elapsed / (1 / 60))) * (target - base);
 	}
 }

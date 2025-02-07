@@ -11,8 +11,8 @@ import flixel.input.keyboard.FlxKey;
 import lime.utils.Assets;
 import lime.media.AudioBuffer;
 
-import flash.media.Sound;
-import flash.geom.Rectangle;
+import openfl.media.Sound;
+import openfl.geom.Rectangle;
 
 import haxe.Json;
 import haxe.Exception;
@@ -951,15 +951,17 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 					else loadSection(0);
 					Conductor.songPosition = FlxG.sound.music.time = vocals.time = opponentVocals.time = timeToGoBack;
 				}
-				else if (FlxG.keys.justPressed.HOME)
+				else if(FlxG.keys.justPressed.HOME)
 				{
+					setSongPlaying(false);
+					Conductor.songPosition = FlxG.sound.music.time = 0;
 					loadSection(0);
-					Conductor.songPosition = FlxG.sound.music.time = vocals.time = opponentVocals.time = 0;
 				}
-				else if (FlxG.keys.justPressed.END)
+				else if(FlxG.keys.justPressed.END)
 				{
-					loadSection(cachedSectionTimes.length - 1);
-					Conductor.songPosition = FlxG.sound.music.time = vocals.time = opponentVocals.time = FlxG.sound.music.length;
+					setSongPlaying(false);
+					Conductor.songPosition = FlxG.sound.music.time = FlxG.sound.music.length - 1;
+					loadSection(PlayState.SONG.notes.length - 1);
 				}
 				else if(FlxG.keys.pressed.W != FlxG.keys.pressed.S || FlxG.mouse.wheel != 0)
 				{
@@ -1006,15 +1008,11 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		}
 		else if(FlxG.sound.music != null)
 		{
-			if(FlxG.sound.music.time >= vocals.length)
-				vocals.pause();
-			if(FlxG.sound.music.time >= opponentVocals.length)
-				opponentVocals.pause();
+			if(FlxG.sound.music.time >= vocals.length) vocals.pause();
+			if(FlxG.sound.music.time >= opponentVocals.length) opponentVocals.pause();
 
-			if(curSec > 0 && Conductor.songPosition < cachedSectionTimes[curSec])
-				loadSection(curSec - 1);
-			else if(curSec < cachedSectionTimes.length - 1 && Conductor.songPosition >= cachedSectionTimes[curSec + 1])
-				loadSection(curSec + 1);
+			while(curSec > 0 && Conductor.songPosition < cachedSectionTimes[curSec]) loadSection(curSec - 1);
+			while(curSec < cachedSectionTimes.length - 1 && Conductor.songPosition >= cachedSectionTimes[curSec + 1]) loadSection(curSec + 1);
 		}
 
 		if(PsychUIInputText.focusOn == null && lastFocus == null)
@@ -1030,10 +1028,8 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 				FlxG.keys.justPressed.C || FlxG.keys.justPressed.V || FlxG.keys.justPressed.A || FlxG.keys.justPressed.S))
 			{
 				canContinue = false;
-				if(FlxG.keys.justPressed.Z)
-					undo();
-				else if(FlxG.keys.justPressed.Y)
-					redo();
+				if(FlxG.keys.justPressed.Z) undo();
+				else if(FlxG.keys.justPressed.Y) redo();
 				else if((doCut = FlxG.keys.justPressed.X) || FlxG.keys.justPressed.C) // Cut (Ctrl + X) and Copy (Ctrl + C)
 				{
 					if(selectedNotes.length > 0)
@@ -1266,8 +1262,7 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 			var noteData:Int = Math.floor(diffX / GRID_SIZE);
 			dummyArrow.visible = !selectionBox.visible;
 			dummyArrow.x = gridBg.x + noteData * GRID_SIZE;
-			if(SHOW_EVENT_COLUMN)
-				noteData--;
+			if(SHOW_EVENT_COLUMN) noteData--;
 
 			if(FlxG.keys.pressed.SHIFT || FlxG.mouse.y >= gridBg.y || !prevGridBg.visible)
 				dummyArrow.y = gridBg.y + diffY;
@@ -1941,8 +1936,9 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 		if(doPlay)
 		{
 			FlxG.sound.music.play();
-			vocals.play();
-			opponentVocals.play();
+			if(FlxG.sound.music.time < vocals.length) vocals.play(true, FlxG.sound.music.time);
+			if(FlxG.sound.music.time < opponentVocals.length) opponentVocals.play(true, FlxG.sound.music.time);
+			updateAudioVolume();
 		}
 		else
 		{
@@ -4864,6 +4860,11 @@ class ChartingState extends MusicBeatState implements PsychUIEventHandler.PsychU
 
 	function openEditorPlayState()
 	{
+		if(FlxG.sound.music == null)
+		{
+			showOutput('Load a valid song to preview!', true);
+			return;
+		}
 		setSongPlaying(false);
 		chartEditorSave.flush(); //just in case a random crash happens before loading
 

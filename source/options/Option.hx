@@ -80,8 +80,7 @@ class Option
 
 		try
 		{
-			if(getValue() == null)
-				setValue(defaultValue);
+			if(getValue() == null) setValue(defaultValue);
 	
 			switch(type)
 			{

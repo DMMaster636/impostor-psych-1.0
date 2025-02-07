@@ -28,7 +28,7 @@ enum FinaleState
 	public var splashAlpha:Float = 0.6;
 	public var lowQuality:Bool = false;
 	public var shaders:Bool = true;
-	public var cacheOnGPU:Bool = #if !switch false #else true #end; //From Stilic
+	public var cacheOnGPU:Bool = #if !switch false #else true #end; // GPU Caching made by Raltyro
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;
 	public var hideHud:Bool = false;
@@ -47,7 +47,6 @@ enum FinaleState
 	public var hitsoundVolume:Float = 0;
 	public var pauseMusic:String = 'Sussus Muzak';
 	public var checkForUpdates:Bool = true;
-	public var comboGameCam:Bool = true;
 	public var comboStacking:Bool = true;
 	public var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
@@ -92,6 +91,7 @@ enum FinaleState
 	public var finaleState:FinaleState = NOT_UNLOCKED;
 
 	// other stuff
+	public var comboGameCam:Bool = true;
 	public var missSoundVolume:Float = 0.6;
 	public var darkBorder:Bool = false;
 }

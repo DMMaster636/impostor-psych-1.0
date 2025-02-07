@@ -20,7 +20,7 @@
 
 	<!-- ______________________ PSYCH ENGINE CUSTOMIZATION ______________________ -->
 
-	<define name="CHECK_FOR_UPDATES" if="desktop || mobile" unless="debug" />
+	<!--<define name="CHECK_FOR_UPDATES" if="desktop || mobile" unless="debug" />-->
 
 	<define name="MODS_ALLOWED" if="desktop" />
 	<define name="HSCRIPT_ALLOWED" if="desktop" />
@@ -33,6 +33,8 @@
 	<define name="DISCORD_ALLOWED" if="desktop" />
 	<define name="VIDEOS_ALLOWED" if="desktop || mobile" unless="32bits" />
 
+	<!-- UNCOMMENTING THIS LINE WILL ENABLE MULTITHREADED LOADING, WHICH IMPROVES LOADING TIMES, BUT WITH A LOW CHANCE FOR THE GAME FREEZE ON SONG LOAD -->
+	<define name="MULTITHREADED_LOADING" />
 	<define name="SHOW_LOADING_SCREEN" />
 	<define name="IRIS_DEBUG" />
 
@@ -86,7 +88,7 @@
 	<section if="MODS_ALLOWED">
 		<assets path='example_mods' rename='mods' embed='false' type='template' unless="mac"/>
 		<assets path='example_mods' rename='mods' embed='false' if="mac"/>
-		<assets path='list.txt' rename='modsList.txt' />
+		<assets path='art/list.txt' rename='modsList.txt' />
 	</section>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 
@@ -177,10 +179,10 @@
 
 	<!-- _________________________________ Custom _______________________________ -->
 
-	<assets path='art/iconOG.png' rename='icon.png' if="linux || mac" />
+	<assets path='art/icons/iconOG.png' rename='icon.png' if="linux || mac" />
 
-	<icon path="art/icon16.png" size='16'/>
-	<icon path="art/icon32.png" size='32'/>
-	<icon path="art/icon64.png" size='64'/>
-	<icon path="art/iconOG.png" />
+	<icon path="art/icons/icon16.png" size='16'/>
+	<icon path="art/icons/icon32.png" size='32'/>
+	<icon path="art/icons/icon64.png" size='64'/>
+	<icon path="art/icons/iconOG.png" />
 </project>

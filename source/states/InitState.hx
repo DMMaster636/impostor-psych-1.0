@@ -60,26 +60,6 @@ class InitState extends MusicBeatState
 		DiscordClient.prepare();
 		#end
 
-		#if CHECK_FOR_UPDATES
-		if(ClientPrefs.data.checkForUpdates)
-		{
-			trace('Checking for updates...');
-
-			var http = new haxe.Http("https://raw.githubusercontent.com/DMMaster636/impostor-psych-1.0/main/gitVersion.txt");
-			http.onData = function(data:String)
-			{
-				updateVersion = data.split('\n')[0].trim();
-				if(updateVersion != MainMenuState.impostorPortVersion.trim()) mustUpdate = true;
-			}
-			http.onError = function(error)
-			{
-				trace('Error: $error');
-			}
-			http.request();
-		}
-		#end
-
-		if(mustUpdate) MusicBeatState.switchState(new OutdatedState(updateVersion));
-		else MusicBeatState.switchState(new TitleState());
+		MusicBeatState.switchState(new TitleState());
 	}
 }

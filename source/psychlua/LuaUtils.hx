@@ -347,8 +347,7 @@ class LuaUtils
 	public static function destroyObject(tag:String) {
 		var variables = MusicBeatState.getVariables();
 		var obj:FlxSprite = variables.get(tag);
-		if(obj == null || obj.destroy == null)
-			return;
+		if(obj == null || obj.destroy == null) return;
 
 		LuaUtils.getTargetInstance().remove(obj, true);
 		obj.destroy();
