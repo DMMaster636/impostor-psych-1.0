@@ -15,7 +15,6 @@ class PlayVideoState extends MusicBeatState
 		this.onComplete = onComplete;
 		this.canSkip = canSkip;
 		this.discordText = discordText;
-
 		super();
 	}
 
@@ -26,7 +25,6 @@ class PlayVideoState extends MusicBeatState
 		#if DISCORD_ALLOWED
 		DiscordClient.changePresence(discordText, null);
 		#end
-
 		startVideo(videoID);
 	}
 

@@ -71,11 +71,11 @@ class DiscordClient
 	{
 		if(isInitialized) return;
 
-		var discordHandlers:DiscordEventHandlers = DiscordEventHandlers.create();
+		var discordHandlers:DiscordEventHandlers = new DiscordEventHandlers();
 		discordHandlers.ready = cpp.Function.fromStaticFunction(onReady);
 		discordHandlers.disconnected = cpp.Function.fromStaticFunction(onDisconnected);
 		discordHandlers.errored = cpp.Function.fromStaticFunction(onError);
-		Discord.Initialize(clientID, cpp.RawPointer.addressOf(discordHandlers), 1, null);
+		Discord.Initialize(clientID, cpp.RawPointer.addressOf(discordHandlers), false, null);
 
 		trace("Discord Client initialized");
 
@@ -191,13 +191,13 @@ private final class DiscordPresence
 
 	function new()
 	{
-		__presence = DiscordRichPresence.create();
+		__presence = new DiscordRichPresence();
 	}
 
 	public function makeButton(id:Int, label:String, url:String):DiscordButton
 	{
 		id = Std.int(FlxMath.bound(id, 0, 1));
-		final button = DiscordButton.create();
+		final button = new DiscordButton();
 		button.label = label;
 		button.url = url;
 		return __presence.buttons[id] = button;

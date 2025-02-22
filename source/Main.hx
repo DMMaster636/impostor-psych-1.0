@@ -83,6 +83,13 @@ class Main extends Sprite
 		// this shouldn't be needed for other systems
 		// Credit to YoshiCrafter29 for finding this function
 		untyped __cpp__("SetProcessDPIAware();");
+
+		var display = lime.system.System.getDisplay(0);
+		if (display != null) {
+			var dpiScale:Float = display.dpi / 96;
+			Application.current.window.width = Std.int(game.width * dpiScale);
+			Application.current.window.height = Std.int(game.height * dpiScale);
+		}
 		#end
 
 		// Credits to MAJigsaw77 (he's the og author for this code)
@@ -99,8 +106,7 @@ class Main extends Sprite
 		FlxG.save.bind('funkin', CoolUtil.getSavePath());
 
 		#if HSCRIPT_ALLOWED
-		Iris.warn = function(x, ?pos:haxe.PosInfos) {
-			Iris.logLevel(WARN, x, pos);
+		function getIrisInfo(x:Any, ?pos:haxe.PosInfos):String {
 			var newPos:HScriptInfos = cast pos;
 			if (newPos.showLine == null) newPos.showLine = true;
 			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
@@ -114,44 +120,20 @@ class Main extends Sprite
 				msgInfo += '${newPos.lineNumber}:';
 			}
 			msgInfo += ' $x';
-			if (PlayState.instance != null)
-				PlayState.instance.addTextToDebug('WARNING: $msgInfo', FlxColor.YELLOW, false);
+			return msgInfo;
+		}
+
+		Iris.warn = function(x, ?pos:haxe.PosInfos) {
+			Iris.logLevel(WARN, x, pos);
+			PlayState.instance?.addTextToDebug('WARNING: ' + getIrisInfo(x, pos), FlxColor.YELLOW, false);
 		}
 		Iris.error = function(x, ?pos:haxe.PosInfos) {
 			Iris.logLevel(ERROR, x, pos);
-			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
-			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
-				msgInfo += 'HScript:';
-				newPos.showLine = false;
-			}
-			#end
-			if (newPos.showLine == true) {
-				msgInfo += '${newPos.lineNumber}:';
-			}
-			msgInfo += ' $x';
-			if (PlayState.instance != null)
-				PlayState.instance.addTextToDebug('ERROR: $msgInfo', FlxColor.RED, true);
+			PlayState.instance?.addTextToDebug('ERROR: ' + getIrisInfo(x, pos), FlxColor.RED, true);
 		}
 		Iris.fatal = function(x, ?pos:haxe.PosInfos) {
 			Iris.logLevel(FATAL, x, pos);
-			var newPos:HScriptInfos = cast pos;
-			if (newPos.showLine == null) newPos.showLine = true;
-			var msgInfo:String = (newPos.funcName != null ? '(${newPos.funcName}) - ' : '')  + '${newPos.fileName}:';
-			#if LUA_ALLOWED
-			if (newPos.isLua == true) {
-				msgInfo += 'HScript:';
-				newPos.showLine = false;
-			}
-			#end
-			if (newPos.showLine == true) {
-				msgInfo += '${newPos.lineNumber}:';
-			}
-			msgInfo += ' $x';
-			if (PlayState.instance != null)
-				PlayState.instance.addTextToDebug('FATAL: $msgInfo', 0xFFBB0000, true);
+			PlayState.instance?.addTextToDebug('FATAL: ' + getIrisInfo(x, pos), 0xFFBB0000, true);
 		}
 		#end
 
@@ -236,9 +218,7 @@ class Main extends Sprite
 		}
 
 		errMsg += "\nUncaught Error: " + e.error;
-
 		errMsg += "\nPlease report this error to the GitHub page:\nhttps://github.com/DMMaster636/impostor-psych-1.0";
-
 		errMsg += "\n\n> Crash Handler written by: sqirra-rng";
 
 		if (!FileSystem.exists("./crash/"))

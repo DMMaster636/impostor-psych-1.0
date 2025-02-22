@@ -16,7 +16,7 @@ typedef DialogueCharacterFile = {
 	var name:String;
 	var sound:String;
 	var box_icon:String;
-	var box_colors:Array<Array<Int>>
+	var box_colors:Array<Array<Int>>;
 }
 
 typedef DialogueAnimArray = {
@@ -111,7 +111,7 @@ class DialogueCharacterImpostor extends FlxSprite
 		charName = json.name;
 		charSound = json.sound;
 		boxIcon = json.box_icon;
-		boxColorArray = (json.box_colors != null && json.box_colors.length > 2) ? json.box_colors : [161, 161, 161];
+		boxColorArray = (json.box_colors != null && json.box_colors.length > 2) ? json.box_colors : [[255, 0, 0], [0, 255, 0], [0, 0, 255]];
 
 		// animations
 		animationsArray = json.animations;

@@ -61,13 +61,6 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		option.decimals = 1;
 		option.onChange = onChangeHitsoundVolume;
-		
-		var option:Option = new Option('Auto Pause',
-			"If checked, the game automatically pauses if the screen isn't on focus.",
-			'autoPause',
-			BOOL);
-		addOption(option);
-		option.onChange = onChangeAutoPause;
 
 		var option:Option = new Option('Disable Reset Button',
 			"If checked, pressing Reset won't do anything.",
@@ -127,6 +120,19 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.minValue = 2;
 		option.maxValue = 10;
 		option.changeValue = 0.1;
+		addOption(option);
+		
+		var option:Option = new Option('Auto Pause',
+			"If checked, the game automatically pauses if the screen isn't on focus.",
+			'autoPause',
+			BOOL);
+		addOption(option);
+		option.onChange = onChangeAutoPause;
+		
+		var option:Option = new Option('Re-Sync after Lag Spikes',
+			"If checked, makes the song re-sync back to before the lag spike,\notherwise it will continue normally.\n(Recommended ON for weaker PCs)",
+			'songResync',
+			BOOL);
 		addOption(option);
 
 		super();

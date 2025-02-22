@@ -64,10 +64,7 @@ class CustomFadeTransition extends MusicBeatSubstate
 		else
 			transBlack.y = transGradient.y - transBlack.height;
 
-		if(transGradient.y >= targetPos)
-		{
-			close();
-		}
+		if(transGradient.y >= targetPos) close();
 	}
 
 	// Don't delete this

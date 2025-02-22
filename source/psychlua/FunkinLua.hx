@@ -67,7 +67,6 @@ class FunkinLua {
 
 		this.scriptName = scriptName.trim();
 		var game:PlayState = PlayState.instance;
-		if(game != null) game.luaArray.push(this);
 
 		var myFolder:Array<String> = this.scriptName.split('/');
 		#if MODS_ALLOWED
@@ -1620,33 +1619,20 @@ class FunkinLua {
 				Lua_helper.add_callback(lua, name, func);
 		}
 
-		try{
+		try {
 			var isString:Bool = !FileSystem.exists(scriptName);
 			var result:Dynamic = null;
-			if(!isString)
-				result = LuaL.dofile(lua, scriptName);
-			else
-				result = LuaL.dostring(lua, scriptName);
+			if(!isString) result = LuaL.dofile(lua, scriptName);
+			else result = LuaL.dostring(lua, scriptName);
 
 			var resultStr:String = Lua.tostring(lua, result);
 			if(resultStr != null && result != 0) {
-				trace(resultStr);
-				#if windows
-				lime.app.Application.current.window.alert(resultStr, 'Error on lua script!');
-				#else
-				luaTrace('$scriptName\n$resultStr', true, false, FlxColor.RED);
-				#end
-				lua = null;
-				return;
+				throw resultStr;
 			}
 			if(isString) scriptName = 'unknown';
 		} catch(e:Dynamic) {
-			trace(e);
-			return;
+			throw e;
 		}
-		trace('lua file loaded succesfully:' + scriptName);
-
-		call('onCreate', []);
 	}
 
 	//main

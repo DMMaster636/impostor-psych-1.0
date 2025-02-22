@@ -103,8 +103,6 @@ class StrumNote extends FlxSprite
 			width = width / 4;
 			height = height / 5;
 			loadGraphic(Paths.image('pixelUI/' + skinPixel + skinPostfix), true, Math.floor(width), Math.floor(height));
-
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			loadPixelNoteAnims();
 			antialiasing = false;
 		}
@@ -170,6 +168,8 @@ class StrumNote extends FlxSprite
 				animation.add('pressed', [7, 11], 12, false);
 				animation.add('confirm', [15, 19], 12, false);
 		}
+		setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+		updateHitbox();
 	}
 
 	public function playerPosition()

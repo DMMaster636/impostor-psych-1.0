@@ -47,8 +47,8 @@ class PolusRed extends BaseStage
 		{
 			switch (songName)
 			{
-				case 'sussus-moogus':
-					if(!seenCutscene) setStartCallback(startingCutscene);
+				/*case 'sussus-moogus':
+					if(!seenCutscene) setStartCallback(startingCutscene);*/
 				case 'sabotage':
 					if(!seenCutscene) setStartCallback(videoCutscene.bind('polus2'));
 				case 'meltdown':
@@ -126,30 +126,27 @@ class PolusRed extends BaseStage
 		addBehindDad(impostorCutscene);
 		cutsceneHandler.push(impostorCutscene);
 
-		cutsceneHandler.finishCallback = function()
+		cutsceneHandler.overallFinish = function()
 		{
 			gfGroup.alpha = dadGroup.alpha = boyfriendGroup.alpha = 1;
 			camHUD.visible = true;
+			//startImpDialogue();
+		};
 
+		cutsceneHandler.finishCallback = function()
+		{
 			var timeForStuff:Float = Conductor.crochet / 1000 * 4.5;
 			FlxG.sound.music.fadeOut(timeForStuff);
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, timeForStuff, {ease: FlxEase.quadInOut});
-
-			//startImpDialogue();
 		};
 
 		cutsceneHandler.skipCallback = function()
 		{
-			gfGroup.alpha = dadGroup.alpha = boyfriendGroup.alpha = 1;
-			camHUD.visible = true;
-
 			FlxTween.cancelTweensOf(FlxG.camera);
 			FlxTween.cancelTweensOf(camFollow);
 			game.moveCameraSection();
 			FlxG.camera.scroll.set(camFollow.x - FlxG.width/2, camFollow.y - FlxG.height/2);
 			FlxG.camera.zoom = defaultCamZoom;
-
-			//startImpDialogue();
 		};
 
 		camFollow.setPosition(boyfriend.x, boyfriend.y - 200);

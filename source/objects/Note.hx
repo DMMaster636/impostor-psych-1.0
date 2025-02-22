@@ -80,6 +80,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var isSustainEnd:Bool = true;
 	public var noteType(default, set):String = null;
 
 	public var eventName:String = '';
@@ -313,6 +314,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
+				prevNote.isSustainEnd = false;
 				prevNote.animation.play(colArray[prevNote.noteData % colArray.length] + 'hold');
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
@@ -446,8 +448,7 @@ class Note extends FlxSprite
 	}
 
 	function loadNoteAnims() {
-		if (colArray[noteData] == null)
-			return;
+		if (colArray[noteData] == null) return;
 
 		if (isSustainNote)
 		{
@@ -462,8 +463,7 @@ class Note extends FlxSprite
 	}
 
 	function loadPixelNoteAnims() {
-		if (colArray[noteData] == null)
-			return;
+		if (colArray[noteData] == null) return;
 
 		if(isSustainNote)
 		{
@@ -471,6 +471,9 @@ class Note extends FlxSprite
 			animation.add(colArray[noteData] + 'hold', [noteData], 24, true);
 		}
 		else animation.add(colArray[noteData] + 'Scroll', [noteData + 4], 24, true);
+
+		/*setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+		updateHitbox();*/
 	}
 
 	function attemptToAddAnimationByPrefix(name:String, prefix:String, framerate:Float = 24, doLoop:Bool = true)

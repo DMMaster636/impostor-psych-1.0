@@ -50,6 +50,9 @@ class Paths
 
 		// run the garbage collector for good measure lmfao
 		System.gc();
+		#if cpp
+		cpp.NativeGc.run(true);
+		#end
 	}
 
 	// define the locally tracked assets
@@ -180,9 +183,6 @@ class Paths
 	inline static public function file(file:String, type:AssetType = TEXT, ?folder:String)
 		return getPath(file, type, folder, true);
 
-	inline static public function deathData(key:String, ?folder:String)
-		return getPath('sounds/deaths/$key/info.txt', TEXT, folder, true);
-
 	inline static public function txt(key:String, ?folder:String)
 		return getPath('data/$key.txt', TEXT, folder, true);
 
@@ -216,8 +216,13 @@ class Paths
 	inline static public function music(key:String, ?modsAllowed:Bool = true, ?playBeep:Bool = true):Sound
 		return returnSound('music/$key', null, modsAllowed, playBeep);
 
-	inline static public function inst(song:String, ?modsAllowed:Bool = true):Sound
-		return returnSound('${formatToSongPath(song)}/Inst', 'songs', modsAllowed);
+	inline static public function inst(song:String, postfix:String = null, ?modsAllowed:Bool = true):Sound
+	{
+		var songKey:String = '${formatToSongPath(song)}/Inst';
+		if(postfix != null) songKey += '-' + postfix;
+		//trace('songKey test: $songKey');
+		return returnSound(songKey, 'songs', modsAllowed, true);
+	}
 
 	inline static public function voices(song:String, postfix:String = null, ?modsAllowed:Bool = true):Sound
 	{
@@ -401,7 +406,6 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?parentFolder:String = null, ?allowGPU:Bool = true):FlxAtlasFrames
 	{
-		if(key.contains('psychic')) trace(key, parentFolder, allowGPU);
 		var imageLoaded:FlxGraphic = image(key, parentFolder, allowGPU);
 		#if MODS_ALLOWED
 		var xmlExists:Bool = false;

@@ -5,7 +5,6 @@ import openfl.utils.Assets;
 import haxe.Json;
 
 import flixel.FlxObject;
-import flixel.input.mouse.FlxMouseEvent;
 
 import objects.Character;
 import objects.Pet;
@@ -50,7 +49,6 @@ class ShopState extends MusicBeatState
     var focusTarget:FlxPoint = FlxPoint.get(0, 0);
     var focusedNode:ShopNode;
 
-    var topBean:FlxSprite;
     var beanText:FlxText;
 
     var panel:FlxSprite;
@@ -61,19 +59,7 @@ class ShopState extends MusicBeatState
     var charName:FlxText;
     var charDesc:FlxText;
 
-    var upperBar:FlxSprite;
-    var crossImage:FlxSprite;
-
     var localBeans:Int;
-
-    /*
-        DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS 
-        DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS 
-        DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS DONT ADD ANY NEW CHARACTERS TO THIS 
-        DONT ADD ANY NEW CHARACTERS TO THIS 
-        please :)
-
-    */
 
     /*
         NOTE FOR ANYONE ADDING NODES:
@@ -258,23 +244,20 @@ class ShopState extends MusicBeatState
         charDesc.cameras = [camUpper];
         add(charDesc);
 
-        upperBar = new FlxSprite(-2, -1.4).loadGraphic(Paths.image('freeplay/topBar', 'impostor'));
+        var upperBar:FlxSprite = new FlxSprite(-2, -1.4).loadGraphic(Paths.image('freeplay/topBar', 'impostor'));
 		upperBar.updateHitbox();
 		upperBar.scrollFactor.set();
 		upperBar.cameras = [camUpper];
 		add(upperBar);
 
-		crossImage = new FlxSprite(12.50, 8.05).loadGraphic(Paths.image('freeplay/menuBack', 'impostor'));
+        var crossImage:FlxSpriteButton = new FlxSpriteButton(12.50, 8.05, goBack);
+		crossImage.loadGraphic(Paths.image('freeplay/menuBack', 'impostor'));
 		crossImage.scrollFactor.set();
 		crossImage.updateHitbox();
 		crossImage.cameras = [camUpper];
 		add(crossImage);
-        FlxMouseEvent.add(crossImage, function onMouseDown(s:FlxSprite)
-		{
-			goBack();
-		}, null, null);
 
-		topBean = new FlxSprite(30, 100).loadGraphic(Paths.image('shop/bean', 'impostor'));
+		var topBean:FlxSprite = new FlxSprite(30, 100).loadGraphic(Paths.image('shop/bean', 'impostor'));
         topBean.cameras = [camUpper];
         topBean.updateHitbox();
 		add(topBean);	
@@ -356,7 +339,7 @@ class ShopState extends MusicBeatState
                 }
             }
 
-            if(node.bought) node.text.visible = false;
+            node.text.visible = !node.bought;
 
             if(!node.gotRequirements)
             {
@@ -372,8 +355,8 @@ class ShopState extends MusicBeatState
         var stupidThing:Bool = false;
         nodes.forEach(function(node:ShopNode)
         {
-            if(node.name == _name && node.bought)
-                stupidThing = true;
+            if(node.name == _name)
+                stupidThing = node.bought;
         });
         return stupidThing;
     }
@@ -403,11 +386,13 @@ class ShopState extends MusicBeatState
             equipbutton.animation.play('equipped');
             equipText.text = 'EQUIP';
         }
+
         if(node.name == ClientPrefs.data.charOverrides[0] || node.name == ClientPrefs.data.charOverrides[1] || node.name == ClientPrefs.data.charOverrides[2])
         {
             equipbutton.animation.play('grey');
             equipText.text = 'EQUIPPED';
         }
+
         if(!node.gotRequirements || !checkPurchased(node.connection))
         {
             equipbutton.animation.play('locked');
@@ -442,34 +427,19 @@ class ShopState extends MusicBeatState
         {
             case BF:
                 if(node.name == ClientPrefs.data.charOverrides[0])
-                {
                     ClientPrefs.data.charOverrides[0] = 'bf';
-                    updateButton(node);
-                    ClientPrefs.saveSettings();
-                    updateNodeVisibility();
-                    return;
-                }
-                ClientPrefs.data.charOverrides[0] = node.name;
+                else
+                    ClientPrefs.data.charOverrides[0] = node.name;
             case GF:
                 if(node.name == ClientPrefs.data.charOverrides[1])
-                {
                     ClientPrefs.data.charOverrides[1] = 'gf';
-                    updateButton(node);
-                    ClientPrefs.saveSettings();
-                    updateNodeVisibility();
-                    return;
-                }
-                ClientPrefs.data.charOverrides[1] = node.name;
+                else
+                    ClientPrefs.data.charOverrides[1] = node.name;
             case PET:
                 if(node.name == ClientPrefs.data.charOverrides[2])
-                {
                     ClientPrefs.data.charOverrides[2] = '';
-                    updateButton(node);
-                    ClientPrefs.saveSettings();
-                    updateNodeVisibility();
-                    return;
-                }
-                ClientPrefs.data.charOverrides[2] = node.name;
+                else
+                    ClientPrefs.data.charOverrides[2] = node.name;
         }
         updateButton(node);
         ClientPrefs.saveSettings();
@@ -495,8 +465,7 @@ class ShopState extends MusicBeatState
                 {
                     canUnfocus = false;
                     focusNode(node);
-                    new FlxTimer().start(0.5, function(tmr:FlxTimer)
-                    {
+                    new FlxTimer().start(0.5, function(tmr:FlxTimer) {
                         canUnfocus = true;
                     });
                     focusTarget.x = (node.x + (node.width / 2)) + (FlxG.width * 0.18);
@@ -576,11 +545,11 @@ class ShopState extends MusicBeatState
 
             if(controls.RESET)
             {
-                nodes.forEach(function(node:ShopNode)
-                {
+                nodes.forEach(function(node:ShopNode) {
                     node.bought = false;
                 });
                 updateNodeVisibility();
+                ClientPrefs.data.boughtArray = [];
                 ClientPrefs.saveSettings();
             }
 
@@ -607,8 +576,7 @@ class ShopState extends MusicBeatState
     function goBack()
     {
         blockInput = true;
-        nodes.forEach(function(node:ShopNode)
-        {
+        nodes.forEach(function(node:ShopNode) {
             if(node.bought && !ClientPrefs.data.boughtArray.contains(node.name))
                 ClientPrefs.data.boughtArray.push(node.name);
         });

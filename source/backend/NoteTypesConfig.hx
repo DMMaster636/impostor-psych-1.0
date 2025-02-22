@@ -49,7 +49,7 @@ class NoteTypesConfig
 	{
 		var data:Array<NoteTypeProperty> = loadNoteTypeData(name);
 		if(data == null || data.length < 1) return;
-		
+
 		for (line in data) 
 		{
 			var obj:Dynamic = note;
@@ -113,7 +113,7 @@ class NoteTypesConfig
 			//is a string
 			return value.substring(1, value.length-1);
 		}
-		
+
 		switch(value)
 		{
 			case "true":

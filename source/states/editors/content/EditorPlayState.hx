@@ -204,9 +204,13 @@ class EditorPlayState extends MusicBeatSubstate
 		keysCheck();
 		if(notes.length > 0)
 		{
-			var fakeCrochet:Float = (60 / PlayState.SONG.bpm) * 1000;
-			notes.forEachAlive(function(daNote:Note)
+			var noteInd:Int = 0;
+			final fakeCrochet:Float = (60 / PlayState.SONG.bpm) * 1000;
+			while(noteInd < notes.length)
 			{
+				var daNote:Note = notes.members[noteInd++];
+				if(daNote == null || !daNote.exists || !daNote.alive) continue;
+
 				var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 				if(!daNote.mustPress) strumGroup = opponentStrums;
 
@@ -219,7 +223,7 @@ class EditorPlayState extends MusicBeatSubstate
 				if(daNote.isSustainNote && strum.sustainReduce) daNote.clipToStrumNote(strum);
 
 				// Kill extremely late notes and cause misses
-				if (Conductor.songPosition - daNote.strumTime > noteKillOffset)
+				if(Conductor.songPosition - daNote.strumTime > noteKillOffset)
 				{
 					if (daNote.mustPress && !daNote.ignoreNote && (daNote.tooLate || !daNote.wasGoodHit))
 						noteMiss(daNote);
@@ -227,7 +231,9 @@ class EditorPlayState extends MusicBeatSubstate
 					daNote.active = daNote.visible = false;
 					invalidateNote(daNote);
 				}
-			});
+
+				if(!daNote.exists || !daNote.alive) noteInd--;
+			}
 		}
 		
 		var time:Float = CoolUtil.floorDecimal((Conductor.songPosition - ClientPrefs.data.noteOffset) / 1000, 1);

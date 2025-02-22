@@ -8,8 +8,6 @@ import objects.HealthIcon;
 
 import substates.ResetScoreSubState;
 
-import flixel.input.mouse.FlxMouseEvent;
-
 import shaders.ChromaticAbberation;
 import openfl.filters.ShaderFilter;
 
@@ -158,22 +156,16 @@ class StoryMenuState extends MusicBeatState
 		add(border);
 		border.cameras = [camScreen];
 
-		var back:FlxSprite = new FlxSprite(85, 65).loadGraphic(Paths.image('storymenu/menuBack', 'impostor'));
+		var back:FlxSpriteButton = new FlxSpriteButton(85, 65, goBack);
+		back.loadGraphic(Paths.image('storymenu/menuBack', 'impostor'));
 		add(back);
 		back.cameras = [camScreen];
-
-		FlxMouseEvent.add(back, function onMouseDown(back:FlxSprite)
-		{
-			goBack();
-			trace("worked");
-		}, null);
 
 		for (i in 0...unlockedWeek.length)
 		{
 			WeekData.setDirectoryFromWeek(WeekData.weeksLoaded.get(WeekData.weeksList[i]));
 
-			var weekCircle:FlxSprite = new FlxSprite(0, 50).loadGraphic(Paths.image('storymenu/circle', 'impostor'));
-			FlxMouseEvent.add(weekCircle, function onMouseDown(weekCircle:FlxSprite)
+			var weekCircle:FlxSpriteButton = new FlxSpriteButton(0, 50, function()
 			{
 				if(curWeek == i && curWeek != 0)
 				{
@@ -203,7 +195,8 @@ class StoryMenuState extends MusicBeatState
 						trace("worked3");
 					}
 				}
-			}, null);
+			});
+			weekCircle.loadGraphic(Paths.image('storymenu/circle', 'impostor'));
 
 			if (i == 5)
 			{
@@ -481,8 +474,10 @@ class StoryMenuState extends MusicBeatState
 
 	function goBack()
 	{
-		FlxG.sound.play(Paths.sound('cancelMenu'));
+		if(selectedWeek) return;
+
 		selectedWeek = true;
+		FlxG.sound.play(Paths.sound('cancelMenu'));
 		MusicBeatState.switchState(new MainMenuState());
 	}
 

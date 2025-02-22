@@ -17,7 +17,7 @@ class InitState extends MusicBeatState
 
 	override public function create():Void
 	{
-		trace('Initializing!');
+		trace('Initializing...');
 
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
@@ -47,6 +47,7 @@ class InitState extends MusicBeatState
 		if (FlxG.save.data.weekCompleted != null)
 			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
 
+		FlxG.game.stage.quality = ClientPrefs.data.antialiasing ? BEST : LOW;
 		FlxSprite.defaultAntialiasing = ClientPrefs.data.antialiasing;
 
 		#if desktop
@@ -60,6 +61,7 @@ class InitState extends MusicBeatState
 		DiscordClient.prepare();
 		#end
 
+		trace('Init Done!');
 		MusicBeatState.switchState(new TitleState());
 	}
 }

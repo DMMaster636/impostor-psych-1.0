@@ -14,7 +14,6 @@ import shaders.ColorShader;
 import shaders.RimlightShader;
 
 import flixel.util.FlxDestroyUtil;
-import flixel.input.mouse.FlxMouseEvent;
 
 import openfl.utils.Assets;
 
@@ -52,19 +51,14 @@ class FreeplayState extends MusicBeatState
 	var camGame:PsychCamera;
 	var camUpper:PsychCamera;
 
-	var space:FlxSprite;
-	var upperBar:FlxSprite;
 	var porGlow:FlxSprite;
 	var intendedColor:Int;
-
-	var crossImage:FlxSprite;
 
 	var portrait:FlxSprite;
 	var portraitTween:FlxTween;
 	var portraitAlphaTween:FlxTween;
 
 	var localBeans:Int;
-	var topBean:FlxSprite;
     var beanText:FlxText;
 
 	var infoText:FlxText;
@@ -105,10 +99,10 @@ class FreeplayState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Selecting a Song", null);
+		DiscordClient.changePresence("Selecting a Freeplay Song", null);
 		#end
 
-		space = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		var space:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		space.updateHitbox();
 		space.scrollFactor.set();
 		add(space);
@@ -198,21 +192,18 @@ class FreeplayState extends MusicBeatState
 			button.spriteOne.setPosition(10, (120 * i) + 100);
 		}
 
-		upperBar = new FlxSprite(-2, -1.4).loadGraphic(Paths.image('freeplay/topBar', 'impostor'));
+		var upperBar:FlxSprite = new FlxSprite(-2, -1.4).loadGraphic(Paths.image('freeplay/topBar', 'impostor'));
 		upperBar.updateHitbox();
 		upperBar.scrollFactor.set();
 		upperBar.cameras = [camUpper];
 		add(upperBar);
 
-		crossImage = new FlxSprite(12.50, 8.05).loadGraphic(Paths.image('freeplay/menuBack', 'impostor'));
+        var crossImage:FlxSpriteButton = new FlxSpriteButton(12.50, 8.05, goBack);
+		crossImage.loadGraphic(Paths.image('freeplay/menuBack', 'impostor'));
 		crossImage.scrollFactor.set();
 		crossImage.updateHitbox();
 		crossImage.cameras = [camUpper];
 		add(crossImage);
-		FlxMouseEvent.add(crossImage, function onMouseDown(s:FlxSprite)
-		{
-			goBack();
-		}, null, null);
 
 		bottomBG = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
 		bottomBG.alpha = 0.6;
@@ -230,7 +221,7 @@ class FreeplayState extends MusicBeatState
 		rimlight = new RimlightShader(315, 10, 0xFFFF6600, portrait);
 		portrait.shader = rimlight.shader;
 
-		topBean = new FlxSprite(30, 100).loadGraphic(Paths.image('shop/bean', 'impostor'));
+		var topBean:FlxSprite = new FlxSprite(30, 100).loadGraphic(Paths.image('shop/bean', 'impostor'));
         topBean.cameras = [camUpper];
         topBean.updateHitbox();
 		add(topBean);	
@@ -461,6 +452,9 @@ class FreeplayState extends MusicBeatState
 
 	function goBack()
 	{
+		if(lockMovement) return;
+
+		lockMovement = true;
 		FlxG.sound.play(Paths.sound('select'), 0.5);
 
 		ClientPrefs.data.beans = localBeans;

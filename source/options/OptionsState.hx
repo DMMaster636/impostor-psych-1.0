@@ -95,7 +95,7 @@ class OptionsState extends MusicBeatState
 		inSubstate = false;
 		ClientPrefs.saveSettings();
 		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Options Menu", null);
+		DiscordClient.changePresence("In the Options Menu", null);
 		#end
 	}
 

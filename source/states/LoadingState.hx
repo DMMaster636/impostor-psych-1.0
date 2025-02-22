@@ -23,6 +23,13 @@ import sys.thread.Mutex;
 import objects.Note;
 import objects.NoteSplash;
 
+#if HSCRIPT_ALLOWED
+import psychlua.HScript;
+import crowplexus.iris.Iris;
+import crowplexus.hscript.Expr.Error as IrisError;
+import crowplexus.hscript.Printer;
+#end
+
 #if cpp
 @:headerCode('
 #include <iostream>
@@ -55,69 +62,109 @@ class LoadingState extends MusicBeatState
 	var stopMusic:Bool = false;
 	var dontUpdate:Bool = false;
 
+	var barGroup:FlxSpriteGroup;
 	var bar:FlxSprite;
 	var barWidth:Int = 0;
 	var intendedPercent:Float = 0;
 	var curPercent:Float = 0;
-	var canChangeState:Bool = true;
+	var stateChangeDelay:Float = 0;
 
 	var loadingText:FlxText;
 	var timePassed:Float;
 	var funkay:FlxSprite;
 
+	#if HSCRIPT_ALLOWED
+	var hscript:HScript;
+	#end
+
 	override function create()
 	{
-		#if !SHOW_LOADING_SCREEN
-		while(true)
-		#end
+		persistentUpdate = true;
+		barGroup = new FlxSpriteGroup();
+		add(barGroup);
+
+		var barBack:FlxSprite = new FlxSprite(0, 660).makeGraphic(1, 1, FlxColor.BLACK);
+		barBack.scale.set(FlxG.width - 300, 25);
+		barBack.updateHitbox();
+		barBack.screenCenter(X);
+		barGroup.add(barBack);
+
+		bar = new FlxSprite(barBack.x + 5, barBack.y + 5).makeGraphic(1, 1, FlxColor.WHITE);
+		bar.scale.set(0, 15);
+		bar.updateHitbox();
+		barGroup.add(bar);
+		barWidth = Std.int(barBack.width - 10);
+
+		#if HSCRIPT_ALLOWED
+		if(Mods.currentModDirectory != null && Mods.currentModDirectory.trim().length > 0)
 		{
-			if (checkLoaded())
+			var scriptPath:String = 'mods/${Mods.currentModDirectory}/data/LoadingScreen.hx'; //mods/My-Mod/data/LoadingScreen.hx
+			if(FileSystem.exists(scriptPath))
 			{
-				dontUpdate = true;
-				super.create();
-				onLoad();
-				return;
+				try
+				{
+					hscript = new HScript(null, scriptPath);
+					hscript.set('getLoaded', function() return loaded);
+					hscript.set('getLoadMax', function() return loadMax);
+					hscript.set('barBack', barBack);
+					hscript.set('bar', bar);
+	
+					if(hscript.exists('onCreate'))
+					{
+						hscript.call('onCreate');
+						trace('initialized hscript interp successfully: $scriptPath');
+						return super.create();
+					}
+					else
+					{
+						trace('"$scriptPath" contains no \"onCreate" function, stopping script.');
+					}
+				}
+				catch(e:IrisError)
+				{
+					var pos:HScriptInfos = cast {fileName: scriptPath, showLine: false};
+					Iris.error(Printer.errorToString(e, false), pos);
+					var hscript:HScript = cast (Iris.instances.get(scriptPath), HScript);
+				}
+				if(hscript != null) hscript.destroy();
+				hscript = null;
 			}
-			#if !SHOW_LOADING_SCREEN
-			Sys.sleep(0.001);
-			#end
 		}
+		#end
 
 		#if DISCORD_ALLOWED
-		DiscordClient.changePresence("Loading into a Song...", null);
+		DiscordClient.changePresence("Loading into a Song", null);
 		#end
 
 		var bg = new FlxSprite().makeGraphic(1, 1, 0xFFCAFF4D);
 		bg.scale.set(FlxG.width, FlxG.height);
 		bg.updateHitbox();
 		bg.screenCenter();
-		add(bg);
+		addBehindBar(bg);
 
 		funkay = new FlxSprite(0, 0).loadGraphic(Paths.image('funkay'));
 		funkay.setGraphicSize(FlxG.width);
 		funkay.updateHitbox();
 		funkay.screenCenter();
-		add(funkay);
+		addBehindBar(funkay);
 	
 		loadingText = new FlxText(520, 600, 400, Language.getPhrase('now_loading', 'Now Loading', ['...']), 32);
 		loadingText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, LEFT, OUTLINE_FAST, FlxColor.BLACK);
 		loadingText.borderSize = 2;
-		add(loadingText);
+		addBehindBar(loadingText);
 
-		var bg:FlxSprite = new FlxSprite(0, 660).makeGraphic(1, 1, FlxColor.BLACK);
-		bg.scale.set(FlxG.width - 300, 25);
-		bg.updateHitbox();
-		bg.screenCenter(X);
-		add(bg);
-
-		bar = new FlxSprite(bg.x + 5, bg.y + 5).makeGraphic(1, 1, FlxColor.WHITE);
-		bar.scale.set(0, 15);
-		bar.updateHitbox();
-		add(bar);
-		barWidth = Std.int(bg.width - 10);
-
-		persistentUpdate = true;
 		super.create();
+
+		if (stateChangeDelay <= 0 && checkLoaded())
+		{
+			dontUpdate = true;
+			onLoad();
+		}
+	}
+
+	function addBehindBar(obj:flixel.FlxBasic)
+	{
+		insert(members.indexOf(barGroup), obj);
 	}
 
 	var transitioning:Bool = false;
@@ -128,11 +175,15 @@ class LoadingState extends MusicBeatState
 
 		if (!transitioning)
 		{
-			if (canChangeState && !finishedLoading && checkLoaded())
+			if (!finishedLoading && checkLoaded())
 			{
-				transitioning = true;
-				onLoad();
-				return;
+				if(stateChangeDelay <= 0)
+				{
+					transitioning = true;
+					onLoad();
+					return;
+				}
+				else stateChangeDelay = Math.max(0, stateChangeDelay - elapsed);
 			}
 			intendedPercent = loaded / loadMax;
 		}
@@ -146,6 +197,14 @@ class LoadingState extends MusicBeatState
 			bar.updateHitbox();
 		}
 
+		#if HSCRIPT_ALLOWED
+		if(hscript != null)
+		{
+			if(hscript.exists('onUpdate')) hscript.call('onUpdate', [elapsed]);
+			return;
+		}
+		#end
+
 		timePassed += elapsed;
 		var dots:String = '';
 		switch(Math.floor(timePassed % 1 * 3))
@@ -156,6 +215,19 @@ class LoadingState extends MusicBeatState
 		}
 		loadingText.text = Language.getPhrase('now_loading', 'Now Loading{1}', [dots]);
 	}
+
+	#if HSCRIPT_ALLOWED
+	override function destroy()
+	{
+		if(hscript != null)
+		{
+			if(hscript.exists('onDestroy')) hscript.call('onDestroy');
+			hscript.destroy();
+		}
+		hscript = null;
+		super.destroy();
+	}
+	#end
 	
 	var finishedLoading:Bool = false;
 	function onLoad()
@@ -211,6 +283,10 @@ class LoadingState extends MusicBeatState
 	static var isIntrusive:Bool = false;
 	static function getNextState(target:FlxState, stopMusic = false, intrusive:Bool = true):FlxState
 	{
+		#if !SHOW_LOADING_SCREEN
+		intrusive = false;
+		#end
+
 		LoadingState.isIntrusive = intrusive;
 		_startPool();
 		loadNextDirectory();
@@ -252,6 +328,19 @@ class LoadingState extends MusicBeatState
 
 	public static function prepareToSong()
 	{
+		if(PlayState.SONG == null)
+		{
+			imagesToPrepare = [];
+			soundsToPrepare = [];
+			musicToPrepare = [];
+			songsToPrepare = [];
+			loaded = 0;
+			loadMax = 0;
+			initialThreadCompleted = true;
+			isIntrusive = false;
+			return;
+		}
+
 		_startPool();
 
 		imagesToPrepare = [];

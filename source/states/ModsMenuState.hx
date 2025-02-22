@@ -53,6 +53,7 @@ class ModsMenuState extends MusicBeatState
 		this.startMod = startMod;
 		super();
 	}
+
 	override function create()
 	{
 		Paths.clearStoredMemory();
@@ -65,7 +66,7 @@ class ModsMenuState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
+		DiscordClient.changePresence("Checking out some Mods", null);
 		#end
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -101,7 +102,7 @@ class ModsMenuState extends MusicBeatState
 
 		buttonReload = new MenuButton(buttonX, bgList.y + bgList.height + 20, buttonWidth, buttonHeight, Language.getPhrase('reload_button', 'RELOAD'), reload);
 		add(buttonReload);
-		
+
 		var myY = buttonReload.y + buttonReload.bg.height + 20;
 		/*buttonModFolder = new MenuButton(buttonX, myY, buttonWidth, buttonHeight, "MODS FOLDER", function() {
 			var modFolder = Paths.mods();
@@ -193,7 +194,7 @@ class ModsMenuState extends MusicBeatState
 		bgDescription = FlxSpriteUtil.drawRoundRectComplex(new FlxSprite(bgTitle.x, bgTitle.y + 200).makeGraphic(840, 450, FlxColor.TRANSPARENT), 0, 0, 840, 450, 0, 0, 15, 15, FlxColor.BLACK);
 		bgDescription.alpha = 0.6;
 		add(bgDescription);
-		
+
 		modDesc = new FlxText(bgDescription.x + 15, bgDescription.y + 15, bgDescription.width - 30, "", 24);
 		modDesc.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT);
 		add(modDesc);
@@ -228,7 +229,7 @@ class ModsMenuState extends MusicBeatState
 		button.icon.animation.play('icon', true);
 		add(button);
 		buttons.push(button);
-		
+
 		if(modsList.all.length < 2)
 		{
 			for (button in buttons)
@@ -288,7 +289,7 @@ class ModsMenuState extends MusicBeatState
 			for (btn in buttons) btn.enabled = false;
 			button.focusChangeCallback = null;
 		}
-		
+
 		add(bgList);
 		add(modsGroup);
 		_lastControllerMode = controls.controllerMode;
@@ -296,7 +297,7 @@ class ModsMenuState extends MusicBeatState
 		changeSelectedMod();
 		super.create();
 	}
-	
+
 	var nextAttempt:Float = 1;
 	var holdingMod:Bool = false;
 	var mouseOffsets:FlxPoint = FlxPoint.get();
@@ -958,7 +959,7 @@ class MenuButton extends FlxSpriteGroup
 			return;
 		}
 
-		if(!ignoreCheck && !Controls.instance.controllerMode && FlxG.mouse.justMoved && FlxG.mouse.visible)
+		if(!ignoreCheck && !Controls.instance.controllerMode && (FlxG.mouse.justPressed || FlxG.mouse.justMoved) && FlxG.mouse.visible)
 			onFocus = FlxG.mouse.overlaps(this);
 
 		if(onFocus && onClick != null && FlxG.mouse.justPressed)

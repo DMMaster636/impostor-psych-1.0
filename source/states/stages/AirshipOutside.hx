@@ -32,7 +32,8 @@ class AirshipOutside extends BaseStage
 
 		camOffset = 50;
 
-		//platforms = new FlxSpriteGroup();
+		// TO-DO: make these FlxBackdrops?
+		platforms = new FlxSpriteGroup();
 		farClouds = new FlxSpriteGroup();
 		midClouds = new FlxSpriteGroup();
 		closeClouds = new FlxSpriteGroup();
@@ -88,13 +89,13 @@ class AirshipOutside extends BaseStage
 		}
 		add(closeClouds);
 
-		var platform:FlxBackdrop = new FlxBackdrop(Paths.image('airship/fgPlatform'), X, -436, 0);
+		/*var platform:FlxBackdrop = new FlxBackdrop(Paths.image('airship/fgPlatform'), X, -436, 0);
 		platform.setPosition(-1454.2, 282.25);
 		platform.scrollFactor.set(1, 1);
-		platform.velocity.set(-4000, 0);
-		add(platform);
+		platform.velocity.set(-3500, 0);
+		add(platform);*/
 
-		/*for(i in 0...2)
+		for(i in 0...2)
 		{
 			var platform:BGSprite = new BGSprite('airship/fgPlatform', -1454.2, 282.25, 1, 1);
 			switch(i)
@@ -104,7 +105,7 @@ class AirshipOutside extends BaseStage
 			}
 			add(platform);
 			platforms.add(platform);
-		}*/
+		}
 
 		flash = new BGSprite('airship/screamsky', 0, -300, 1, 1, ['scream sky  instance 1']);
 		flash.setGraphicSize(Std.int(flash.width * 3));
@@ -171,14 +172,14 @@ class AirshipOutside extends BaseStage
 			}
 		}
 
-		/*if(platforms != null && platforms.members.length > 0)
+		if(platforms != null && platforms.members.length > 0)
 		{
 			for(platform in platforms)
 			{
 				platform.x = FlxMath.lerp(platform.x, platform.x - 300, FlxMath.bound(elapsed * 9 * game.playbackRate, 0, 1));
 				if(platform.x < -7184.8) platform.x = 4275.15;
 			}
-		}*/
+		}
 
 		if(bigCloud != null)
 		{

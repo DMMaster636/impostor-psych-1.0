@@ -6,22 +6,24 @@ import openfl.display.Shader;
 import openfl.filters.ShaderFilter;
 #end
 
+import shaders.ErrorHandledShader;
+
 class ShaderHelper
 {
 	public static var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
-	public static function createRuntimeShader(name:String, ?forceShader:Bool = false):FlxRuntimeShader
+	public static function createRuntimeShader(name:String, ?forceShader:Bool = false):ErrorHandledRuntimeShader
 	{
-		if(!ClientPrefs.data.shaders && !forceShader) return new FlxRuntimeShader();
+		if(!ClientPrefs.data.shaders && !forceShader) return new ErrorHandledRuntimeShader();
 
 		#if (!flash && sys)
 		if(!runtimeShaders.exists(name) && !initRuntimeShader(name))
 		{
 			FlxG.log.warn('Shader $name is missing!');
-			return new FlxRuntimeShader();
+			return new ErrorHandledRuntimeShader(name);
 		}
 
 		var arr:Array<String> = runtimeShaders.get(name);
-		return new FlxRuntimeShader(arr[0], arr[1]);
+		return new ErrorHandledRuntimeShader(name, arr[0], arr[1]);
 		#else
 		FlxG.log.warn("Platform unsupported for Runtime Shaders!");
 		return null;
@@ -78,7 +80,7 @@ class ShaderHelper
 				return true;
 			}
 		}
-		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
+		#if SCRIPTS_ALLOWED
 		if(PlayState.instance != null)
 			PlayState.instance.addTextToDebug('Missing shader $name .frag AND .vert files!', FlxColor.RED);
 		else #end

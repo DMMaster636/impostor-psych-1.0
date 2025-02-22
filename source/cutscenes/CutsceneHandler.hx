@@ -12,18 +12,23 @@ typedef CutsceneEvent = {
 
 class CutsceneHandler extends FlxBasic
 {
-	public var timedEvents:Array<CutsceneEvent> = [];
-	public var skipCallback:Void->Void = null;
 	public var onStart:Void->Void = null;
+	public var finishCallback:Void->Void = null;
+	public var skipCallback:Void->Void = null;
+	public var overallFinish:Void->Void = null;
+
 	public var endTime:Float = 0;
-	public var objects:Array<FlxSprite> = [];
 	public var music:String = null;
 
+	public var objects:Array<FlxSprite> = [];
+	public var timedEvents:Array<CutsceneEvent> = [];
+
+	public var canSkip(default, set):Bool = false;
+
 	final _timeToSkip:Float = 1;
-	var _canSkip:Bool = false;
 	public var holdingTime:Float = 0;
+
 	public var skipSprite:FlxPieDial;
-	public var finishCallback:Void->Void = null;
 
 	public function new(canSkip:Bool = true)
 	{
@@ -40,17 +45,7 @@ class CutsceneHandler extends FlxBasic
 		});
 		FlxG.state.add(this);
 
-		this._canSkip = canSkip;
-		if(canSkip)
-		{
-			skipSprite = new FlxPieDial(0, 0, 40, FlxColor.WHITE, 40, true, 24);
-			skipSprite.replaceColor(FlxColor.BLACK, FlxColor.TRANSPARENT);
-			skipSprite.x = FlxG.width - (skipSprite.width + 80);
-			skipSprite.y = FlxG.height - (skipSprite.height + 72);
-			skipSprite.amount = 0;
-			skipSprite.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-			FlxG.state.add(skipSprite);
-		}
+		this.canSkip = canSkip;
 	}
 
 	private var cutsceneTime:Float = 0;
@@ -72,7 +67,7 @@ class CutsceneHandler extends FlxBasic
 			timedEvents.shift();
 		}
 		
-		if(_canSkip && cutsceneTime > 0.1)
+		if(canSkip && cutsceneTime > 0.1)
 		{
 			if(Controls.instance.pressed('accept'))
 				holdingTime = Math.max(0, Math.min(_timeToSkip, holdingTime + elapsed));
@@ -87,10 +82,11 @@ class CutsceneHandler extends FlxBasic
 			if(holdingTime >= _timeToSkip)
 			{
 				trace('skipped cutscene');
-				if(skipCallback != null)
-					skipCallback();
+				if(skipCallback != null) skipCallback();
 			}
-			else finishCallback();
+			else if(finishCallback != null) finishCallback();
+
+			if(overallFinish != null) overallFinish();
 
 			for (spr in objects)
 			{
@@ -103,6 +99,28 @@ class CutsceneHandler extends FlxBasic
 			destroy();
 			PlayState.instance.remove(this);
 		}
+	}
+
+	function set_canSkip(newValue:Bool)
+	{
+		canSkip = newValue;
+		if(canSkip)
+		{
+			if(skipSprite == null)
+			{
+				skipSprite = new FlxPieDial(0, 0, 40, FlxColor.WHITE, 40, true, 24);
+				skipSprite.replaceColor(FlxColor.BLACK, FlxColor.TRANSPARENT);
+				skipSprite.x = FlxG.width - (skipSprite.width + 80);
+				skipSprite.y = FlxG.height - (skipSprite.height + 72);
+				skipSprite.amount = 0;
+				skipSprite.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+				FlxG.state.add(skipSprite);
+			}
+		}
+		else if(skipSprite != null)
+			skipSprite = FlxDestroyUtil.destroy(skipSprite);
+
+		return canSkip;
 	}
 
 	function updateSkipAlpha()

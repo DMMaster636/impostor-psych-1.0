@@ -142,7 +142,7 @@ class VideoSprite extends FlxSpriteGroup
 				{
 					trace('Skipped Video');
 					skippedVideo = true;
-					videoSprite.bitmap.onEndReached.dispatch();
+					videoSprite?.bitmap.onEndReached.dispatch();
 					return;
 				}
 			}
@@ -195,7 +195,8 @@ class VideoSprite extends FlxSpriteGroup
 	function set_playbackRate(newValue:Float)
 	{
 		playbackRate = newValue;
-		videoSprite.bitmap.rate = newValue;
+		if(videoSprite != null)
+			videoSprite.bitmap.rate = newValue;
 		return playbackRate;
 	}
 
@@ -219,7 +220,7 @@ class VideoSprite extends FlxSpriteGroup
 	{
 		try
 		{
-			for(vid in _videos) vid.videoSprite.bitmap.onEndReached.dispatch();
+			for(vid in _videos) vid.videoSprite?.bitmap.onEndReached.dispatch();
 			_videos = [];
 			trace("Cleared Videos!");
 		}

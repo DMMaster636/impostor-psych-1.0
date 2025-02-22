@@ -4,17 +4,17 @@ import backend.animation.PsychAnimationController;
 
 class WalkingCrewmate extends FlxSprite
 {
-	public var theColor:String;
+	public var theColor:String = 'yellow';
 	public var xRange:Array<Float> = [0, 0];
-	var savedHeight:Float;
+	var savedHeight:Float = 0;
 
 	var idle:Bool = false;
-	var nextActionTime:Float;
-	var time:Float;
-	var right:Bool;
+	var nextActionTime:Float = 5;
+	var time:Float = 0;
+	var right:Bool = true;
 	var hibernating:Bool = false;
 
-	public function new(col:Int, xRange:Array<Float>, savedHeight:Float = 0, sca:Float = 1)
+	public function new(col:Int, xRange:Array<Float>, savedHeight:Float = 0, scale:Float = 1)
 	{
 		super(FlxG.random.float(xRange[1] - xRange[0]), savedHeight);
 
@@ -22,14 +22,17 @@ class WalkingCrewmate extends FlxSprite
 
 		this.xRange = xRange;
 		this.savedHeight = savedHeight;
-		scale.set(sca, sca);
+		this.scale.set(scale, scale);
 
 		lookupColor(col);
 
 		frames = Paths.getSparrowAtlas('mira/walkers', 'impostor');
-		animation.addByPrefix('walk', theColor, 24, true);
-		animation.addByIndices('idle', theColor, [8], "", 24, true);
-		animation.play('walk');
+		for(animCol in ['blue', 'brown', 'lime', 'tan', 'white', 'yellow'])
+		{
+			animation.addByPrefix(animCol + '_walk', animCol, 24, true);
+			animation.addByIndices(animCol + '_idle', animCol, [8], "", 24, true);
+		}
+		animation.play(theColor + '_walk');
 		scrollFactor.set(1, 1);
 
 		setNewActionTime();
@@ -52,7 +55,7 @@ class WalkingCrewmate extends FlxSprite
 				theColor = 'tan';
 			case 4:
 				theColor = 'white';
-			case 5:
+			default:
 				theColor = 'yellow';
 		}
 	}
@@ -62,21 +65,15 @@ class WalkingCrewmate extends FlxSprite
 		setNewActionTime(5, 10);
 
 		visible = false;
-		animation.stop();
-		animation.remove('walk');
-		animation.remove('idle');
 
 		var newColor:Int = 0;
 		switch(theColor) //prevent duplicate guys appearing on the screen at the same time
 		{
 			case 'blue' | 'brown': newColor = FlxG.random.int(0, 1);
 			case 'lime' | 'tan': newColor = FlxG.random.int(2, 3);
-			case 'white' | 'yellow': newColor = FlxG.random.int(4, 5);
+			default: newColor = FlxG.random.int(4, 5);
 		}
 		lookupColor(newColor);
-
-		animation.addByPrefix('walk', theColor, 24, true);
-		animation.addByIndices('idle', theColor, [8], "", 24, true);
 	}
 
 	function setNewActionTime(min:Float = 0.5, max:Float = 1)
@@ -128,15 +125,15 @@ class WalkingCrewmate extends FlxSprite
 
 			if(!idle)
 			{
-				if(animation.curAnim.name != 'walk') animation.play('walk');
+				if(animation.curAnim.name != theColor + '_walk') animation.play(theColor + '_walk');
 
 				if(right) x = FlxMath.lerp(x, x + 30, FlxMath.bound(elapsed * 9, 0, 1));
 				else x = FlxMath.lerp(x, x - 30, FlxMath.bound(elapsed * 9, 0, 1));
 			}
 			else
 			{
-				if(animation.curAnim.name != 'idle' && (animation.curAnim.curFrame == 7 || animation.curAnim.curFrame == 15))
-					animation.play('idle');
+				if(animation.curAnim.name != theColor + '_idle' && (animation.curAnim.curFrame == 7 || animation.curAnim.curFrame == 15))
+					animation.play(theColor + '_idle');
 			}
 
 			flipX = !right;

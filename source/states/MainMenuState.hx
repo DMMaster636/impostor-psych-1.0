@@ -8,7 +8,7 @@ class MainMenuState extends MusicBeatState
 {
 	public static var impostorPortVersion:String = '0.2';
 	public static var impostorModVersion:String = '4.1.0';
-	public static var psychEngineVersion:String = '1.0.2h';
+	public static var psychEngineVersion:String = '1.0.3';
 
 	public static var curSelected:Int = 0;
 

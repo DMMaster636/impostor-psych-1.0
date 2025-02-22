@@ -91,9 +91,10 @@ enum FinaleState
 	public var finaleState:FinaleState = NOT_UNLOCKED;
 
 	// other stuff
+	public var songResync:Bool = true;
 	public var comboGameCam:Bool = true;
 	public var missSoundVolume:Float = 0.6;
-	public var darkBorder:Bool = false;
+	public var darkBorder:Bool = true;
 }
 
 class ClientPrefs {

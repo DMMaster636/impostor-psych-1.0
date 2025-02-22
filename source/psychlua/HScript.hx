@@ -15,6 +15,8 @@ import crowplexus.iris.IrisConfig;
 import crowplexus.hscript.Expr.Error as IrisError;
 import crowplexus.hscript.Printer;
 
+import haxe.ValueException;
+
 typedef HScriptInfos = {
 	> haxe.PosInfos,
 	var ?funcName:String;
@@ -178,6 +180,8 @@ class HScript extends Iris
 		set('CustomSubstate', CustomSubstate);
 		#if (!flash && sys)
 		set('FlxRuntimeShader', flixel.addons.display.FlxRuntimeShader);
+		set('ErrorHandledRuntimeShader', shaders.ErrorHandledShader.ErrorHandledRuntimeShader);
+		set('ShaderHelper', shaders.ShaderHelper);
 		#end
 		set('ShaderFilter', openfl.filters.ShaderFilter);
 		set('StringTools', StringTools);
@@ -436,6 +440,18 @@ class HScript extends Iris
 			#end
 			Iris.error(Printer.errorToString(e, false), pos);
 		}
+		catch (e:ValueException) {
+			var pos:HScriptInfos = cast this.interp.posInfos();
+			pos.funcName = funcToRun;
+			#if LUA_ALLOWED
+			if (parentLua != null)
+			{
+				pos.isLua = true;
+				if (parentLua.lastCalledFunction != '') pos.funcName = parentLua.lastCalledFunction;
+			}
+			#end
+			Iris.error('$e', pos);
+		}
 		return null;
 	}
 
@@ -508,33 +524,50 @@ class CustomFlxColor
 
 class CustomInterp extends crowplexus.hscript.Interp
 {
-	public var parentInstance:Dynamic;
+	public var parentInstance(default, set):Dynamic = [];
+	private var _instanceFields:Array<String>;
+	function set_parentInstance(inst:Dynamic):Dynamic
+	{
+		parentInstance = inst;
+		if(parentInstance == null)
+		{
+			_instanceFields = [];
+			return inst;
+		}
+		_instanceFields = Type.getInstanceFields(Type.getClass(inst));
+		return inst;
+	}
+
 	public function new()
 	{
 		super();
 	}
 
+	override function fcall(o:Dynamic, funcToRun:String, args:Array<Dynamic>):Dynamic
+	{
+		for (_using in usings)
+		{
+			var v = _using.call(o, funcToRun, args);
+			if (v != null) return v;
+		}
+
+		var f = get(o, funcToRun);
+		if (f == null)
+		{
+			Iris.error('Tried to call null function $funcToRun', posInfos());
+			return null;
+		}
+
+		return Reflect.callMethod(o, f, args);
+	}
+
 	override function resolve(id:String):Dynamic
 	{
-		if (locals.exists(id)) {
-			var l = locals.get(id);
-			return l.r;
-		}
-
-		if (variables.exists(id)) {
-			var v = variables.get(id);
-			return v;
-		}
-
-		if (imports.exists(id)) {
-			var v = imports.get(id);
-			return v;
-		}
-
-		if(parentInstance != null && Type.getInstanceFields(Type.getClass(parentInstance)).contains(id)) {
-			var v = Reflect.getProperty(parentInstance, id);
-			return v;
-		}
+		if (locals.exists(id)) return locals.get(id).r;
+		if (variables.exists(id)) return variables.get(id);
+		if (imports.exists(id)) return imports.get(id);
+		if (parentInstance != null && _instanceFields.contains(id))
+			return Reflect.getProperty(parentInstance, id);
 
 		error(EUnknownVariable(id));
 		return null;

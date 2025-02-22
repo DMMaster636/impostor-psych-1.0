@@ -38,7 +38,7 @@ import backend.Highscore;
 
 // the same as FlxText, just with antialiasing automated
 import objects.FlxTextAA as FlxText;
-// sadly we have to import all this now (no, flixel.text.FlxText.* does not work)
+// sadly we have to import all this now (no, flixel.text.FlxText.*; does not work)
 import flixel.text.FlxText.FlxTextAlign;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.text.FlxText.FlxTextFormat;
